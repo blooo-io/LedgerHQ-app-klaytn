@@ -1,0 +1,21 @@
+bin
+debug
+dep
+obj
+dev-env
+src/glyphs.c
+src/glyphs.h
+.idea
+.vscode
+gitignore
+.vagrant
+libsol/target
+
+# Python
+__pycache__
+.egg
+.pyc
+*~
+
+tests/elfs/
+tests/python/snapshots-tmp/
