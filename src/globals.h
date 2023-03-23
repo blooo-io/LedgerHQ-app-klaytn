@@ -41,15 +41,18 @@
 #define OFFCHAIN_MESSAGE_HEADER_LENGTH 20
 
 typedef enum InstructionCode {
+    InsGetAppConfiguration = 0x01,
+    InsGetPubkey = 0x02,
+    InsSignLegacyTransaction = 0x03,
     // DEPRECATED - Use non "16" suffixed variants below
-    InsDeprecatedGetAppConfiguration = 0x01,
-    InsDeprecatedGetPubkey = 0x02,
-    InsDeprecatedSignMessage = 0x03,
+    InsDeprecatedGetAppConfiguration = 0xF1,
+    InsDeprecatedGetPubkey = 0xF2,
+    InsDeprecatedSignMessage = 0xF3,
     // END DEPRECATED
-    InsGetAppConfiguration = 0x04,
-    InsGetPubkey = 0x05,
-    InsSignMessage = 0x06,
-    InsSignOffchainMessage = 0x07
+    // InsGetAppConfiguration = 0xF4,
+    // InsGetPubkey = 0xF5,
+    InsSignMessage = 0xF6,
+    InsSignOffchainMessage = 0xF7
 } InstructionCode;
 
 // display stepped screens

@@ -1,5 +1,6 @@
 #pragma once
 #include <string.h>
+#include <stdio.h>
 
 #define ARRAY_LEN(a) (sizeof(a) / sizeof((a)[0]))
 #define BAIL_IF(x)           \
@@ -16,3 +17,13 @@
 #ifndef UNUSED
 #define UNUSED(x) (void) x
 #endif
+
+static inline void printf_hex_array(const char *title __attribute__((unused)),
+                                    size_t len __attribute__((unused)),
+                                    const uint8_t *data __attribute__((unused))) {
+    printf("%s", title);
+    for (size_t i = 0; i < len; ++i) {
+        printf("%02x", data[i]);
+    };
+    printf("\n");
+}

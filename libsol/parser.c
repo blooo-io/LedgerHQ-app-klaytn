@@ -173,3 +173,7 @@ int parse_instruction(Parser* parser, Instruction* instruction) {
     BAIL_IF(parse_data(parser, &instruction->data, &instruction->data_length));
     return 0;
 }
+
+int parse_legacy(Parser* parser, MessageHeader* header) {
+    return 0;
+}

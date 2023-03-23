@@ -62,6 +62,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
 
             break;
         }
+        case InsSignLegacyTransaction:
         case InsGetAppConfiguration:
         case InsGetPubkey:
         case InsSignMessage:

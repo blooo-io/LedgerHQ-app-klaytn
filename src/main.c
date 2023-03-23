@@ -18,6 +18,7 @@
 #include "utils.h"
 #include "getPubkey.h"
 #include "signMessage.h"
+#include "signLegacyTransaction.h"
 #include "signOffchainMessage.h"
 #include "apdu.h"
 #include "menu.h"
@@ -61,6 +62,10 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         case InsDeprecatedGetPubkey:
         case InsGetPubkey:
             handle_get_pubkey(flags, tx);
+            break;
+        case InsSignLegacyTransaction:
+            handle_sign_legacy_transaction(tx);
+            // ui here
             break;
 
         case InsDeprecatedSignMessage:
