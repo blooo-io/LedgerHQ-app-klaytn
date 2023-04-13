@@ -4,15 +4,32 @@
 #include <stdlib.h>
 #include "utils.h"
 #include "menu.h"
+#include "ethUtils.h"
 
-void get_public_key(uint8_t *publicKeyArray, const uint32_t *derivationPath, size_t pathLength) {
+uint32_t set_result_get_publicKey(publicKeyContext_t *publicKeyContext) {
+    uint32_t tx = 0;
+    G_io_apdu_buffer[tx++] = 65;
+    memmove(G_io_apdu_buffer + tx, publicKeyContext->publicKey.W, 65);
+    tx += 65;
+    G_io_apdu_buffer[tx++] = 40;
+    memmove(G_io_apdu_buffer + tx, publicKeyContext->address, 40);
+    tx += 40;
+    if (publicKeyContext->getChaincode) {
+        memmove(G_io_apdu_buffer + tx, publicKeyContext->chainCode, 32);
+        tx += 32;
+    }
+    return tx;
+}
+
+void get_public_key(publicKeyContext_t *publicKeyContext,
+                    const uint32_t *derivationPath,
+                    size_t pathLength) {
     cx_ecfp_private_key_t privateKey;
-    cx_ecfp_public_key_t publicKey;
 
-    get_private_key(&privateKey, derivationPath, pathLength);
+    get_private_key(&privateKey, publicKeyContext, derivationPath, pathLength);
     BEGIN_TRY {
         TRY {
-            cx_ecfp_generate_pair(CX_CURVE_Ed25519, &publicKey, &privateKey, 1);
+            cx_ecfp_generate_pair(CX_CURVE_256K1, &(publicKeyContext->publicKey), &privateKey, 1);
         }
         CATCH_OTHER(e) {
             MEMCLEAR(privateKey);
@@ -24,12 +41,13 @@ void get_public_key(uint8_t *publicKeyArray, const uint32_t *derivationPath, siz
     }
     END_TRY;
 
-    for (int i = 0; i < PUBKEY_LENGTH; i++) {
-        publicKeyArray[i] = publicKey.W[PUBKEY_LENGTH + PRIVATEKEY_LENGTH - i];
-    }
-    if ((publicKey.W[PUBKEY_LENGTH] & 1) != 0) {
-        publicKeyArray[PUBKEY_LENGTH - 1] |= 0x80;
-    }
+    cx_sha3_t sha3_hash;
+    uint64_t chainId = 8217;
+
+    getEthAddressStringFromKey(&(publicKeyContext->publicKey),
+                               publicKeyContext->address,
+                               &sha3_hash,
+                               chainId);
 }
 
 uint32_t readUint32BE(uint8_t *buffer) {
@@ -37,23 +55,22 @@ uint32_t readUint32BE(uint8_t *buffer) {
 }
 
 void get_private_key(cx_ecfp_private_key_t *privateKey,
+                     publicKeyContext_t *publicKeyContext,
                      const uint32_t *derivationPath,
                      size_t pathLength) {
     uint8_t privateKeyData[PRIVATEKEY_LENGTH];
+
     BEGIN_TRY {
         TRY {
-            os_perso_derive_node_bip32_seed_key(HDW_ED25519_SLIP10,
-                                                CX_CURVE_Ed25519,
-                                                derivationPath,
-                                                pathLength,
-                                                privateKeyData,
-                                                NULL,
-                                                NULL,
-                                                0);
-            cx_ecfp_init_private_key(CX_CURVE_Ed25519,
-                                     privateKeyData,
-                                     PRIVATEKEY_LENGTH,
-                                     privateKey);
+            os_perso_derive_node_bip32(
+                CX_CURVE_256K1,
+                derivationPath,
+                pathLength,
+                privateKeyData,
+                (publicKeyContext->getChaincode ? publicKeyContext->chainCode : NULL));
+            io_seproxyhal_io_heartbeat();
+            cx_ecfp_init_private_key(CX_CURVE_256K1, privateKeyData, PRIVATEKEY_LENGTH, privateKey);
+            io_seproxyhal_io_heartbeat();
         }
         CATCH_OTHER(e) {
             MEMCLEAR(privateKeyData);
@@ -122,7 +139,6 @@ int read_derivation_path(const uint8_t *data_buffer,
     }
 
     *derivation_path_length = len;
-
     return 0;
 }
 

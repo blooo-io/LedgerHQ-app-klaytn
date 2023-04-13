@@ -69,6 +69,7 @@ typedef struct ApduCommand {
     uint32_t derivation_path[MAX_BIP32_PATH_LENGTH];
     uint32_t derivation_path_length;
     bool non_confirm;
+    bool chaincode;
     bool deprecated_host;
     uint8_t message[MAX_MESSAGE_LENGTH];
     int message_length;

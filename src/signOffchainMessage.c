@@ -222,7 +222,10 @@ void handle_sign_offchain_message(volatile unsigned int *flags, volatile unsigne
         summary_item_set_hash(transaction_summary_general_item(), "Hash", &G_command.message_hash);
 
         Pubkey signer_pubkey;
-        get_public_key(signer_pubkey.data,
+        // to delete warnings
+        publicKeyContext_t publicKeyContext;
+        // get_public_key(signer_pubkey.data, ...
+        get_public_key(&publicKeyContext,
                        G_command.derivation_path,
                        G_command.derivation_path_length);
         summary_item_set_pubkey(transaction_summary_general_item(), "Signer", &signer_pubkey);

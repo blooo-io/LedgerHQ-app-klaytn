@@ -92,8 +92,11 @@ static int scan_header_for_signer(const uint32_t *derivation_path,
                                   uint32_t derivation_path_length,
                                   size_t *signer_index,
                                   const MessageHeader *header) {
-    uint8_t signer_pubkey[PUBKEY_SIZE];
-    get_public_key(signer_pubkey, derivation_path, derivation_path_length);
+    // to delete warnings
+    uint8_t signer_pubkey[PUBKEY_SIZE] = {0};
+    publicKeyContext_t publicKeyContext;
+    // get_public_key(signer_pubkey, derivation_path, derivation_path_length);
+    get_public_key(&publicKeyContext, derivation_path, derivation_path_length);
     for (size_t i = 0; i < header->pubkeys_header.num_required_signatures; ++i) {
         const Pubkey *current_pubkey = &(header->pubkeys[i]);
         if (memcmp(current_pubkey, signer_pubkey, PUBKEY_SIZE) == 0) {
