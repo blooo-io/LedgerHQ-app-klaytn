@@ -1,4 +1,4 @@
-from typing import List, Generator
+from typing import List, Generator, Tuple
 from enum import IntEnum
 from contextlib import contextmanager
 
@@ -16,6 +16,7 @@ class INS(IntEnum):
     INS_GET_PUBKEY = 0x02
     INS_SIGN_MESSAGE = 0xF6
     INS_SIGN_OFFCHAIN_MESSAGE = 0xF7
+    INS_SIGN_LEGACY_TRANSACTION = 0x04
 
 
 CLA = 0xE0
@@ -77,11 +78,16 @@ class SolanaClient:
     def __init__(self, client):
         self._client = client
 
-    def get_public_key(self, derivation_path: bytes) -> bytes:
+    def get_public_key(self, derivation_path: bytes) -> Tuple[bytes, bytes]:
         public_key: RAPDU = self._client.exchange(CLA, INS.INS_GET_PUBKEY,
                                                   P1_NON_CONFIRM, P2_NONE,
                                                   derivation_path)
-        return public_key.data
+        data = public_key.data
+        print("data: ", data.hex())
+        offset = 1 + data[0]
+        address = data[offset + 1: offset + 1 + data[offset]]
+
+        return data, address
 
     def split_and_prefix_message(self, derivation_path: bytes, message: bytes) -> List[bytes]:
         assert len(message) <= 65535, "Message to send is too long"
@@ -122,6 +128,17 @@ class SolanaClient:
                                          P1_CONFIRM,
                                          final_p2,
                                          message_splited_prefixed[-1]):
+            yield
+
+    @contextmanager
+    def send_async_sign_legacy(self):
+        data_str = "058000002c80002019800000008000000080000000e719850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01808220198080"
+        data = bytes.fromhex(data_str)
+        with self._client.exchange_async(CLA,
+                                         INS.INS_SIGN_LEGACY_TRANSACTION,
+                                         0,
+                                         0,
+                                         data):
             yield
 
     def get_async_response(self) -> RAPDU:

@@ -12,12 +12,26 @@ from binascii import hexlify
 
 def test_klaytn_get_public_key(backend, navigator, test_name):
     sol = SolanaClient(backend)
-    from_public_key = sol.get_public_key(KLAYTN_DERIVATION_PATH)
-
-    offset = 1 + from_public_key[0]
-    address = from_public_key[offset + 1: offset + 1 + from_public_key[offset]]
+    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
 
     print("Address 0x", address.decode(), sep='')
 
     assert address == "6E93a3ACfbaDF457F29fb0E57FA42274004c32EA".encode(
     ), "Public key is not the expected one"
+
+
+def test_klaytn_signLegacyTransaction(backend, navigator, test_name):
+    sol = SolanaClient(backend)
+    # from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+
+    with sol.send_async_sign_legacy():
+        navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                  [NavInsID.BOTH_CLICK],
+                                                  "Approve",
+                                                  ROOT_SCREENSHOT_PATH,
+                                                  test_name)
+
+    # signature: bytes = sol.get_async_response().data
+    # print("signature: ", signature)
+    assert False
+    verify_signature(from_public_key, message, signature)

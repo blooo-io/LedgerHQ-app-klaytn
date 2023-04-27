@@ -13,4 +13,4 @@ fi
 
 echo "Running tests for ${app_name} on ${device_label}"
 
-pytest tests/python/ -v --tb=short --device ${device_label}
+pytest -s tests/python/ -v --tb=short --device ${device_label}
