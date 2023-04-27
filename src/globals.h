@@ -19,6 +19,9 @@
 #define P1_CONFIRM     0x01
 #define P1_NON_CONFIRM 0x00
 
+#define P1_FIRST 0x00
+#define P1_MORE  0x80
+
 #define P2_NO_CHAINCODE 0x00
 #define P2_CHAINCODE    0x01
 
@@ -48,7 +51,7 @@
 typedef enum InstructionCode {
     InsGetAppConfiguration = 0x01,
     InsGetPubkey = 0x02,
-    InsSignLegacyTransaction = 0x03,
+    InsSignLegacyTransaction = 0x04,
     // DEPRECATED - Use non "16" suffixed variants below
     InsDeprecatedGetAppConfiguration = 0xF1,
     InsDeprecatedGetPubkey = 0xF2,

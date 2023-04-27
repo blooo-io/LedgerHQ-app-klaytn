@@ -15,6 +15,7 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include "shared_context.h"
 #include "utils.h"
 #include "getPubkey.h"
 #include "signMessage.h"
@@ -22,13 +23,19 @@
 #include "signOffchainMessage.h"
 #include "apdu.h"
 #include "menu.h"
+#include "ethUstream.h"
 
 ApduCommand G_command;
+txContext_t txContext;
+tmpContent_t tmpContent;
+strings_t strings;
+
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 static void reset_main_globals(void) {
     MEMCLEAR(G_command);
     MEMCLEAR(G_io_seproxyhal_spi_buffer);
+    MEMCLEAR(txContext);
 }
 
 void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx) {
