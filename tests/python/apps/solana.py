@@ -131,14 +131,12 @@ class SolanaClient:
             yield
 
     @contextmanager
-    def send_async_sign_legacy(self):
-        data_str = "058000002c80002019800000008000000080000000e719850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01808220198080"
-        data = bytes.fromhex(data_str)
+    def send_async_sign_legacy(self, message):
         with self._client.exchange_async(CLA,
                                          INS.INS_SIGN_LEGACY_TRANSACTION,
                                          0,
                                          0,
-                                         data):
+                                         message):
             yield
 
     def get_async_response(self) -> RAPDU:

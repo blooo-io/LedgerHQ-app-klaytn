@@ -61,9 +61,9 @@ int print_token_amount(uint64_t amount,
     return 0;
 }
 
-#define SOL_DECIMALS 9
+#define KLAY_DECIMALS 18
 int print_amount(uint64_t amount, char *out, size_t out_length) {
-    return print_token_amount(amount, "SOL", SOL_DECIMALS, out, out_length);
+    return print_token_amount(amount, "KLAY", KLAY_DECIMALS, out, out_length);
 }
 
 int print_sized_string(const SizedString *string, char *out, size_t out_length) {
@@ -94,6 +94,18 @@ int print_string(const char *in, char *out, size_t out_length) {
         }
     }
     return rc;
+}
+
+int print_pubkey(const Pubkey *pubkey, char *out, size_t out_length) {
+    const char hexDigits[] = "0123456789ABCDEF";
+
+    for (size_t i = 0; i < out_length; i++) {
+        out[i * 2] = hexDigits[pubkey->data[i] >> 4];
+        out[i * 2 + 1] = hexDigits[pubkey->data[i] & 0x0F];
+    }
+
+    out[PUBKEY_SIZE * 2] = '\0';  // Null-terminate the string
+    return 0;
 }
 
 int print_summary(const char *in,

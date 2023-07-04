@@ -3,74 +3,10 @@
 #include "spl_memo_instruction.h"
 #include "spl_token_instruction.h"
 #include "stake_instruction.h"
-#include "system_instruction.h"
 #include "util.h"
 #include <string.h>
-
-enum ProgramId instruction_program_id(const Instruction* instruction, const MessageHeader* header) {
-    const Pubkey* program_id = &header->pubkeys[instruction->program_id_index];
-    if (memcmp(program_id, &system_program_id, PUBKEY_SIZE) == 0) {
-        return ProgramIdSystem;
-    } else if (memcmp(program_id, &stake_program_id, PUBKEY_SIZE) == 0) {
-        return ProgramIdStake;
-    } else if (memcmp(program_id, &vote_program_id, PUBKEY_SIZE) == 0) {
-        return ProgramIdVote;
-    } else if (memcmp(program_id, &spl_token_program_id, PUBKEY_SIZE) == 0) {
-        return ProgramIdSplToken;
-    } else if (memcmp(program_id, &spl_associated_token_account_program_id, PUBKEY_SIZE) == 0) {
-        return ProgramIdSplAssociatedTokenAccount;
-    } else if (is_serum_assert_owner_program_id(program_id)) {
-        return ProgramIdSerumAssertOwner;
-    } else if (memcmp(program_id, &spl_memo_program_id, PUBKEY_SIZE) == 0) {
-        return ProgramIdSplMemo;
-    }
-
-    return ProgramIdUnknown;
-}
-
-int instruction_validate(const Instruction* instruction, const MessageHeader* header) {
-    BAIL_IF(instruction->program_id_index >= header->pubkeys_header.pubkeys_length);
-    for (size_t i = 0; i < instruction->accounts_length; i++) {
-        BAIL_IF(instruction->accounts[i] >= header->pubkeys_header.pubkeys_length);
-    }
-    return 0;
-}
-
-bool instruction_info_matches_brief(const InstructionInfo* info, const InstructionBrief* brief) {
-    if (brief->program_id == info->kind) {
-        switch (brief->program_id) {
-            case ProgramIdSerumAssertOwner:
-                return true;
-            case ProgramIdSplAssociatedTokenAccount:
-                return true;
-            case ProgramIdSplMemo:
-                return true;
-            case ProgramIdSplToken:
-                return (brief->spl_token == info->spl_token.kind);
-            case ProgramIdStake:
-                return (brief->stake == info->stake.kind);
-            case ProgramIdSystem:
-                return (brief->system == info->system.kind);
-            case ProgramIdVote:
-                return (brief->vote == info->vote.kind);
-            case ProgramIdUnknown:
-                break;
-        }
-    }
-    return false;
-}
-
-bool instruction_infos_match_briefs(InstructionInfo* const* infos,
-                                    const InstructionBrief* briefs,
-                                    size_t len) {
-    size_t i;
-    for (i = 0; i < len; i++) {
-        if (!instruction_info_matches_brief(infos[i], &briefs[i])) {
-            break;
-        }
-    }
-    return (i == len);
-}
+#include "ethUstream.h"
+#include "sol/parser.h"
 
 void instruction_accounts_iterator_init(InstructionAccountsIterator* it,
                                         const MessageHeader* header,
@@ -97,5 +33,66 @@ size_t instruction_accounts_iterator_remaining(const InstructionAccountsIterator
     if (it->current_instruction_account < it->instruction_accounts_length) {
         return it->instruction_accounts_length - it->current_instruction_account;
     }
+    return 0;
+}
+
+uint64_t convertUint256ToUint64(const txInt256_t* bytes) {
+    uint64_t result = 0;
+    for (int i = 0; i < bytes->length && i < 8; i++) {
+        result <<= 8;  // Shift existing value left by 8 bits
+        result |= (uint64_t) bytes->value[i];
+    }
+    return result;
+}
+
+int parse_system_transfer_instruction(txContext_t* context,
+                                      SystemTransferInfo* info,
+                                      char* method_name) {
+    SizedString method_name_ss = {
+        strlen(method_name),
+        (char*) method_name,
+    };
+    // Method name
+    info->method_name = method_name_ss;
+
+    // Address to
+    info->to = context->content->destination;
+
+    // Amount
+    info->amount = convertUint256ToUint64(&context->content->value);
+
+    // Nonce
+    info->nonce = convertUint256ToUint64(&context->content->nonce);
+
+    // Gas Price
+    info->gas_price = convertUint256ToUint64(&context->content->gasprice);
+
+    // Gas
+    info->gas = convertUint256ToUint64(&context->content->startgas);
+
+    return 1;
+}
+
+int print_system_transfer_info(const SystemTransferInfo* info) {
+    SummaryItem* item;
+
+    item = transaction_summary_primary_item();
+    summary_item_set_sized_string(item, "Transaction", &info->method_name);
+
+    item = transaction_summary_general_item();
+    summary_item_set_amount(item, "Amount", info->amount);
+
+    item = transaction_summary_general_item();
+    summary_item_set_pubkey(item, "Recipient", info->to);
+
+    item = transaction_summary_general_item();
+    summary_item_set_u64(item, "Nonce", info->nonce);
+
+    item = transaction_summary_general_item();
+    summary_item_set_u64(item, "Gas Price", info->gas_price);
+
+    item = transaction_summary_general_item();
+    summary_item_set_u64(item, "Gas", info->gas);
+
     return 0;
 }

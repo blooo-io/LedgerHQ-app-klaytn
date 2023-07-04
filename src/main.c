@@ -72,7 +72,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
             break;
         case InsSignLegacyTransaction:
             handle_sign_legacy_transaction(tx);
-            // ui here
+            handle_sign_message_ui(flags);
             break;
 
         case InsDeprecatedSignMessage:

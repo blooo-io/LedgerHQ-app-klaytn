@@ -28,7 +28,6 @@ void test_parse_delegate_stake_instructions() {
 
     Instruction instruction;
     assert(parse_instruction(&parser, &instruction) == 0);
-    assert(instruction_validate(&instruction, &header) == 0);
 
     StakeInfo info;
     assert(parse_stake_instructions(&instruction, &header, &info) == 0);
