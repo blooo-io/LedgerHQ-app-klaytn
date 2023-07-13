@@ -4,11 +4,63 @@
 #include "ethUstream.h"
 #include "shared_context.h"
 #include "ux.h"
+#include "cx.h"
+#include "utils.h"
 #include "sol/transaction_summary.h"
+
+static uint8_t set_result_sign_message() {
+    uint8_t signature[SIGNATURE_LENGTH];
+    cx_ecfp_private_key_t privateKey;
+    BEGIN_TRY {
+        TRY {
+            get_private_key_with_seed(&privateKey,
+                                      G_command.derivation_path,
+                                      G_command.derivation_path_length);
+            cx_eddsa_sign(&privateKey,
+                          CX_LAST,
+                          CX_SHA512,
+                          G_command.message,
+                          G_command.message_length,
+                          NULL,
+                          0,
+                          signature,
+                          SIGNATURE_LENGTH,
+                          NULL);
+            memcpy(G_io_apdu_buffer, signature, SIGNATURE_LENGTH);
+        }
+        CATCH_OTHER(e) {
+            MEMCLEAR(privateKey);
+            THROW(e);
+        }
+        FINALLY {
+            MEMCLEAR(privateKey);
+        }
+    }
+    END_TRY;
+    return SIGNATURE_LENGTH;
+}
+
+static void send_result_sign_message(void) {
+    sendResponse(set_result_sign_message(), true);
+}
 
 //////////////////////////////////////////////////////////////////////
 
-UX_STEP_NOCB_INIT(ux_test_step,  // rename after deleting the singmessage one
+UX_STEP_CB(ux_approve_step,
+           pb,
+           send_result_sign_message(),
+           {
+               &C_icon_validate_14,
+               "Approve",
+           });
+UX_STEP_CB(ux_reject_step,
+           pb,
+           sendResponse(0, false),
+           {
+               &C_icon_crossmark,
+               "Reject",
+           });
+UX_STEP_NOCB_INIT(ux_summary_step,  // rename after deleting the singmessage one
                   bnnn_paging,
                   {
                       size_t step_index = G_ux.flow_stack[stack_slot].index;
@@ -33,10 +85,12 @@ UX_STEP_NOCB_INIT(ux_test_step,  // rename after deleting the singmessage one
 ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 
 void handle_sign_legacy_transaction(volatile unsigned int *tx) {
-    if (!tx || G_command.instruction != InsSignLegacyTransaction ||
-        G_command.state != ApduStatePayloadComplete) {
+    if (!tx || G_command.state != ApduStatePayloadComplete ||
+        (G_command.instruction != InsSignLegacyTransaction &&
+         G_command.instruction != InsSignValueTransfer)) {
         THROW(ApduReplySdkInvalidParameter);
     }
+
     cx_sha3_t global_sha3;
     parserStatus_e txResult;
 
@@ -49,14 +103,19 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     uint8_t txType = *workBuffer;
     if (txType >= 0x00 && txType <= 0x7f) {
         // Enumerate through all supported txTypes here...
-        if (txType == 1 || txType == 2) {
-            cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
-            txContext.txType = txType;
-            workBuffer++;
-            dataLength--;
-        } else {
-            PRINTF("Transaction type %d not supported\n", txType);
-            THROW(0x6501);
+        switch (txType) {
+            case 1:
+            case 2:
+            case InsSignValueTransfer:
+                cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
+                txContext.txType = txType;
+                workBuffer++;
+                dataLength--;
+                break;
+            default:
+                PRINTF("Transaction type %d not supported\n", txType);
+                THROW(0x6501);
+                break;
         }
     } else {
         txContext.txType = LEGACY;
@@ -64,8 +123,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
 
     txResult = processTx(&txContext, workBuffer, dataLength, 0);
     transaction_summary_reset();
-    if (process_message_body(G_command.message, G_command.message_length, G_command.instruction) !=
-        0) {
+    if (process_message_body() != 0) {
         // Message not processed, throw if blind signing is not enabled
         if (N_storage.settings.allow_blind_sign == BlindSignEnabled) {
             SummaryItem *item = transaction_summary_primary_item();
@@ -92,8 +150,11 @@ void handle_sign_legacy_transaction_ui(volatile unsigned int *flags) {
         size_t num_flow_steps = 0;
 
         for (size_t i = 0; i < num_summary_steps; i++) {
-            flow_steps[num_flow_steps++] = &ux_test_step;
+            flow_steps[num_flow_steps++] = &ux_summary_step;
         }
+
+        flow_steps[num_flow_steps++] = &ux_approve_step;
+        flow_steps[num_flow_steps++] = &ux_reject_step;
         flow_steps[num_flow_steps++] = FLOW_END_STEP;
 
         ux_flow_init(0, flow_steps, NULL);

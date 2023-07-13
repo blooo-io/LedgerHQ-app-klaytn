@@ -73,7 +73,31 @@ int parse_system_transfer_instruction(txContext_t* context,
     return 1;
 }
 
-int print_system_transfer_info(const SystemTransferInfo* info) {
+int print_legacy_transaction_info(const SystemTransferInfo* info) {
+    SummaryItem* item;
+
+    item = transaction_summary_primary_item();
+    summary_item_set_sized_string(item, "Transaction", &info->method_name);
+
+    item = transaction_summary_general_item();
+    summary_item_set_amount(item, "Amount", info->amount);
+
+    item = transaction_summary_general_item();
+    summary_item_set_pubkey(item, "Recipient", info->to);
+
+    item = transaction_summary_general_item();
+    summary_item_set_u64(item, "Nonce", info->nonce);
+
+    item = transaction_summary_general_item();
+    summary_item_set_u64(item, "Gas Price", info->gas_price);
+
+    item = transaction_summary_general_item();
+    summary_item_set_u64(item, "Gas", info->gas);
+
+    return 0;
+}
+
+int print_value_transfer_info(const SystemTransferInfo* info) {
     SummaryItem* item;
 
     item = transaction_summary_primary_item();

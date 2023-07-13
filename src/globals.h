@@ -52,6 +52,7 @@ typedef enum InstructionCode {
     InsGetAppConfiguration = 0x01,
     InsGetPubkey = 0x02,
     InsSignLegacyTransaction = 0x04,
+    InsSignValueTransfer = 0x08,
     // DEPRECATED - Use non "16" suffixed variants below
     InsDeprecatedGetAppConfiguration = 0xF1,
     InsDeprecatedGetPubkey = 0xF2,
@@ -94,5 +95,5 @@ typedef struct internalStorage_t {
 } internalStorage_t;
 
 extern const internalStorage_t N_storage_real;
-#define N_storage (*(volatile internalStorage_t*) PIC(&N_storage_real))
+#define N_storage (*(volatile internalStorage_t *) PIC(&N_storage_real))
 #endif

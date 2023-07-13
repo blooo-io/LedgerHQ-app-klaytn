@@ -36,3 +36,21 @@ def test_klaytn_signLegacyTransaction(backend, navigator, test_name):
     signature: bytes = sol.get_async_response().data
     # print("signature: ", signature)
     verify_signature(from_public_key, message, signature)
+
+
+def test_klaytn_signValueTransfer(backend, navigator, test_name):
+    sol = SolanaClient(backend)
+    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+    print("from_public_key", list(from_public_key))
+    message: bytes = bytearray.fromhex(
+        "058000002c8000201980000000800000008000000008f83b19850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df7555c4c3018080")
+    with sol.send_async_sign_legacy(message):
+        navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                  [NavInsID.BOTH_CLICK],
+                                                  "Approve",
+                                                  ROOT_SCREENSHOT_PATH,
+                                                  test_name)
+
+    signature: bytes = sol.get_async_response().data
+    # print("signature: ", signature)
+    verify_signature(from_public_key, message, signature)

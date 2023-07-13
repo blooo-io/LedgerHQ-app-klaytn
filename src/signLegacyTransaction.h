@@ -7,4 +7,6 @@
 
 void handle_sign_legacy_transaction(volatile unsigned int *tx);
 
+void handle_sign_legacy_transaction_ui(volatile unsigned int *flags);
+
 #endif

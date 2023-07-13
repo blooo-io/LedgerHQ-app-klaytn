@@ -71,10 +71,10 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
             handle_get_pubkey(flags, tx);
             break;
         case InsSignLegacyTransaction:
+        case InsSignValueTransfer:
             handle_sign_legacy_transaction(tx);
-            handle_sign_message_ui(flags);
+            handle_sign_legacy_transaction_ui(flags);
             break;
-
         case InsDeprecatedSignMessage:
         case InsSignMessage:
             handle_sign_message_parse_message(tx);

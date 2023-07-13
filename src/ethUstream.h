@@ -88,6 +88,19 @@ typedef enum rlpLegacyTxField_e {
     LEGACY_RLP_DONE
 } rlpLegacyTxField_e;
 
+typedef enum rlpValueTransferTxField_e {
+    VALUE_TRANSFER_RLP_NONE = RLP_NONE,
+    VALUE_TRANSFER_RLP_CONTENT,
+    VALUE_TRANSFER_RLP_TYPE,  // For wanchain
+    VALUE_TRANSFER_RLP_NONCE,
+    VALUE_TRANSFER_RLP_GASPRICE,
+    VALUE_TRANSFER_RLP_GASLIMIT,
+    VALUE_TRANSFER_RLP_TO,
+    VALUE_TRANSFER_RLP_VALUE,
+    VALUE_TRANSFER_RLP_DATA,
+    VALUE_TRANSFER_RLP_DONE
+} rlpValueTransferTxField_e;
+
 typedef enum rlpEIP2930TxField_e {
     EIP2930_RLP_NONE = RLP_NONE,
     EIP2930_RLP_CONTENT,

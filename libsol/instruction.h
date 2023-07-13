@@ -72,3 +72,6 @@ uint64_t convertUint256ToUint64(const txInt256_t* bytes);
 int parse_system_transfer_instruction(txContext_t* context,
                                       SystemTransferInfo* info,
                                       char* method_name);
+
+int print_legacy_transaction_info(const SystemTransferInfo* info);
+int print_value_transfer_info(const SystemTransferInfo* info);

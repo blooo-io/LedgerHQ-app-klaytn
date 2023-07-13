@@ -10,7 +10,7 @@
 // change this if you want to be able to add successive tx
 #define MAX_INSTRUCTIONS 1
 
-int process_message_body(const uint8_t* message_body, int message_body_length, int ins_code) {
+int process_message_body() {
     size_t instruction_count = 0;
     InstructionInfo instruction_info[MAX_INSTRUCTIONS];
     explicit_bzero(instruction_info, sizeof(InstructionInfo) * MAX_INSTRUCTIONS);
@@ -19,17 +19,24 @@ int process_message_body(const uint8_t* message_body, int message_body_length, i
 
     InstructionInfo* info = &instruction_info[instruction_count];
 
-    switch (ins_code) {
+    switch (G_command.instruction) {
         case InsSignLegacyTransaction:
             parse_system_transfer_instruction(&txContext, &info->transaction, "Legacy Transaction");
             break;
+        case InsSignValueTransfer:
+            parse_system_transfer_instruction(&txContext, &info->transaction, "Value Transfer");
+            break;
+        default:
+            return 0;
     };
 
     display_instruction_info[display_instruction_count++] = info;
 
-    switch (ins_code) {
+    switch (G_command.instruction) {
         case InsSignLegacyTransaction:
-            return print_system_transfer_info(&display_instruction_info[0]->transaction);
+            return print_legacy_transaction_info(&display_instruction_info[0]->transaction);
+        case InsSignValueTransfer:
+            return print_value_transfer_info(&display_instruction_info[0]->transaction);
     };
     return 1;
 }
