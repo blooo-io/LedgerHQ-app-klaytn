@@ -87,7 +87,8 @@ ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     if (!tx || G_command.state != ApduStatePayloadComplete ||
         (G_command.instruction != InsSignLegacyTransaction &&
-         G_command.instruction != InsSignValueTransfer)) {
+         G_command.instruction != InsSignValueTransfer &&
+         G_command.instruction != InsSignValueTransferMemo)) {
         THROW(ApduReplySdkInvalidParameter);
     }
 
@@ -107,6 +108,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
             case 1:
             case 2:
             case InsSignValueTransfer:
+            case InsSignValueTransferMemo:
                 cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
                 txContext.txType = txType;
                 workBuffer++;

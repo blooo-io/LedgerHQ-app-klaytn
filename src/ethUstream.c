@@ -317,6 +317,28 @@ static void processV(txContext_t *context) {
     }
 }
 
+// Skips the "from" parameter after verifying its presence
+static void processFrom(txContext_t *context) {
+    if (context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP_FROM\n");
+        THROW(EXCEPTION);
+    }
+    if (context->currentFieldLength > MAX_ADDRESS) {
+        PRINTF("Invalid length for RLP_FROM\n");
+        THROW(EXCEPTION);
+    }
+    if (context->currentFieldPos < context->currentFieldLength) {
+        uint32_t copySize =
+            MIN(context->commandLength, context->currentFieldLength - context->currentFieldPos);
+        copyTxData(context, NULL, copySize);
+    }
+    if (context->currentFieldPos == context->currentFieldLength) {
+        context->content->destinationLength = context->currentFieldLength;
+        context->currentField++;
+        context->processingField = false;
+    }
+}
+
 static bool processEIP1559Tx(txContext_t *context) {
     switch (context->currentField) {
         case EIP1559_RLP_CONTENT: {
@@ -494,6 +516,46 @@ static bool processValueTransfer(txContext_t *context) {
     return false;
 }
 
+static bool processValueTransferMemo(txContext_t *context) {
+    switch (context->currentField) {
+        case VALUE_TRANSFER_MEMO_RLP_CONTENT:
+            processContent(context);
+            if ((context->processingFlags & TX_FLAG_TYPE) == 0) {
+                context->currentField++;
+            }
+            break;
+        // This gets hit only by Wanchain
+        case VALUE_TRANSFER_MEMO_RLP_TYPE:
+            processType(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_NONCE:
+            processNonce(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_GASPRICE:
+            processGasprice(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_GASLIMIT:
+            processGasLimit(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_TO:
+            processTo(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_VALUE:
+            processValue(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_FROM:
+            processFrom(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_DATA:
+            processData(context);
+            break;
+        default:
+            PRINTF("Invalid RLP decoder context\n");
+            return true;
+    }
+    return false;
+}
+
 static parserStatus_e parseRLP(txContext_t *context) {
     bool canDecode = false;
     uint32_t offset;
@@ -612,6 +674,13 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                     }
                 case InsSignValueTransfer:
                     fault = processValueTransfer(context);
+                    if (fault) {
+                        return USTREAM_FAULT;
+                    } else {
+                        break;
+                    }
+                case InsSignValueTransferMemo:
+                    fault = processValueTransferMemo(context);
                     if (fault) {
                         return USTREAM_FAULT;
                     } else {

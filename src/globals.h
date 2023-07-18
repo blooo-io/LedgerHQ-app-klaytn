@@ -53,6 +53,7 @@ typedef enum InstructionCode {
     InsGetPubkey = 0x02,
     InsSignLegacyTransaction = 0x04,
     InsSignValueTransfer = 0x08,
+    InsSignValueTransferMemo = 0x10,
     // DEPRECATED - Use non "16" suffixed variants below
     InsDeprecatedGetAppConfiguration = 0xF1,
     InsDeprecatedGetPubkey = 0xF2,

@@ -64,6 +64,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
         }
         case InsSignLegacyTransaction:
         case InsSignValueTransfer:
+        case InsSignValueTransferMemo:
         case InsGetAppConfiguration:
         case InsGetPubkey:
         case InsSignMessage:

@@ -72,6 +72,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
             break;
         case InsSignLegacyTransaction:
         case InsSignValueTransfer:
+        case InsSignValueTransferMemo:
             handle_sign_legacy_transaction(tx);
             handle_sign_legacy_transaction_ui(flags);
             break;

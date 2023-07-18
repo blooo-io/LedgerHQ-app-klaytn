@@ -26,6 +26,11 @@ int process_message_body() {
         case InsSignValueTransfer:
             parse_system_transfer_instruction(&txContext, &info->transaction, "Value Transfer");
             break;
+        case InsSignValueTransferMemo:
+            parse_system_transfer_instruction(&txContext,
+                                              &info->transaction,
+                                              "Value Transfer Memo");
+            break;
         default:
             return 0;
     };
@@ -36,6 +41,7 @@ int process_message_body() {
         case InsSignLegacyTransaction:
             return print_legacy_transaction_info(&display_instruction_info[0]->transaction);
         case InsSignValueTransfer:
+        case InsSignValueTransferMemo:
             return print_value_transfer_info(&display_instruction_info[0]->transaction);
     };
     return 1;
