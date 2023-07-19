@@ -17,6 +17,7 @@ class INS(IntEnum):
     INS_SIGN_MESSAGE = 0xF6
     INS_SIGN_OFFCHAIN_MESSAGE = 0xF7
     INS_SIGN_LEGACY_TRANSACTION = 0x04
+    INS_SIGN_VALUE_TRANSFER = 0x08
 
 
 CLA = 0xE0
@@ -131,11 +132,11 @@ class SolanaClient:
             yield
 
     @contextmanager
-    def send_async_sign_legacy(self, message):
+    def send_async_sign_transaction(self, message, ins, p1=0, p2=0):
         with self._client.exchange_async(CLA,
-                                         INS.INS_SIGN_LEGACY_TRANSACTION,
-                                         0,
-                                         0,
+                                         ins,
+                                         p1,
+                                         p2,
                                          message):
             yield
 
