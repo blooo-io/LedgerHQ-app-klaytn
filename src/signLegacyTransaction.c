@@ -88,7 +88,8 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     if (!tx || G_command.state != ApduStatePayloadComplete ||
         (G_command.instruction != InsSignLegacyTransaction &&
          G_command.instruction != InsSignValueTransfer &&
-         G_command.instruction != InsSignValueTransferMemo)) {
+         G_command.instruction != InsSignValueTransferMemo &&
+         G_command.instruction != InsSignSmartContractDeploy)) {
         THROW(ApduReplySdkInvalidParameter);
     }
 
@@ -109,6 +110,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
             case 2:
             case InsSignValueTransfer:
             case InsSignValueTransferMemo:
+            case InsSignSmartContractDeploy:
                 cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
                 txContext.txType = txType;
                 workBuffer++;

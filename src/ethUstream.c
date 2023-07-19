@@ -317,16 +317,7 @@ static void processV(txContext_t *context) {
     }
 }
 
-// Skips the "from" parameter after verifying its presence
-static void processFrom(txContext_t *context) {
-    if (context->currentFieldIsList) {
-        PRINTF("Invalid type for RLP_FROM\n");
-        THROW(EXCEPTION);
-    }
-    if (context->currentFieldLength > MAX_ADDRESS) {
-        PRINTF("Invalid length for RLP_FROM\n");
-        THROW(EXCEPTION);
-    }
+static void processParamSkip(txContext_t *context) {
     if (context->currentFieldPos < context->currentFieldLength) {
         uint32_t copySize =
             MIN(context->commandLength, context->currentFieldLength - context->currentFieldPos);
@@ -337,6 +328,19 @@ static void processFrom(txContext_t *context) {
         context->currentField++;
         context->processingField = false;
     }
+}
+
+// Skips the "from" parameter after verifying its presence
+static void processFrom(txContext_t *context) {
+    if (context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP_FROM\n");
+        THROW(EXCEPTION);
+    }
+    if (context->currentFieldLength > MAX_ADDRESS) {
+        PRINTF("Invalid length for RLP_FROM\n");
+        THROW(EXCEPTION);
+    }
+    processParamSkip(context);
 }
 
 static bool processEIP1559Tx(txContext_t *context) {
@@ -556,6 +560,52 @@ static bool processValueTransferMemo(txContext_t *context) {
     return false;
 }
 
+static bool processSmartContractDeploy(txContext_t *context) {
+    switch (context->currentField) {
+        case SMART_CONTRACT_DEPLOY_RLP_CONTENT:
+            processContent(context);
+            if ((context->processingFlags & TX_FLAG_TYPE) == 0) {
+                context->currentField++;
+            }
+            break;
+        // This gets hit only by Wanchain
+        case SMART_CONTRACT_DEPLOY_RLP_TYPE:
+            processType(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_NONCE:
+            processNonce(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_GASPRICE:
+            processGasprice(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_GASLIMIT:
+            processGasLimit(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_TO:
+            processParamSkip(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_VALUE:
+            processValue(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_FROM:
+            processFrom(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_DATA:
+            processData(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_HUMAN_READABLE:
+            processParamSkip(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_CODE_FORMAT:
+            processParamSkip(context);
+            break;
+        default:
+            PRINTF("Invalid RLP decoder context\n");
+            return true;
+    }
+    return false;
+}
+
 static parserStatus_e parseRLP(txContext_t *context) {
     bool canDecode = false;
     uint32_t offset;
@@ -681,6 +731,13 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                     }
                 case InsSignValueTransferMemo:
                     fault = processValueTransferMemo(context);
+                    if (fault) {
+                        return USTREAM_FAULT;
+                    } else {
+                        break;
+                    }
+                case InsSignSmartContractDeploy:
+                    fault = processSmartContractDeploy(context);
                     if (fault) {
                         return USTREAM_FAULT;
                     } else {
