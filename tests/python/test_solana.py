@@ -62,7 +62,25 @@ def test_klaytn_signValueTransferMemo(backend, navigator, test_name):
     print("from_public_key", list(from_public_key))
     message: bytes = bytearray.fromhex(
         "058000002c8000201980000000800000008000000010f84119850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558568656c6c6fc4c3018080")
-    with sol.send_async_sign_transaction(message, INS.MEMO):
+    with sol.send_async_sign_transaction(message, INS.INS_SIGN_VALUE_TRANSFER_MEMO):
+        navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                  [NavInsID.BOTH_CLICK],
+                                                  "Approve",
+                                                  ROOT_SCREENSHOT_PATH,
+                                                  test_name)
+
+    signature: bytes = sol.get_async_response().data
+    # print("signature: ", signature)
+    verify_signature(from_public_key, message, signature)
+
+
+def test_klaytn_signSmartContractDeploy(backend, navigator, test_name):
+    sol = SolanaClient(backend)
+    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+    print("from_public_key", list(from_public_key))
+    message: bytes = bytearray.fromhex(
+        "058000002c8000201980000000800000008000000028ef19850ba43b7400830493e08080946694d467b419b36fb719e851cd65d54205df75558568656c6c6f8080c4c3018080")
+    with sol.send_async_sign_transaction(message, INS.INS_SIGN_SMART_CONTRACT_DEPLOY):
         navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
                                                   [NavInsID.BOTH_CLICK],
                                                   "Approve",
