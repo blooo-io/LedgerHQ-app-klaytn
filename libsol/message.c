@@ -41,6 +41,9 @@ int process_message_body() {
                                               &info->transaction,
                                               "Smart Contract Execution");
             break;
+        case InsSignCancel:
+            parse_system_transfer_instruction(&txContext, &info->transaction, "Cancel");
+            break;
         default:
             return 0;
     };
@@ -57,6 +60,8 @@ int process_message_body() {
             return print_smart_contract_deploy_info(&display_instruction_info[0]->transaction);
         case InsSignSmartContractExecution:
             return print_smart_contract_execution_info(&display_instruction_info[0]->transaction);
+        case InsSignCancel:
+            return print_cancel_info(&display_instruction_info[0]->transaction);
     };
     return 1;
 }

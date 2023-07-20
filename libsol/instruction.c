@@ -165,3 +165,21 @@ int print_smart_contract_execution_info(const SystemTransferInfo* info) {
 
     return 0;
 }
+
+int print_cancel_info(const SystemTransferInfo* info) {
+    SummaryItem* item;
+
+    item = transaction_summary_primary_item();
+    summary_item_set_sized_string(item, "Transaction", &info->method_name);
+
+    item = transaction_summary_general_item();
+    summary_item_set_u64(item, "Cancelled Tx Nonce", info->nonce);
+
+    item = transaction_summary_general_item();
+    summary_item_set_u64(item, "Gas Price", info->gas_price);
+
+    item = transaction_summary_general_item();
+    summary_item_set_u64(item, "Gas", info->gas);
+
+    return 0;
+}

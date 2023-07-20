@@ -631,6 +631,39 @@ static bool processSmartContractExecution(txContext_t *context) {
     return false;
 }
 
+static bool processCancel(txContext_t *context) {
+    switch (context->currentField) {
+        case SMART_CONTRACT_EXECUTION_RLP_CONTENT:
+            processContent(context);
+            if ((context->processingFlags & TX_FLAG_TYPE) == 0) {
+                context->currentField++;
+            }
+            break;
+        case SMART_CONTRACT_EXECUTION_RLP_TYPE:
+            processType(context);
+            break;
+        case SMART_CONTRACT_EXECUTION_RLP_NONCE:
+            processNonce(context);
+            break;
+        case SMART_CONTRACT_EXECUTION_RLP_GASPRICE:
+            processGasprice(context);
+            break;
+        case SMART_CONTRACT_EXECUTION_RLP_GASLIMIT:
+            processGasLimit(context);
+            break;
+        case SMART_CONTRACT_EXECUTION_RLP_FROM:
+            processParamSkip(context);
+            break;
+        case SMART_CONTRACT_EXECUTION_RLP_DATA:
+            processData(context);
+            break;
+        default:
+            PRINTF("Invalid RLP decoder context\n");
+            return true;
+    }
+    return false;
+}
+
 static parserStatus_e parseRLP(txContext_t *context) {
     bool canDecode = false;
     uint32_t offset;
@@ -770,6 +803,13 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                     }
                 case InsSignSmartContractExecution:
                     fault = processSmartContractExecution(context);
+                    if (fault) {
+                        return USTREAM_FAULT;
+                    } else {
+                        break;
+                    }
+                case InsSignCancel:
+                    fault = processCancel(context);
                     if (fault) {
                         return USTREAM_FAULT;
                     } else {

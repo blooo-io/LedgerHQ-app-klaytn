@@ -75,6 +75,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         case InsSignValueTransferMemo:
         case InsSignSmartContractDeploy:
         case InsSignSmartContractExecution:
+        case InsSignCancel:
             handle_sign_legacy_transaction(tx);
             handle_sign_legacy_transaction_ui(flags);
             break;
