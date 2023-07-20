@@ -654,9 +654,6 @@ static bool processCancel(txContext_t *context) {
         case CANCEL_RLP_FROM:
             processParamSkip(context);
             break;
-        case CANCEL_RLP_DATA:
-            processData(context);
-            break;
         default:
             PRINTF("Invalid RLP decoder context\n");
             return true;
