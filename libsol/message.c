@@ -36,6 +36,11 @@ int process_message_body() {
                                               &info->transaction,
                                               "Smart Contract Deploy");
             break;
+        case InsSignSmartContractExecution:
+            parse_system_transfer_instruction(&txContext,
+                                              &info->transaction,
+                                              "Smart Contract Execution");
+            break;
         default:
             return 0;
     };
@@ -50,6 +55,8 @@ int process_message_body() {
             return print_value_transfer_info(&display_instruction_info[0]->transaction);
         case InsSignSmartContractDeploy:
             return print_smart_contract_deploy_info(&display_instruction_info[0]->transaction);
+        case InsSignSmartContractExecution:
+            return print_smart_contract_execution_info(&display_instruction_info[0]->transaction);
     };
     return 1;
 }

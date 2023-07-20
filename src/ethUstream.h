@@ -67,10 +67,16 @@ typedef customStatus_e (*ustreamProcess_t)(struct txContext_t *context);
 // First variant of every Tx enum.
 #define RLP_NONE 0
 
-#define PARSING_IS_DONE(ctx)                                              \
-    ((ctx->txType == LEGACY && ctx->currentField == LEGACY_RLP_DONE) ||   \
-     (ctx->txType == EIP2930 && ctx->currentField == EIP2930_RLP_DONE) || \
-     (ctx->txType == EIP1559 && ctx->currentField == EIP1559_RLP_DONE))
+#define PARSING_IS_DONE(ctx)                                                                    \
+    ((ctx->txType == LEGACY && ctx->currentField == LEGACY_RLP_DONE) ||                         \
+     (ctx->txType == EIP2930 && ctx->currentField == EIP2930_RLP_DONE) ||                       \
+     (ctx->txType == EIP1559 && ctx->currentField == EIP1559_RLP_DONE) ||                       \
+     (ctx->txType == ValueTransfer && ctx->currentField == VALUE_TRANSFER_RLP_DONE) ||          \
+     (ctx->txType == ValueTransferMemo && ctx->currentField == VALUE_TRANSFER_MEMO_RLP_DONE) || \
+     (ctx->txType == SmartContractDeploy &&                                                     \
+      ctx->currentField == SMART_CONTRACT_DEPLOY_RLP_DONE) ||                                   \
+     (ctx->txType == SmartContractExecution &&                                                  \
+      ctx->currentField == SMART_CONTRACT_EXECUTION_RLP_DONE))
 
 typedef enum rlpLegacyTxField_e {
     LEGACY_RLP_NONE = RLP_NONE,
@@ -131,6 +137,20 @@ typedef enum rlpSmartContractDeployTxField_e {
     SMART_CONTRACT_DEPLOY_RLP_DONE
 } rlpSmartContractDeployTxField_e;
 
+typedef enum rlpSmartContractExecutionTxField_e {
+    SMART_CONTRACT_EXECUTION_RLP_NONE = RLP_NONE,
+    SMART_CONTRACT_EXECUTION_RLP_CONTENT,
+    SMART_CONTRACT_EXECUTION_RLP_TYPE,
+    SMART_CONTRACT_EXECUTION_RLP_NONCE,
+    SMART_CONTRACT_EXECUTION_RLP_GASPRICE,
+    SMART_CONTRACT_EXECUTION_RLP_GASLIMIT,
+    SMART_CONTRACT_EXECUTION_RLP_TO,
+    SMART_CONTRACT_EXECUTION_RLP_VALUE,
+    SMART_CONTRACT_EXECUTION_RLP_FROM,
+    SMART_CONTRACT_EXECUTION_RLP_DATA,
+    SMART_CONTRACT_EXECUTION_RLP_DONE
+} rlpSmartContractExecutionTxField_e;
+
 typedef enum rlpEIP2930TxField_e {
     EIP2930_RLP_NONE = RLP_NONE,
     EIP2930_RLP_CONTENT,
@@ -170,6 +190,10 @@ typedef enum rlpEIP1559TxField_e {
 typedef enum txType_e {
     EIP2930 = 0x01,
     EIP1559 = 0x02,
+    ValueTransfer = 0x08,
+    ValueTransferMemo = 0x10,
+    SmartContractDeploy = 0x28,
+    SmartContractExecution = 0x30,
     LEGACY = 0xc0  // Legacy tx are greater than or equal to 0xc0.
 } txType_e;
 
