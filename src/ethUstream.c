@@ -633,28 +633,28 @@ static bool processSmartContractExecution(txContext_t *context) {
 
 static bool processCancel(txContext_t *context) {
     switch (context->currentField) {
-        case SMART_CONTRACT_EXECUTION_RLP_CONTENT:
+        case CANCEL_RLP_CONTENT:
             processContent(context);
             if ((context->processingFlags & TX_FLAG_TYPE) == 0) {
                 context->currentField++;
             }
             break;
-        case SMART_CONTRACT_EXECUTION_RLP_TYPE:
+        case CANCEL_RLP_TYPE:
             processType(context);
             break;
-        case SMART_CONTRACT_EXECUTION_RLP_NONCE:
+        case CANCEL_RLP_NONCE:
             processNonce(context);
             break;
-        case SMART_CONTRACT_EXECUTION_RLP_GASPRICE:
+        case CANCEL_RLP_GASPRICE:
             processGasprice(context);
             break;
-        case SMART_CONTRACT_EXECUTION_RLP_GASLIMIT:
+        case CANCEL_RLP_GASLIMIT:
             processGasLimit(context);
             break;
-        case SMART_CONTRACT_EXECUTION_RLP_FROM:
+        case CANCEL_RLP_FROM:
             processParamSkip(context);
             break;
-        case SMART_CONTRACT_EXECUTION_RLP_DATA:
+        case CANCEL_RLP_DATA:
             processData(context);
             break;
         default:

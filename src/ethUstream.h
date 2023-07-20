@@ -76,7 +76,8 @@ typedef customStatus_e (*ustreamProcess_t)(struct txContext_t *context);
      (ctx->txType == SmartContractDeploy &&                                                     \
       ctx->currentField == SMART_CONTRACT_DEPLOY_RLP_DONE) ||                                   \
      (ctx->txType == SmartContractExecution &&                                                  \
-      ctx->currentField == SMART_CONTRACT_EXECUTION_RLP_DONE))
+      ctx->currentField == SMART_CONTRACT_EXECUTION_RLP_DONE) ||                                \
+     (ctx->txType == Cancel && ctx->currentField == CANCEL_RLP_DONE))
 
 typedef enum rlpLegacyTxField_e {
     LEGACY_RLP_NONE = RLP_NONE,
@@ -151,6 +152,18 @@ typedef enum rlpSmartContractExecutionTxField_e {
     SMART_CONTRACT_EXECUTION_RLP_DONE
 } rlpSmartContractExecutionTxField_e;
 
+typedef enum rlpCancelTxField_e {
+    CANCEL_RLP_NONE = RLP_NONE,
+    CANCEL_RLP_CONTENT,
+    CANCEL_RLP_TYPE,
+    CANCEL_RLP_NONCE,
+    CANCEL_RLP_GASPRICE,
+    CANCEL_RLP_GASLIMIT,
+    CANCEL_RLP_FROM,
+    CANCEL_RLP_DATA,
+    CANCEL_RLP_DONE
+} rlpCancelTxField_e;
+
 typedef enum rlpEIP2930TxField_e {
     EIP2930_RLP_NONE = RLP_NONE,
     EIP2930_RLP_CONTENT,
@@ -194,6 +207,7 @@ typedef enum txType_e {
     ValueTransferMemo = 0x10,
     SmartContractDeploy = 0x28,
     SmartContractExecution = 0x30,
+    Cancel = 0x38,
     LEGACY = 0xc0  // Legacy tx are greater than or equal to 0xc0.
 } txType_e;
 
