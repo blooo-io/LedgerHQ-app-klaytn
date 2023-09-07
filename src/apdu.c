@@ -62,6 +62,12 @@ int apdu_handle_message(const uint8_t* apdu_message,
 
             break;
         }
+        case InsSignLegacyTransaction:
+        case InsSignValueTransfer:
+        case InsSignValueTransferMemo:
+        case InsSignSmartContractDeploy:
+        case InsSignSmartContractExecution:
+        case InsSignCancel:
         case InsGetAppConfiguration:
         case InsGetPubkey:
         case InsSignMessage:
@@ -105,6 +111,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
         apdu_command->state = ApduStatePayloadComplete;
         apdu_command->instruction = header.instruction;
         apdu_command->non_confirm = (header.p1 == P1_NON_CONFIRM);
+        apdu_command->chaincode = (header.p2 == P2_CHAINCODE);
         apdu_command->deprecated_host = header.deprecated_host;
         return 0;
     } else if (header.instruction == InsDeprecatedSignMessage ||
@@ -115,8 +122,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
             if (apdu_command->state != ApduStatePayloadInProgress ||
                 apdu_command->instruction != header.instruction ||
                 apdu_command->non_confirm != (header.p1 == P1_NON_CONFIRM) ||
-                apdu_command->deprecated_host != header.deprecated_host ||
-                apdu_command->num_derivation_paths != 1) {
+                apdu_command->deprecated_host != header.deprecated_host) {
                 return ApduReplySolanaInvalidMessage;
             }
         } else {
@@ -132,27 +138,22 @@ int apdu_handle_message(const uint8_t* apdu_message,
             if (!header.data_length) {
                 return ApduReplySolanaInvalidMessageSize;
             }
-            apdu_command->num_derivation_paths = header.data[0];
-            header.data++;
-            header.data_length--;
-            // We only support one derivation path ATM
-            if (apdu_command->num_derivation_paths != 1) {
-                return ApduReplySolanaInvalidMessage;
-            }
-        } else {
-            apdu_command->num_derivation_paths = 1;
         }
         const int ret = read_derivation_path(header.data,
                                              header.data_length,
                                              apdu_command->derivation_path,
                                              &apdu_command->derivation_path_length);
+        PRINTF("read_derivation_path: %.*H\n",
+               sizeof(uint32_t) * apdu_command->derivation_path_length,
+               apdu_command->derivation_path);
         if (ret) {
             return ret;
         }
         header.data += 1 + apdu_command->derivation_path_length * 4;
         header.data_length -= 1 + apdu_command->derivation_path_length * 4;
     }
-
+    apdu_command->p1 = header.p1;
+    apdu_command->p2 = header.p2;
     apdu_command->state = ApduStatePayloadInProgress;
     apdu_command->instruction = header.instruction;
     apdu_command->non_confirm = (header.p1 == P1_NON_CONFIRM);
@@ -189,7 +190,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
     if (header.p2 & P2_MORE) {
         return 0;
     }
-
+    PRINTF("apdu_command->message: %.*H\n", apdu_command->message_length, apdu_command->message);
     apdu_command->state = ApduStatePayloadComplete;
 
     return 0;

@@ -82,8 +82,9 @@ else
     DEFINES += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
 endif
 
-DEBUG = 0
+DEBUG := 0
 ifneq ($(DEBUG),0)
+    $(info DEBUG ENABLED)
     DEFINES += HAVE_PRINTF
     ifeq ($(TARGET_NAME),TARGET_NANOS)
         DEFINES += PRINTF=screen_printf
@@ -91,7 +92,8 @@ ifneq ($(DEBUG),0)
         DEFINES += PRINTF=mcu_usb_printf
     endif
 else
-        DEFINES += PRINTF\(...\)=
+    $(info DEBUG DISABLED)
+    DEFINES += PRINTF\(...\)=
 endif
 
 ifneq ($(BOLOS_ENV),)

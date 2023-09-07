@@ -1,10 +1,13 @@
 bin
+bin_eth
+build
 debug
 dep
 obj
 dev-env
 src/glyphs.c
 src/glyphs.h
+*.core
 .idea
 .vscode
 gitignore

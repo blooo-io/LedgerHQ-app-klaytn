@@ -4,9 +4,9 @@
 #include "spl_associated_token_account_instruction.h"
 #include "spl_token_instruction.h"
 #include "stake_instruction.h"
-#include "system_instruction.h"
 #include "vote_instruction.h"
 #include <stdbool.h>
+#include "ethUstream.h"
 
 enum ProgramId {
     ProgramIdUnknown = 0,
@@ -19,30 +19,26 @@ enum ProgramId {
     ProgramIdSerumAssertOwner,
 };
 
+typedef struct SystemTransferInfo {
+    const Pubkey* from;
+    const Pubkey* to;
+    uint32_t ref_block_number;
+    SizedString ref_block_prefix;
+    SizedString method_name;
+    const Pubkey* dest;
+    SizedString ticker;
+    // TODO: change following to int256
+    uint64_t amount;
+    uint64_t nonce;
+    uint64_t gas_price;
+    uint64_t gas;
+} SystemTransferInfo;
+
 typedef struct InstructionInfo {
-    enum ProgramId kind;
     union {
-        SplAssociatedTokenAccountInfo spl_associated_token_account;
-        SplTokenInfo spl_token;
-        StakeInfo stake;
-        SystemInfo system;
-        VoteInfo vote;
+        SystemTransferInfo transaction;
     };
 } InstructionInfo;
-
-enum ProgramId instruction_program_id(const Instruction* instruction, const MessageHeader* header);
-int instruction_validate(const Instruction* instruction, const MessageHeader* header);
-
-typedef struct InstructionBrief {
-    enum ProgramId program_id;
-    union {
-        int none;
-        SplTokenInstructionKind spl_token;
-        enum SystemInstructionKind system;
-        enum StakeInstructionKind stake;
-        enum VoteInstructionKind vote;
-    };
-} InstructionBrief;
 
 #define SPL_ASSOCIATED_TOKEN_ACCOUNT_IX_BRIEF \
     { ProgramIdSplAssociatedTokenAccount, .none = 0 }
@@ -54,11 +50,6 @@ typedef struct InstructionBrief {
     { ProgramIdStake, .stake = (stake_ix) }
 #define VOTE_IX_BRIEF(vote_ix) \
     { ProgramIdVote, .vote = (vote_ix) }
-
-bool instruction_info_matches_brief(const InstructionInfo* info, const InstructionBrief* brief);
-bool instruction_infos_match_briefs(InstructionInfo* const* infos,
-                                    const InstructionBrief* briefs,
-                                    size_t len);
 
 typedef struct InstructionAccountsIterator {
     const Pubkey* message_header_pubkeys;
@@ -75,3 +66,14 @@ int instruction_accounts_iterator_next(InstructionAccountsIterator* it,
                                        const Pubkey** next_account);
 
 size_t instruction_accounts_iterator_remaining(const InstructionAccountsIterator* it);
+
+uint64_t convertUint256ToUint64(const txInt256_t* bytes);
+
+int parse_system_transfer_instruction(txContext_t* context,
+                                      SystemTransferInfo* info,
+                                      char* method_name);
+
+int print_legacy_transaction_info(const SystemTransferInfo* info);
+int print_value_transfer_info(const SystemTransferInfo* info);
+int print_smart_contract_deploy_info(const SystemTransferInfo* info);
+int print_smart_contract_execution_info(const SystemTransferInfo* info);

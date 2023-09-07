@@ -21,9 +21,13 @@ int print_i64(int64_t i64, char *out, size_t out_length);
 
 int print_u64(uint64_t u64, char *out, size_t out_length);
 
+int print_amount(uint64_t amount, char *out, size_t out_length);
+
 int print_sized_string(const SizedString *string, char *out, size_t out_length);
 
 int print_string(const char *in, char *out, size_t out_length);
+
+int print_pubkey(const Pubkey *pubkey, char *out, size_t out_length);
 
 int print_summary(const char *in,
                   char *out,

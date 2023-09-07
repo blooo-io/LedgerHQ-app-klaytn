@@ -1,4 +1,4 @@
-from typing import List, Generator
+from typing import List, Generator, Tuple
 from enum import IntEnum
 from contextlib import contextmanager
 
@@ -8,14 +8,20 @@ from ragger.utils import RAPDU
 
 class INS(IntEnum):
     # DEPRECATED - Use non "16" suffixed variants below
-    INS_GET_APP_CONFIGURATION16 = 0x01
-    INS_GET_PUBKEY16 = 0x02
-    INS_SIGN_MESSAGE16 = 0x03
+    INS_GET_APP_CONFIGURATION16 = 0xF1
+    INS_GET_PUBKEY16 = 0xF2
+    INS_SIGN_MESSAGE16 = 0xF3
     # END DEPRECATED
-    INS_GET_APP_CONFIGURATION = 0x04
-    INS_GET_PUBKEY = 0x05
-    INS_SIGN_MESSAGE = 0x06
-    INS_SIGN_OFFCHAIN_MESSAGE = 0x07
+    INS_GET_APP_CONFIGURATION = 0x01
+    INS_GET_PUBKEY = 0x02
+    INS_SIGN_MESSAGE = 0xF6
+    INS_SIGN_OFFCHAIN_MESSAGE = 0xF7
+    INS_SIGN_LEGACY_TRANSACTION = 0x04
+    INS_SIGN_VALUE_TRANSFER = 0x08
+    INS_SIGN_VALUE_TRANSFER_MEMO = 0x10
+    INS_SIGN_SMART_CONTRACT_DEPLOY = 0x28
+    INS_SIGN_SMART_CONTRACT_EXECUTION = 0x30
+    INS_SIGN_CANCEL = 0x38
 
 
 CLA = 0xE0
@@ -27,7 +33,7 @@ P2_NONE = 0x00
 P2_EXTEND = 0x01
 P2_MORE = 0x02
 
-PUBLIC_KEY_LENGTH = 32
+PUBLIC_KEY_LENGTH = 40
 
 MAX_CHUNK_SIZE = 255
 
@@ -77,42 +83,48 @@ class SolanaClient:
     def __init__(self, client):
         self._client = client
 
-
-    def get_public_key(self, derivation_path: bytes) -> bytes:
+    def get_public_key(self, derivation_path: bytes) -> Tuple[bytes, bytes]:
         public_key: RAPDU = self._client.exchange(CLA, INS.INS_GET_PUBKEY,
                                                   P1_NON_CONFIRM, P2_NONE,
                                                   derivation_path)
-        assert len(public_key.data) == PUBLIC_KEY_LENGTH, "'from' public key size incorrect"
-        return public_key.data
+        data = public_key.data
+        print("data: ", data.hex())
+        offset = 1 + data[0]
+        address = data[offset + 1: offset + 1 + data[offset]]
 
+        return data, address
 
-    def split_and_prefix_message(self, derivation_path : bytes, message: bytes) -> List[bytes]:
+    def split_and_prefix_message(self, derivation_path: bytes, message: bytes) -> List[bytes]:
         assert len(message) <= 65535, "Message to send is too long"
-        header: bytes = _extend_and_serialize_multiple_derivations_paths([derivation_path])
+        header: bytes = _extend_and_serialize_multiple_derivations_paths([
+            derivation_path])
         # Check to see if this data needs to be split up and sent in chunks.
         max_size = MAX_CHUNK_SIZE - len(header)
-        message_splited = [message[x:x + max_size] for x in range(0, len(message), max_size)]
+        message_splited = [message[x:x + max_size]
+                           for x in range(0, len(message), max_size)]
         # Add the header to every chunk
         return [header + s for s in message_splited]
 
-
     def send_first_message_batch(self, messages: List[bytes], p1: int) -> RAPDU:
-        self._client.exchange(CLA, INS.INS_SIGN_MESSAGE, p1, P2_MORE, messages[0])
+        self._client.exchange(CLA, INS.INS_SIGN_MESSAGE,
+                              p1, P2_MORE, messages[0])
         for m in messages[1:]:
-            self._client.exchange(CLA, INS.INS_SIGN_MESSAGE, p1, P2_MORE | P2_EXTEND, m)
+            self._client.exchange(CLA, INS.INS_SIGN_MESSAGE,
+                                  p1, P2_MORE | P2_EXTEND, m)
 
-
-    @contextmanager
+    @ contextmanager
     def send_async_sign_message(self,
-                                derivation_path : bytes,
+                                derivation_path: bytes,
                                 message: bytes) -> Generator[None, None, None]:
-        message_splited_prefixed = self.split_and_prefix_message(derivation_path, message)
+        message_splited_prefixed = self.split_and_prefix_message(
+            derivation_path, message)
 
         # Send all chunks with P2_MORE except for the last chunk
         # Send all chunks with P2_EXTEND except for the first chunk
         if len(message_splited_prefixed) > 1:
             final_p2 = P2_EXTEND
-            self.send_first_message_batch(message_splited_prefixed[:-1], P1_CONFIRM)
+            self.send_first_message_batch(
+                message_splited_prefixed[:-1], P1_CONFIRM)
         else:
             final_p2 = 0
 
@@ -123,19 +135,28 @@ class SolanaClient:
                                          message_splited_prefixed[-1]):
             yield
 
+    @contextmanager
+    def send_async_sign_transaction(self, message, ins, p1=0, p2=0):
+        with self._client.exchange_async(CLA,
+                                         ins,
+                                         p1,
+                                         p2,
+                                         message):
+            yield
 
     def get_async_response(self) -> RAPDU:
         return self._client.last_async_response
 
-
-    def send_blind_sign_message(self, derivation_path : bytes, message: bytes) -> RAPDU:
-        message_splited_prefixed = self.split_and_prefix_message(derivation_path, message)
+    def send_blind_sign_message(self, derivation_path: bytes, message: bytes) -> RAPDU:
+        message_splited_prefixed = self.split_and_prefix_message(
+            derivation_path, message)
 
         # Send all chunks with P2_MORE except for the last chunk
         # Send all chunks with P2_EXTEND except for the first chunk
         if len(message_splited_prefixed) > 1:
             final_p2 |= P2_EXTEND
-            self.send_first_message_batch(message_splited_prefixed[:-1], P1_NON_CONFIRM)
+            self.send_first_message_batch(
+                message_splited_prefixed[:-1], P1_NON_CONFIRM)
         else:
             final_p2 = 0
 

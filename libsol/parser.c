@@ -1,5 +1,7 @@
 #include "sol/parser.h"
 #include "util.h"
+#include "os.h"  // for PRINTF, to remove
+#include "cx.h"
 
 #define OFFCHAIN_MESSAGE_SIGNING_DOMAIN \
     "\xff"                              \
@@ -171,5 +173,33 @@ int parse_instruction(Parser* parser, Instruction* instruction) {
     BAIL_IF(parse_u8(parser, &instruction->program_id_index));
     BAIL_IF(parse_data(parser, &instruction->accounts, &instruction->accounts_length));
     BAIL_IF(parse_data(parser, &instruction->data, &instruction->data_length));
+    return 0;
+}
+
+int parse_tx_type(Parser* parser) {
+    BAIL_IF(check_buffer_length(parser, 1));
+    const uint8_t tx_type = *parser->buffer;
+    advance(parser, 1);
+    return 0;
+}
+
+int parse_legacy(Parser* parser) {
+    PRINTF("in parse_legacy\n");
+    cx_sha3_t global_sha3;
+    uint8_t txType = *parser->buffer;
+    if (txType >= 0x00 && txType <= 0x7f) {
+        // Enumerate through all supported txTypes here...
+        if (txType == 1 || txType == 2) {
+            cx_hash((cx_hash_t*) &global_sha3, 0, parser->buffer, 1, NULL, 0);
+            parser->buffer++;
+            parser->buffer_length--;
+        } else {
+            PRINTF("Transaction type %d not supported\n", txType);
+            THROW(0x6501);
+        }
+    } else {
+        txType = 0xc0;
+    }
+    PRINTF("TxType: %x\n", txType);
     return 0;
 }

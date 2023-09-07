@@ -19,6 +19,13 @@
 #define P1_CONFIRM     0x01
 #define P1_NON_CONFIRM 0x00
 
+#define P1_BASIC                    0x00
+#define P1_FEE_DELEGATED            0x01
+#define P1_FEE_DELEGATED_WITH_RATIO 0x02
+
+#define P2_NO_CHAINCODE 0x00
+#define P2_CHAINCODE    0x01
+
 #define P2_EXTEND 0x01
 #define P2_MORE   0x02
 
@@ -34,22 +41,32 @@
 #define MAX_MESSAGE_LENGTH ROUND_TO_NEXT(TOTAL_SIGN_MESSAGE_BUFFER_LENGTH, USB_SEGMENT_SIZE)
 #define SIGNATURE_LENGTH   64
 #define HASH_LENGTH        32
-#define PUBKEY_LENGTH      HASH_LENGTH
-#define PRIVATEKEY_LENGTH  HASH_LENGTH
+#define PUBKEY_LENGTH      32
+#define PRIVATEKEY_LENGTH  32
+#define CHAINCODE_LENGTH   32
+#define ETH_PUBKEY_LENGTH  40
 
 #define MAX_OFFCHAIN_MESSAGE_LENGTH    (MAX_MESSAGE_LENGTH - 1 > 1212 ? 1212 : MAX_MESSAGE_LENGTH - 1)
 #define OFFCHAIN_MESSAGE_HEADER_LENGTH 20
 
 typedef enum InstructionCode {
+    InsGetAppConfiguration = 0x01,
+    InsGetPubkey = 0x02,
+    InsSignLegacyTransaction = 0x04,
+    InsSignValueTransfer = 0x08,
+    InsSignValueTransferMemo = 0x10,
+    InsSignSmartContractDeploy = 0x28,
+    InsSignSmartContractExecution = 0x30,
+    InsSignCancel = 0x38,
     // DEPRECATED - Use non "16" suffixed variants below
-    InsDeprecatedGetAppConfiguration = 0x01,
-    InsDeprecatedGetPubkey = 0x02,
-    InsDeprecatedSignMessage = 0x03,
+    InsDeprecatedGetAppConfiguration = 0xF1,
+    InsDeprecatedGetPubkey = 0xF2,
+    InsDeprecatedSignMessage = 0xF3,
     // END DEPRECATED
-    InsGetAppConfiguration = 0x04,
-    InsGetPubkey = 0x05,
-    InsSignMessage = 0x06,
-    InsSignOffchainMessage = 0x07
+    // InsGetAppConfiguration = 0xF4,
+    // InsGetPubkey = 0xF5,
+    InsSignMessage = 0xF6,
+    InsSignOffchainMessage = 0xF7
 } InstructionCode;
 
 // display stepped screens
@@ -83,5 +100,5 @@ typedef struct internalStorage_t {
 } internalStorage_t;
 
 extern const internalStorage_t N_storage_real;
-#define N_storage (*(volatile internalStorage_t*) PIC(&N_storage_real))
+#define N_storage (*(volatile internalStorage_t *) PIC(&N_storage_real))
 #endif

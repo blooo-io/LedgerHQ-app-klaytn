@@ -300,24 +300,20 @@ void test_parse_data_too_short() {
     assert(parse_data(&parser, &data, &data_length) == 1);
 }
 
-void test_parse_instruction() {
-    uint8_t message[] = {0, 2, 33, 34, 1, 36};
-    Parser parser = {message, sizeof(message)};
-    Instruction instruction;
-    assert(parse_instruction(&parser, &instruction) == 0);
-    MessageHeader header = {false, 0, {0, 0, 0, 35}, NULL, NULL, 1};
-    assert(instruction_validate(&instruction, &header) == 0);
-    assert(parser_is_empty(&parser));
-    assert(instruction.accounts[0] == 33);
-    assert(instruction.data[0] == 36);
-}
-
 void test_parser_is_empty() {
     uint8_t buf[1] = {0};
     Parser nonempty = {buf, 1};
     assert(!parser_is_empty(&nonempty));
     Parser empty = {NULL, 0};
     assert(parser_is_empty(&empty));
+}
+
+void test_parse_legacy() {
+    uint8_t message[] = {0, 2, 33, 34, 1, 36};
+    Parser parser = {message, sizeof(message)};
+    MessageHeader header = {false, 0, {0, 0, 0, 35}, NULL, NULL, 1};
+    parse_legacy(&parser, &header);
+    printf_hex_array("printf_hex_array: ", parser.buffer_length, parser.buffer);
 }
 
 int main() {
@@ -338,9 +334,8 @@ int main() {
     test_parse_hash_too_short();
     test_parse_data();
     test_parse_data_too_short();
-    test_parse_instruction();
     test_parser_is_empty();
-
+    test_parse_legacy();
     printf("passed\n");
     return 0;
 }

@@ -19,13 +19,25 @@ typedef enum rlpTxType {
     TX_FEE
 } rlpTxType;
 
+typedef struct publicKeyContext_t {
+    cx_ecfp_public_key_t publicKey;
+    char address[ETH_PUBKEY_LENGTH + 1];
+    uint8_t chainCode[CHAINCODE_LENGTH];
+    bool getChaincode;
+} publicKeyContext_t;
+
+uint32_t set_result_get_publicKey(publicKeyContext_t *publicKeyContext);
+
 unsigned int ui_prepro(const bagl_element_t *element);
 
-void get_public_key(uint8_t *publicKeyArray, const uint32_t *derivationPath, size_t pathLength);
+void get_public_key(publicKeyContext_t *publicKeyContext,
+                    const uint32_t *derivationPath,
+                    size_t pathLength);
 
 uint32_t readUint32BE(uint8_t *buffer);
 
 void get_private_key(cx_ecfp_private_key_t *privateKey,
+                     publicKeyContext_t *publicKeyContext,
                      const uint32_t *derivationPath,
                      size_t pathLength);
 
@@ -110,7 +122,7 @@ void sendResponse(uint8_t tx, bool approve);
     } while (0)
 #define PRINTF(msg, arg) printf(msg, arg)
 #define PIC(code)        code
-//#define TARGET_NANOS 1
+// #define TARGET_NANOS 1
 #define TARGET_BLUE    1
 #define MEMCLEAR(dest) explicit_bzero(&dest, sizeof(dest));
 #else

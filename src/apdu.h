@@ -65,10 +65,12 @@ typedef struct ApduHeader {
 typedef struct ApduCommand {
     ApduState state;
     InstructionCode instruction;
-    uint8_t num_derivation_paths;
     uint32_t derivation_path[MAX_BIP32_PATH_LENGTH];
     uint32_t derivation_path_length;
+    uint8_t p1;
+    uint8_t p2;
     bool non_confirm;
+    bool chaincode;
     bool deprecated_host;
     uint8_t message[MAX_MESSAGE_LENGTH];
     int message_length;
