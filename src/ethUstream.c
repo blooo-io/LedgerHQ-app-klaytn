@@ -22,6 +22,7 @@
 #include "ethUtils.h"
 #include "utils_copy.h"
 #include "globals.h"
+#include "shared_context.h"
 
 #define MAX_INT256  32
 #define MAX_ADDRESS 20
@@ -52,6 +53,9 @@ uint8_t readTxByte(txContext_t *context) {
     if (context->processingField) {
         context->currentFieldPos++;
     }
+    if (context->processingOuterRLPField) {
+        context->outerRLPFieldPos++;
+    }
     if (!(context->processingField && context->fieldSingleByte)) {
         cx_hash((cx_hash_t *) context->sha3, 0, &data, 1, NULL, 0);
     }
@@ -73,6 +77,9 @@ void copyTxData(txContext_t *context, uint8_t *out, uint32_t length) {
     context->commandLength -= length;
     if (context->processingField) {
         context->currentFieldPos += length;
+    }
+    if (context->processingOuterRLPField) {
+        context->outerRLPFieldPos += length;
     }
 }
 
@@ -317,19 +324,6 @@ static void processV(txContext_t *context) {
     }
 }
 
-static void processParamSkip(txContext_t *context) {
-    if (context->currentFieldPos < context->currentFieldLength) {
-        uint32_t copySize =
-            MIN(context->commandLength, context->currentFieldLength - context->currentFieldPos);
-        copyTxData(context, NULL, copySize);
-    }
-    if (context->currentFieldPos == context->currentFieldLength) {
-        context->content->destinationLength = context->currentFieldLength;
-        context->currentField++;
-        context->processingField = false;
-    }
-}
-
 static bool processEIP1559Tx(txContext_t *context) {
     switch (context->currentField) {
         case EIP1559_RLP_CONTENT: {
@@ -477,11 +471,7 @@ static bool processValueTransfer(txContext_t *context) {
     switch (context->currentField) {
         case VALUE_TRANSFER_RLP_CONTENT:
             processContent(context);
-            if ((context->processingFlags & TX_FLAG_TYPE) == 0) {
-                context->currentField++;
-            }
             break;
-        // This gets hit only by Wanchain
         case VALUE_TRANSFER_RLP_TYPE:
             processType(context);
             break;
@@ -511,11 +501,7 @@ static bool processValueTransferMemo(txContext_t *context) {
     switch (context->currentField) {
         case VALUE_TRANSFER_MEMO_RLP_CONTENT:
             processContent(context);
-            if ((context->processingFlags & TX_FLAG_TYPE) == 0) {
-                context->currentField++;
-            }
             break;
-        // This gets hit only by Wanchain
         case VALUE_TRANSFER_MEMO_RLP_TYPE:
             processType(context);
             break;
@@ -535,7 +521,7 @@ static bool processValueTransferMemo(txContext_t *context) {
             processValue(context);
             break;
         case VALUE_TRANSFER_MEMO_RLP_FROM:
-            processParamSkip(context);
+            processAndDiscard(context);
             break;
         case VALUE_TRANSFER_MEMO_RLP_DATA:
             processData(context);
@@ -551,9 +537,6 @@ static bool processSmartContractDeploy(txContext_t *context) {
     switch (context->currentField) {
         case SMART_CONTRACT_DEPLOY_RLP_CONTENT:
             processContent(context);
-            if ((context->processingFlags & TX_FLAG_TYPE) == 0) {
-                context->currentField++;
-            }
             break;
         case SMART_CONTRACT_DEPLOY_RLP_TYPE:
             processType(context);
@@ -568,22 +551,22 @@ static bool processSmartContractDeploy(txContext_t *context) {
             processGasLimit(context);
             break;
         case SMART_CONTRACT_DEPLOY_RLP_TO:
-            processParamSkip(context);
+            processAndDiscard(context);
             break;
         case SMART_CONTRACT_DEPLOY_RLP_VALUE:
             processValue(context);
             break;
         case SMART_CONTRACT_DEPLOY_RLP_FROM:
-            processParamSkip(context);
+            processAndDiscard(context);
             break;
         case SMART_CONTRACT_DEPLOY_RLP_DATA:
             processData(context);
             break;
         case SMART_CONTRACT_DEPLOY_RLP_HUMAN_READABLE:
-            processParamSkip(context);
+            processAndDiscard(context);
             break;
         case SMART_CONTRACT_DEPLOY_RLP_CODE_FORMAT:
-            processParamSkip(context);
+            processAndDiscard(context);
             break;
         default:
             PRINTF("Invalid RLP decoder context\n");
@@ -596,9 +579,6 @@ static bool processSmartContractExecution(txContext_t *context) {
     switch (context->currentField) {
         case SMART_CONTRACT_EXECUTION_RLP_CONTENT:
             processContent(context);
-            if ((context->processingFlags & TX_FLAG_TYPE) == 0) {
-                context->currentField++;
-            }
             break;
         case SMART_CONTRACT_EXECUTION_RLP_TYPE:
             processType(context);
@@ -619,7 +599,7 @@ static bool processSmartContractExecution(txContext_t *context) {
             processValue(context);
             break;
         case SMART_CONTRACT_EXECUTION_RLP_FROM:
-            processParamSkip(context);
+            processAndDiscard(context);
             break;
         case SMART_CONTRACT_EXECUTION_RLP_DATA:
             processData(context);
@@ -635,9 +615,6 @@ static bool processCancel(txContext_t *context) {
     switch (context->currentField) {
         case CANCEL_RLP_CONTENT:
             processContent(context);
-            if ((context->processingFlags & TX_FLAG_TYPE) == 0) {
-                context->currentField++;
-            }
             break;
         case CANCEL_RLP_TYPE:
             processType(context);
@@ -652,7 +629,7 @@ static bool processCancel(txContext_t *context) {
             processGasLimit(context);
             break;
         case CANCEL_RLP_FROM:
-            processParamSkip(context);
+            processAndDiscard(context);
             break;
         default:
             PRINTF("Invalid RLP decoder context\n");
@@ -688,15 +665,26 @@ static parserStatus_e parseRLP(txContext_t *context) {
         PRINTF("Can't decode\n");
         return USTREAM_PROCESSING;
     }
-    // Ready to process this field
-    if (!rlpDecodeLength(context->rlpBuffer,
-                         &context->currentFieldLength,
-                         &offset,
-                         &context->currentFieldIsList)) {
-        PRINTF("RLP decode error\n");
-        return USTREAM_FAULT;
+    if (context->outerRLP) {
+        bool nestedFieldIsList;
+        if (!rlpDecodeLength(context->rlpBuffer,
+                             &context->outerRLPFieldLength,
+                             &offset,
+                             &nestedFieldIsList)) {
+            PRINTF("RLP decode error\n");
+            return USTREAM_FAULT;
+        }
+    } else {
+        // Ready to process this field
+        if (!rlpDecodeLength(context->rlpBuffer,
+                             &context->currentFieldLength,
+                             &offset,
+                             &context->currentFieldIsList)) {
+            PRINTF("RLP decode error\n");
+            return USTREAM_FAULT;
+        }
     }
-    // Ready to process this field
+
     if (offset == 0) {
         // Hack for single byte, self encoded
         context->workBuffer--;
@@ -705,10 +693,23 @@ static parserStatus_e parseRLP(txContext_t *context) {
     } else {
         context->fieldSingleByte = false;
     }
-    context->currentFieldPos = 0;
+
     context->rlpBufferPos = 0;
-    context->processingField = true;
+
+    if (context->outerRLP) {
+        context->outerRLPFieldPos = 0;
+        context->processingOuterRLPField = true;
+    } else {
+        context->currentFieldPos = 0;
+        context->processingField = true;
+    }
     return USTREAM_CONTINUE;
+}
+
+static void parseNestedRlp(txContext_t *context) {
+    parseRLP(context);
+    parseRLP(context);
+    context->outerRLP = false;
 }
 
 static parserStatus_e processTxInternal(txContext_t *context) {
@@ -735,6 +736,14 @@ static parserStatus_e processTxInternal(txContext_t *context) {
         if (context->commandLength == 0) {
             PRINTF("Command length done\n");
             return USTREAM_PROCESSING;
+        }
+        if (context->outerRLPFieldLength != 0 &&
+            context->outerRLPFieldPos == context->outerRLPFieldLength) {
+            context->processingOuterRLPField = false;
+        }
+        if (context->outerRLP && !context->processingOuterRLPField) {
+            parseNestedRlp(context);
+            continue;
         }
         if (!context->processingField) {
             parserStatus_e status = parseRLP(context);
@@ -777,35 +786,40 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                     } else {
                         break;
                     }
-                case InsSignValueTransfer:
+                case VALUE_TRANSFER:
+                case FEE_DELEGATED_VALUE_TRANSFER:
                     fault = processValueTransfer(context);
                     if (fault) {
                         return USTREAM_FAULT;
                     } else {
                         break;
                     }
-                case InsSignValueTransferMemo:
+                case VALUE_TRANSFER_MEMO:
+                case FEE_DELEGATED_VALUE_TRANSFER_MEMO:
                     fault = processValueTransferMemo(context);
                     if (fault) {
                         return USTREAM_FAULT;
                     } else {
                         break;
                     }
-                case InsSignSmartContractDeploy:
+                case SMART_CONTRACT_DEPLOY:
+                case FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
                     fault = processSmartContractDeploy(context);
                     if (fault) {
                         return USTREAM_FAULT;
                     } else {
                         break;
                     }
-                case InsSignSmartContractExecution:
+                case SMART_CONTRACT_EXECUTION:
+                case FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
                     fault = processSmartContractExecution(context);
                     if (fault) {
                         return USTREAM_FAULT;
                     } else {
                         break;
                     }
-                case InsSignCancel:
+                case CANCEL:
+                case FEE_DELEGATED_CANCEL:
                     fault = processCancel(context);
                     if (fault) {
                         return USTREAM_FAULT;

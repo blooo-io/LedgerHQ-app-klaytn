@@ -24,25 +24,55 @@ int process_message_body() {
             parse_system_transfer_instruction(&txContext, &info->transaction, "Legacy Transaction");
             break;
         case InsSignValueTransfer:
-            parse_system_transfer_instruction(&txContext, &info->transaction, "Value Transfer");
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                parse_system_transfer_instruction(&txContext,
+                                                  &info->transaction,
+                                                  "Fee Delegated Value Transfer");
+            } else {
+                parse_system_transfer_instruction(&txContext, &info->transaction, "Value Transfer");
+            }
             break;
         case InsSignValueTransferMemo:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              "Value Transfer Memo");
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                parse_system_transfer_instruction(&txContext,
+                                                  &info->transaction,
+                                                  "Fee Delegated Value Transfer Memo");
+            } else {
+                parse_system_transfer_instruction(&txContext,
+                                                  &info->transaction,
+                                                  "Value Transfer Memo");
+            }
             break;
         case InsSignSmartContractDeploy:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              "Smart Contract Deploy");
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                parse_system_transfer_instruction(&txContext,
+                                                  &info->transaction,
+                                                  "Fee Delegated Smart Contract Deploy");
+            } else {
+                parse_system_transfer_instruction(&txContext,
+                                                  &info->transaction,
+                                                  "Smart Contract Deploy");
+            }
             break;
         case InsSignSmartContractExecution:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              "Smart Contract Execution");
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                parse_system_transfer_instruction(&txContext,
+                                                  &info->transaction,
+                                                  "Fee Delegated Smart Contract Execution");
+            } else {
+                parse_system_transfer_instruction(&txContext,
+                                                  &info->transaction,
+                                                  "Smart Contract Execution");
+            }
             break;
         case InsSignCancel:
-            parse_system_transfer_instruction(&txContext, &info->transaction, "Cancel");
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                parse_system_transfer_instruction(&txContext,
+                                                  &info->transaction,
+                                                  "Fee Delegated Cancel");
+            } else {
+                parse_system_transfer_instruction(&txContext, &info->transaction, "Cancel");
+            }
             break;
         default:
             return 0;

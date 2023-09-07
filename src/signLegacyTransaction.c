@@ -104,29 +104,33 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     uint8_t dataLength = G_command.message_length;
     PRINTF("workBuffer: %.*H\n", dataLength, workBuffer);
 
-    uint8_t txType = *workBuffer;
-    if (txType >= 0x00 && txType <= 0x7f) {
-        // Enumerate through all supported txTypes here...
-        switch (txType) {
-            case 1:
-            case 2:
-            case InsSignValueTransfer:
-            case InsSignValueTransferMemo:
-            case InsSignSmartContractDeploy:
-            case InsSignSmartContractExecution:
-            case InsSignCancel:
-                cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
-                txContext.txType = txType;
-                workBuffer++;
-                dataLength--;
-                break;
-            default:
-                PRINTF("Transaction type %d not supported\n", txType);
-                THROW(0x6501);
-                break;
-        }
-    } else {
-        txContext.txType = LEGACY;
+    uint8_t txType = getTxType();
+    // Enumerate through all supported txTypes here...
+    switch (txType) {
+        case LEGACY:
+            txContext.txType = LEGACY;
+            txContext.outerRLP = false;
+            break;
+        case 1:
+        case 2:
+        case VALUE_TRANSFER:
+        case FEE_DELEGATED_VALUE_TRANSFER:
+        case VALUE_TRANSFER_MEMO:
+        case FEE_DELEGATED_VALUE_TRANSFER_MEMO:
+        case SMART_CONTRACT_DEPLOY:
+        case FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
+        case SMART_CONTRACT_EXECUTION:
+        case FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
+        case CANCEL:
+        case FEE_DELEGATED_CANCEL:
+            cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
+            txContext.txType = txType;
+            txContext.outerRLP = true;
+            break;
+        default:
+            PRINTF("Transaction type %d not supported\n", txType);
+            THROW(0x6501);
+            break;
     }
 
     txResult = processTx(&txContext, workBuffer, dataLength, 0);

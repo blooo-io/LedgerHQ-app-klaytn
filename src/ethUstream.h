@@ -24,6 +24,8 @@
 #include "os.h"
 #include "cx.h"
 
+#include "apdu.h"
+
 #define TX_FLAG_TYPE   0x01
 #define ADDRESS_LENGTH 20
 #define INT128_LENGTH  16
@@ -67,17 +69,17 @@ typedef customStatus_e (*ustreamProcess_t)(struct txContext_t *context);
 // First variant of every Tx enum.
 #define RLP_NONE 0
 
-#define PARSING_IS_DONE(ctx)                                                                    \
-    ((ctx->txType == LEGACY && ctx->currentField == LEGACY_RLP_DONE) ||                         \
-     (ctx->txType == EIP2930 && ctx->currentField == EIP2930_RLP_DONE) ||                       \
-     (ctx->txType == EIP1559 && ctx->currentField == EIP1559_RLP_DONE) ||                       \
-     (ctx->txType == ValueTransfer && ctx->currentField == VALUE_TRANSFER_RLP_DONE) ||          \
-     (ctx->txType == ValueTransferMemo && ctx->currentField == VALUE_TRANSFER_MEMO_RLP_DONE) || \
-     (ctx->txType == SmartContractDeploy &&                                                     \
-      ctx->currentField == SMART_CONTRACT_DEPLOY_RLP_DONE) ||                                   \
-     (ctx->txType == SmartContractExecution &&                                                  \
-      ctx->currentField == SMART_CONTRACT_EXECUTION_RLP_DONE) ||                                \
-     (ctx->txType == Cancel && ctx->currentField == CANCEL_RLP_DONE))
+#define PARSING_IS_DONE(ctx)                                                                      \
+    ((ctx->txType == LEGACY && ctx->currentField == LEGACY_RLP_DONE) ||                           \
+     (ctx->txType == EIP2930 && ctx->currentField == EIP2930_RLP_DONE) ||                         \
+     (ctx->txType == EIP1559 && ctx->currentField == EIP1559_RLP_DONE) ||                         \
+     (ctx->txType == VALUE_TRANSFER && ctx->currentField == VALUE_TRANSFER_RLP_DONE) ||           \
+     (ctx->txType == VALUE_TRANSFER_MEMO && ctx->currentField == VALUE_TRANSFER_MEMO_RLP_DONE) || \
+     (ctx->txType == SMART_CONTRACT_DEPLOY &&                                                     \
+      ctx->currentField == SMART_CONTRACT_DEPLOY_RLP_DONE) ||                                     \
+     (ctx->txType == SMART_CONTRACT_EXECUTION &&                                                  \
+      ctx->currentField == SMART_CONTRACT_EXECUTION_RLP_DONE) ||                                  \
+     (ctx->txType == CANCEL && ctx->currentField == CANCEL_RLP_DONE))
 
 typedef enum rlpLegacyTxField_e {
     LEGACY_RLP_NONE = RLP_NONE,
@@ -104,7 +106,6 @@ typedef enum rlpValueTransferTxField_e {
     VALUE_TRANSFER_RLP_GASLIMIT,
     VALUE_TRANSFER_RLP_TO,
     VALUE_TRANSFER_RLP_VALUE,
-    VALUE_TRANSFER_RLP_DATA,
     VALUE_TRANSFER_RLP_DONE
 } rlpValueTransferTxField_e;
 
@@ -202,13 +203,64 @@ typedef enum rlpEIP1559TxField_e {
 typedef enum txType_e {
     EIP2930 = 0x01,
     EIP1559 = 0x02,
-    ValueTransfer = 0x08,
-    ValueTransferMemo = 0x10,
-    SmartContractDeploy = 0x28,
-    SmartContractExecution = 0x30,
-    Cancel = 0x38,
+
+    VALUE_TRANSFER = 0x08,
+    FEE_DELEGATED_VALUE_TRANSFER = 0x09,
+
+    VALUE_TRANSFER_MEMO = 0x10,
+    FEE_DELEGATED_VALUE_TRANSFER_MEMO = 0x11,
+
+    SMART_CONTRACT_DEPLOY = 0x28,
+    FEE_DELEGATED_SMART_CONTRACT_DEPLOY = 0x29,
+
+    SMART_CONTRACT_EXECUTION = 0x30,
+    FEE_DELEGATED_SMART_CONTRACT_EXECUTION = 0x31,
+
+    CANCEL = 0x38,
+    FEE_DELEGATED_CANCEL = 0x39,
+
     LEGACY = 0xc0  // Legacy tx are greater than or equal to 0xc0.
 } txType_e;
+
+static inline uint8_t getTxType() {
+    switch (G_command.instruction) {
+        case InsSignLegacyTransaction:
+            return LEGACY;
+        case InsSignValueTransfer:
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                return FEE_DELEGATED_VALUE_TRANSFER;
+            } else {
+                return VALUE_TRANSFER;
+            }
+            return VALUE_TRANSFER;
+        case InsSignValueTransferMemo:
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                return FEE_DELEGATED_VALUE_TRANSFER_MEMO;
+            } else {
+                return VALUE_TRANSFER_MEMO;
+            }
+        case InsSignSmartContractDeploy:
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                return FEE_DELEGATED_SMART_CONTRACT_DEPLOY;
+            } else {
+                return SMART_CONTRACT_DEPLOY;
+            }
+        case InsSignSmartContractExecution:
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                return FEE_DELEGATED_SMART_CONTRACT_EXECUTION;
+            } else {
+                return SMART_CONTRACT_EXECUTION;
+            }
+        case InsSignCancel:
+            if (G_command.p1 == P1_FEE_DELEGATED) {
+                return FEE_DELEGATED_CANCEL;
+            } else {
+                return CANCEL;
+            }
+        default:
+            THROW(ApduReplySdkInvalidParameter);
+    }
+}
 
 typedef enum parserStatus_e {
     USTREAM_PROCESSING,  // Parsing is in progress
@@ -219,6 +271,12 @@ typedef enum parserStatus_e {
 } parserStatus_e;
 
 typedef struct txContext_t {
+    // To process the outer RLP in Klaytn specific txs
+    bool outerRLP;
+    bool processingOuterRLPField;
+    uint32_t outerRLPFieldLength;
+    uint32_t outerRLPFieldPos;
+    // To process eth compatible txs and the inner RLP in Klaytn specific txs
     uint8_t currentField;
     cx_sha3_t *sha3;
     uint32_t currentFieldLength;

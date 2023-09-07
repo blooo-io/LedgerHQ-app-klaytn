@@ -19,8 +19,9 @@
 #define P1_CONFIRM     0x01
 #define P1_NON_CONFIRM 0x00
 
-#define P1_FIRST 0x00
-#define P1_MORE  0x80
+#define P1_BASIC                    0x00
+#define P1_FEE_DELEGATED            0x01
+#define P1_FEE_DELEGATED_WITH_RATIO 0x02
 
 #define P2_NO_CHAINCODE 0x00
 #define P2_CHAINCODE    0x01
