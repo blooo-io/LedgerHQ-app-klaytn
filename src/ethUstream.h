@@ -274,8 +274,6 @@ typedef struct txContext_t {
     // To process the outer RLP in Klaytn specific txs
     bool outerRLP;
     bool processingOuterRLPField;
-    uint32_t outerRLPFieldLength;
-    uint32_t outerRLPFieldPos;
     // To process eth compatible txs and the inner RLP in Klaytn specific txs
     uint8_t currentField;
     cx_sha3_t *sha3;

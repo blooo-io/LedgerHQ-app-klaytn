@@ -53,9 +53,6 @@ uint8_t readTxByte(txContext_t *context) {
     if (context->processingField) {
         context->currentFieldPos++;
     }
-    if (context->processingOuterRLPField) {
-        context->outerRLPFieldPos++;
-    }
     if (!(context->processingField && context->fieldSingleByte)) {
         cx_hash((cx_hash_t *) context->sha3, 0, &data, 1, NULL, 0);
     }
@@ -77,9 +74,6 @@ void copyTxData(txContext_t *context, uint8_t *out, uint32_t length) {
     context->commandLength -= length;
     if (context->processingField) {
         context->currentFieldPos += length;
-    }
-    if (context->processingOuterRLPField) {
-        context->outerRLPFieldPos += length;
     }
 }
 
@@ -667,8 +661,9 @@ static parserStatus_e parseRLP(txContext_t *context) {
     }
     if (context->outerRLP) {
         bool outerRLPFieldIsList;
+        uint32_t outerRLPFieldLength;
         if (!rlpDecodeLength(context->rlpBuffer,
-                             &context->outerRLPFieldLength,
+                             &outerRLPFieldLength,
                              &offset,
                              &outerRLPFieldIsList)) {
             PRINTF("RLP decode error\n");
@@ -697,7 +692,6 @@ static parserStatus_e parseRLP(txContext_t *context) {
     context->rlpBufferPos = 0;
 
     if (context->outerRLP) {
-        context->outerRLPFieldPos = 0;
         context->processingOuterRLPField = true;
     } else {
         context->currentFieldPos = 0;
@@ -736,10 +730,6 @@ static parserStatus_e processTxInternal(txContext_t *context) {
         if (context->commandLength == 0) {
             PRINTF("Command length done\n");
             return USTREAM_PROCESSING;
-        }
-        if (context->outerRLPFieldLength != 0 &&
-            context->outerRLPFieldPos == context->outerRLPFieldLength) {
-            context->processingOuterRLPField = false;
         }
         if (context->outerRLP && !context->processingOuterRLPField) {
             parseNestedRlp(context);
