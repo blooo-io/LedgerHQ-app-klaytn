@@ -666,11 +666,11 @@ static parserStatus_e parseRLP(txContext_t *context) {
         return USTREAM_PROCESSING;
     }
     if (context->outerRLP) {
-        bool nestedFieldIsList;
+        bool outerRLPFieldIsList;
         if (!rlpDecodeLength(context->rlpBuffer,
                              &context->outerRLPFieldLength,
                              &offset,
-                             &nestedFieldIsList)) {
+                             &outerRLPFieldIsList)) {
             PRINTF("RLP decode error\n");
             return USTREAM_FAULT;
         }
@@ -720,7 +720,7 @@ static parserStatus_e processTxInternal(txContext_t *context) {
             PRINTF("parsing is done\n");
             return USTREAM_FINISHED;
         }
-        // Old style transaction (pre EIP-155). Transations could just skip `v,r,s` so we needed to
+        // Old style transaction (pre EIP-155). Transactions could just skip `v,r,s` so we needed to
         // cut parsing here. commandLength == 0 could happen in two cases :
         // 1. We are in an old style transaction : just return `USTREAM_FINISHED`.
         // 2. We are at the end of an APDU in a multi-apdu process. This would make us return
