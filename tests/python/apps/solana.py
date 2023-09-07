@@ -29,6 +29,10 @@ CLA = 0xE0
 P1_NON_CONFIRM = 0x00
 P1_CONFIRM = 0x01
 
+P1_BASIC = 0x00
+P1_FEE_DELEGATED = 0x01
+P1_FEE_DELEGATED_WITH_RATIO = 0x02
+
 P2_NONE = 0x00
 P2_EXTEND = 0x01
 P2_MORE = 0x02
@@ -136,7 +140,7 @@ class SolanaClient:
             yield
 
     @contextmanager
-    def send_async_sign_transaction(self, message, ins, p1=0, p2=0):
+    def send_async_sign_transaction(self, message, ins, p1=P1_BASIC, p2=P1_BASIC):
         with self._client.exchange_async(CLA,
                                          ins,
                                          p1,
