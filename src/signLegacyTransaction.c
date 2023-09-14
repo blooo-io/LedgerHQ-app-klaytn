@@ -115,14 +115,19 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
         case 2:
         case VALUE_TRANSFER:
         case FEE_DELEGATED_VALUE_TRANSFER:
+        case PARTIAL_FEE_DELEGATED_VALUE_TRANSFER:
         case VALUE_TRANSFER_MEMO:
         case FEE_DELEGATED_VALUE_TRANSFER_MEMO:
+        case PARTIAL_FEE_DELEGATED_VALUE_TRANSFER_MEMO:
         case SMART_CONTRACT_DEPLOY:
         case FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
+        case PARTIAL_FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
         case SMART_CONTRACT_EXECUTION:
         case FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
+        case PARTIAL_FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
         case CANCEL:
         case FEE_DELEGATED_CANCEL:
+        case PARTIAL_FEE_DELEGATED_CANCEL:
             cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
             txContext.txType = txType;
             txContext.outerRLP = true;

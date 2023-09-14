@@ -32,6 +32,7 @@ typedef struct SystemTransferInfo {
     uint64_t nonce;
     uint64_t gas_price;
     uint64_t gas;
+    uint8_t fee_ratio;
 } SystemTransferInfo;
 
 typedef struct InstructionInfo {

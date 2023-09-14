@@ -104,7 +104,7 @@ int print_pubkey(const Pubkey *pubkey, char *out, size_t out_length) {
         out[i * 2 + 1] = hexDigits[pubkey->data[i] & 0x0F];
     }
 
-    out[PUBKEY_SIZE * 2] = '\0';  // Null-terminate the string
+    out[out_length * 2] = '\0';  // Null-terminate the string
     return 0;
 }
 
@@ -153,9 +153,9 @@ int encode_base58(const void *in, size_t length, char *out, size_t maxoutlen) {
         uint16_t remainder = 0;
         size_t div_loop;
         for (div_loop = start_at; div_loop < length; div_loop++) {
-            uint16_t digit256 = (uint16_t) (tmp[div_loop] & 0xff);
+            uint16_t digit256 = (uint16_t)(tmp[div_loop] & 0xff);
             uint16_t tmp_div = remainder * 256 + digit256;
-            tmp[div_loop] = (uint8_t) (tmp_div / 58);
+            tmp[div_loop] = (uint8_t)(tmp_div / 58);
             remainder = (tmp_div % 58);
         }
         if (tmp[start_at] == 0) {
