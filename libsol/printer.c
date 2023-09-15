@@ -153,9 +153,9 @@ int encode_base58(const void *in, size_t length, char *out, size_t maxoutlen) {
         uint16_t remainder = 0;
         size_t div_loop;
         for (div_loop = start_at; div_loop < length; div_loop++) {
-            uint16_t digit256 = (uint16_t)(tmp[div_loop] & 0xff);
+            uint16_t digit256 = (uint16_t) (tmp[div_loop] & 0xff);
             uint16_t tmp_div = remainder * 256 + digit256;
-            tmp[div_loop] = (uint8_t)(tmp_div / 58);
+            tmp[div_loop] = (uint8_t) (tmp_div / 58);
             remainder = (tmp_div % 58);
         }
         if (tmp[start_at] == 0) {
