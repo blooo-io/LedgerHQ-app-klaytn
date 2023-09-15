@@ -680,9 +680,8 @@ static bool processCancel(txContext_t *context) {
                 context->currentField++;
             }
             break;
-        case SMART_CONTRACT_EXECUTION_RLP_RATIO:
+        case CANCEL_RLP_RATIO:
             processRatio(context);
-            break;
             break;
         default:
             PRINTF("Invalid RLP decoder context\n");

@@ -167,6 +167,7 @@ typedef enum rlpCancelTxField_e {
     CANCEL_RLP_GASPRICE,
     CANCEL_RLP_GASLIMIT,
     CANCEL_RLP_FROM,
+    CANCEL_RLP_RATIO,
     CANCEL_RLP_DONE
 } rlpCancelTxField_e;
 
