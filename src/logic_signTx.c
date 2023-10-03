@@ -155,14 +155,14 @@ static void feesToString(uint256_t *rawFee, char *displayBuffer, uint32_t displa
         tickerOffset++;
     }
     while (G_io_apdu_buffer[i]) {
-        if ((uint32_t) (tickerOffset) + i >= displayBufferSize) {
+        if ((uint32_t)(tickerOffset) + i >= displayBufferSize) {
             break;
         }
         displayBuffer[tickerOffset + i] = G_io_apdu_buffer[i];
         i++;
     }
 
-    if ((uint32_t) (tickerOffset) + i < displayBufferSize) {
+    if ((uint32_t)(tickerOffset) + i < displayBufferSize) {
         displayBuffer[tickerOffset + i] = '\0';
     }
 }
@@ -205,7 +205,6 @@ static void get_public_key(uint8_t *out, uint8_t outLength) {
     if (outLength < ADDRESS_LENGTH) {
         return;
     }
-    cx_sha3_t global_sha3;
     os_perso_derive_node_bip32(CX_CURVE_256K1,
                                G_command.derivation_path,
                                G_command.derivation_path_length,
@@ -219,189 +218,11 @@ static void get_public_key(uint8_t *out, uint8_t outLength) {
 }
 
 void finalizeParsing(bool direct) {
-    return;
-    //     char displayBuffer[50];
-    //     uint8_t decimals = WEI_TO_ETHER;
-    //     const char *ticker = get_network_ticker();
-    //     ethPluginFinalize_t pluginFinalize;
-    //     bool genericUI = true;
-
-    //     // Verify the chain
-    //     if (chainConfig->chainId != ETHEREUM_MAINNET_CHAINID) {
-    //         uint64_t id = get_chain_id();
-
-    //         if (chainConfig->chainId != id) {
-    //             PRINTF("Invalid chainID %u expected %u\n", id, chainConfig->chainId);
-    //             reset_app_context();
-    //             reportFinalizeError(direct);
-    //             if (!direct) {
-    //                 return;
-    //             }
-    //         }
-    //     }
-    //     // Store the hash
-    //     cx_hash((cx_hash_t *) &global_sha3,
-    //             CX_LAST,
-    //             tmpCtx.transactionContext.hash,
-    //             0,
-    //             tmpCtx.transactionContext.hash,
-    //             32);
-
-    //     // Finalize the plugin handling
-    //     if (dataContext.tokenContext.pluginStatus >= ETH_PLUGIN_RESULT_SUCCESSFUL) {
-    //         genericUI = false;
-    //         eth_plugin_prepare_finalize(&pluginFinalize);
-
-    //         uint8_t msg_sender[ADDRESS_LENGTH] = {0};
-    //         get_public_key(msg_sender, sizeof(msg_sender));
-    //         pluginFinalize.address = msg_sender;
-
-    //         if (!eth_plugin_call(ETH_PLUGIN_FINALIZE, (void *) &pluginFinalize)) {
-    //             PRINTF("Plugin finalize call failed\n");
-    //             reportFinalizeError(direct);
-    //             if (!direct) {
-    //                 return;
-    //             }
-    //         }
-    //         // Lookup tokens if requested
-    //         ethPluginProvideInfo_t pluginProvideInfo;
-    //         eth_plugin_prepare_provide_info(&pluginProvideInfo);
-    //         if ((pluginFinalize.tokenLookup1 != NULL) || (pluginFinalize.tokenLookup2 != NULL)) {
-    //             if (pluginFinalize.tokenLookup1 != NULL) {
-    //                 PRINTF("Lookup1: %.*H\n", ADDRESS_LENGTH, pluginFinalize.tokenLookup1);
-    //                 pluginProvideInfo.item1 = getKnownToken(pluginFinalize.tokenLookup1);
-    //                 if (pluginProvideInfo.item1 != NULL) {
-    //                     PRINTF("Token1 ticker: %s\n", pluginProvideInfo.item1->token.ticker);
-    //                 }
-    //             }
-    //             if (pluginFinalize.tokenLookup2 != NULL) {
-    //                 PRINTF("Lookup2: %.*H\n", ADDRESS_LENGTH, pluginFinalize.tokenLookup2);
-    //                 pluginProvideInfo.item2 = getKnownToken(pluginFinalize.tokenLookup2);
-    //                 if (pluginProvideInfo.item2 != NULL) {
-    //                     PRINTF("Token2 ticker: %s\n", pluginProvideInfo.item2->token.ticker);
-    //                 }
-    //             }
-    //             if (eth_plugin_call(ETH_PLUGIN_PROVIDE_INFO, (void *) &pluginProvideInfo) <=
-    //                 ETH_PLUGIN_RESULT_UNSUCCESSFUL) {
-    //                 PRINTF("Plugin provide token call failed\n");
-    //                 reportFinalizeError(direct);
-    //                 if (!direct) {
-    //                     return;
-    //                 }
-    //             }
-    //             pluginFinalize.result = pluginProvideInfo.result;
-    //         }
-    //         if (pluginFinalize.result != ETH_PLUGIN_RESULT_FALLBACK) {
-    //             // Handle the right interface
-    //             switch (pluginFinalize.uiType) {
-    //                 case ETH_UI_TYPE_GENERIC:
-    //                     tmpContent.txContent.dataPresent = false;
-    //                     // Add the number of screens + the number of additional screens to get
-    //                     the total
-    //                     // number of screens needed.
-    //                     dataContext.tokenContext.pluginUiMaxItems =
-    //                         pluginFinalize.numScreens + pluginProvideInfo.additionalScreens;
-    //                     break;
-    //                 case ETH_UI_TYPE_AMOUNT_ADDRESS:
-    //                     genericUI = true;
-    //                     tmpContent.txContent.dataPresent = false;
-    //                     if ((pluginFinalize.amount == NULL) || (pluginFinalize.address == NULL))
-    //                     {
-    //                         PRINTF("Incorrect amount/address set by plugin\n");
-    //                         reportFinalizeError(direct);
-    //                         if (!direct) {
-    //                             return;
-    //                         }
-    //                     }
-    //                     memmove(tmpContent.txContent.value.value, pluginFinalize.amount, 32);
-    //                     tmpContent.txContent.value.length = 32;
-    //                     memmove(tmpContent.txContent.destination, pluginFinalize.address, 20);
-    //                     tmpContent.txContent.destinationLength = 20;
-    //                     if (pluginProvideInfo.item1 != NULL) {
-    //                         decimals = pluginProvideInfo.item1->token.decimals;
-    //                         ticker = pluginProvideInfo.item1->token.ticker;
-    //                     }
-    //                     break;
-    //                 default:
-    //                     PRINTF("ui type %d not supported\n", pluginFinalize.uiType);
-    //                     reportFinalizeError(direct);
-    //                     if (!direct) {
-    //                         return;
-    //                     }
-    //             }
-    //         } else {
-    //             genericUI = true;
-    //         }
-    //     }
-
-    //     if (tmpContent.txContent.dataPresent && !N_storage.dataAllowed) {
-    //         reportFinalizeError(direct);
-    //         ui_warning_contract_data();
-    //         if (!direct) {
-    //             return;
-    //         }
-    //     }
-
-    //     // Prepare destination address to display
-    //     if (genericUI) {
-    //         if (tmpContent.txContent.destinationLength != 0) {
-    //             getEthDisplayableAddress(tmpContent.txContent.destination,
-    //                                      displayBuffer,
-    //                                      sizeof(displayBuffer),
-    //                                      &global_sha3,
-    //                                      chainConfig->chainId);
-    //             compareOrCopy(strings.common.fullAddress,
-    //                           sizeof(strings.common.fullAddress),
-    //                           displayBuffer,
-    //                           called_from_swap);
-    //         } else {
-    //             strcpy(strings.common.fullAddress, "Contract");
-    //         }
-    //     }
-
-    //     // Prepare amount to display
-    //     if (genericUI) {
-    //         amountToString(tmpContent.txContent.value.value,
-    //                        tmpContent.txContent.value.length,
-    //                        decimals,
-    //                        ticker,
-    //                        displayBuffer,
-    //                        sizeof(displayBuffer));
-    //         compareOrCopy(strings.common.fullAmount,
-    //                       sizeof(strings.common.fullAmount),
-    //                       displayBuffer,
-    //                       called_from_swap);
-    //     }
-
-    //     // Prepare nonce to display
-    //     uint256_t nonce;
-    //     convertUint256BE(tmpContent.txContent.nonce.value, tmpContent.txContent.nonce.length,
-    //     &nonce); tostring256(&nonce, 10, displayBuffer, sizeof(displayBuffer));
-    //     strlcpy(strings.common.nonce, displayBuffer, sizeof(strings.common.nonce));
-
-    //     // Compute maximum fee
-    //     prepareFeeDisplay();
-    //     PRINTF("Fees displayed: %s\n", strings.common.maxFee);
-
-    //     // Prepare chainID field
-    //     prepareNetworkDisplay();
-    //     PRINTF("Network: %s\n", strings.common.network_name);
-
-    //     bool no_consent;
-
-    //     no_consent = called_from_swap;
-
-    // #ifdef NO_CONSENT
-    //     no_consent = true;
-    // #endif  // NO_CONSENT
-
-    //     if (no_consent) {
-    //         io_seproxyhal_touch_tx_ok(NULL);
-    //     } else {
-    //         if (genericUI) {
-    //             ux_approve_tx(false);
-    //         } else {
-    //             plugin_ui_start();
-    //         }
-    //     }
+    // Store the hash
+    cx_hash_no_throw((cx_hash_t *) &global_sha3,
+                     CX_LAST,
+                     G_command.message_hash.data,
+                     0,
+                     G_command.message_hash.data,
+                     32);
 }

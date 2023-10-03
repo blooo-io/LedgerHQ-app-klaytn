@@ -29,6 +29,7 @@ ApduCommand G_command;
 txContext_t txContext;
 tmpContent_t tmpContent;
 strings_t strings;
+cx_sha3_t global_sha3;
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
@@ -59,11 +60,10 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         case InsDeprecatedGetAppConfiguration:
         case InsGetAppConfiguration:
             G_io_apdu_buffer[0] = N_storage.settings.allow_blind_sign;
-            G_io_apdu_buffer[1] = N_storage.settings.pubkey_display;
-            G_io_apdu_buffer[2] = MAJOR_VERSION;
-            G_io_apdu_buffer[3] = MINOR_VERSION;
-            G_io_apdu_buffer[4] = PATCH_VERSION;
-            *tx = 5;
+            G_io_apdu_buffer[1] = MAJOR_VERSION;
+            G_io_apdu_buffer[2] = MINOR_VERSION;
+            G_io_apdu_buffer[3] = PATCH_VERSION;
+            *tx = 4;
             THROW(ApduReplySuccess);
 
         case InsDeprecatedGetPubkey:

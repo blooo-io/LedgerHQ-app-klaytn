@@ -111,7 +111,6 @@ int apdu_handle_message(const uint8_t* apdu_message,
         apdu_command->state = ApduStatePayloadComplete;
         apdu_command->instruction = header.instruction;
         apdu_command->non_confirm = (header.p1 == P1_NON_CONFIRM);
-        apdu_command->chaincode = (header.p2 == P2_CHAINCODE);
         apdu_command->deprecated_host = header.deprecated_host;
         return 0;
     } else if (header.instruction == InsDeprecatedSignMessage ||

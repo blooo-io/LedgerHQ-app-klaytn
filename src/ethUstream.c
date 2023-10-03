@@ -514,6 +514,13 @@ static bool processValueTransfer(txContext_t *context) {
         case VALUE_TRANSFER_RLP_RATIO:
             processRatio(context);
             break;
+        case VALUE_TRANSFER_RLP_CHAIN_ID:
+            processChainID(context);
+            break;
+        case VALUE_TRANSFER_RLP_ZERO1:
+        case VALUE_TRANSFER_RLP_ZERO2:
+            processAndDiscard(context);
+            break;
         default:
             PRINTF("Invalid RLP decoder context\n");
             return true;
@@ -556,6 +563,13 @@ static bool processValueTransferMemo(txContext_t *context) {
             break;
         case VALUE_TRANSFER_MEMO_RLP_RATIO:
             processRatio(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_CHAIN_ID:
+            processChainID(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_ZERO1:
+        case VALUE_TRANSFER_MEMO_RLP_ZERO2:
+            processAndDiscard(context);
             break;
         default:
             PRINTF("Invalid RLP decoder context\n");
@@ -604,6 +618,13 @@ static bool processSmartContractDeploy(txContext_t *context) {
             processRatio(context);
             break;
         case SMART_CONTRACT_DEPLOY_RLP_CODE_FORMAT:
+            processAndDiscard(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_CHAIN_ID:
+            processChainID(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_ZERO1:
+        case SMART_CONTRACT_DEPLOY_RLP_ZERO2:
             processAndDiscard(context);
             break;
         default:

@@ -35,10 +35,11 @@ typedef union {
     strDataTmp_t tmp;
 } strings_t;
 
+extern ApduCommand G_command;
 extern txContext_t txContext;
 extern tmpContent_t tmpContent;
 extern strings_t strings;
-extern ApduCommand G_command;
+extern cx_sha3_t global_sha3;
 
 customStatus_e customProcessor(txContext_t *context);
 

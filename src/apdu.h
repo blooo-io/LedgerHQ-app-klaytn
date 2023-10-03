@@ -70,7 +70,6 @@ typedef struct ApduCommand {
     uint8_t p1;
     uint8_t p2;
     bool non_confirm;
-    bool chaincode;
     bool deprecated_host;
     uint8_t message[MAX_MESSAGE_LENGTH];
     int message_length;

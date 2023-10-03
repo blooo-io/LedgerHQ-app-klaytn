@@ -7,26 +7,71 @@
 #include "cx.h"
 #include "utils.h"
 #include "sol/transaction_summary.h"
+#include "uint_common.h"
+
+void format_signature_out(const uint8_t *signature) {
+    memset(G_io_apdu_buffer + 1, 0x00, 64);
+    uint8_t offset = 1;
+    uint8_t xoffset = 4;  // point to r value
+    // copy r
+    uint8_t xlength = signature[xoffset - 1];
+    if (xlength == 33) {
+        xlength = 32;
+        xoffset++;
+    }
+    memmove(G_io_apdu_buffer + offset + 32 - xlength, signature + xoffset, xlength);
+    offset += 32;
+    xoffset += xlength + 2;  // move over rvalue and TagLEn
+    // copy s value
+    xlength = signature[xoffset - 1];
+    if (xlength == 33) {
+        xlength = 32;
+        xoffset++;
+    }
+    memmove(G_io_apdu_buffer + offset + 32 - xlength, signature + xoffset, xlength);
+}
 
 static uint8_t set_result_sign_message() {
-    uint8_t signature[SIGNATURE_LENGTH];
+    uint8_t sig_len = 100;
+    uint8_t signature[sig_len];
+    unsigned int info = 0;
     cx_ecfp_private_key_t privateKey;
     BEGIN_TRY {
         TRY {
-            get_private_key_with_seed(&privateKey,
-                                      G_command.derivation_path,
-                                      G_command.derivation_path_length);
-            cx_eddsa_sign(&privateKey,
-                          CX_LAST,
-                          CX_SHA512,
-                          G_command.message,
-                          G_command.message_length,
-                          NULL,
-                          0,
-                          signature,
-                          SIGNATURE_LENGTH,
-                          NULL);
-            memcpy(G_io_apdu_buffer, signature, SIGNATURE_LENGTH);
+            get_private_key(&privateKey,
+                            NULL,
+                            G_command.derivation_path,
+                            G_command.derivation_path_length);
+            cx_ecdsa_sign_no_throw(&privateKey,
+                                   CX_RND_RFC6979 | CX_LAST,
+                                   CX_SHA256,
+                                   G_command.message_hash.data,
+                                   sizeof(G_command.message_hash.data),
+                                   signature,
+                                   &sig_len,
+                                   &info);
+            // Taking only the 4 highest bytes
+            // uint32_t v = (uint32_t) u64_from_BE(tmpContent.txContent.v,
+            //                                     MIN(4, tmpContent.txContent.vLength));
+            // Hardcoded klaytn chain id
+            // TODO: replace with parsed v value
+            G_io_apdu_buffer[0] = (0x2019 * 2) + 35;
+            if (info & CX_ECCINFO_PARITY_ODD) {
+                G_io_apdu_buffer[0]++;
+            }
+            if (info & CX_ECCINFO_xGTn) {
+                G_io_apdu_buffer[0] += 2;
+            }
+            // uint64_t v = (0x2019 * 2) + 35;
+            // if (info & CX_ECCINFO_PARITY_ODD) {
+            //     v++;
+            // }
+            // if (info & CX_ECCINFO_xGTn) {
+            //     v += 2;
+            // }
+            // G_io_apdu_buffer[0] = ((v >> 8) & 0xff);
+            // G_io_apdu_buffer[1] = (v & 0xff);
+            format_signature_out(signature);
         }
         CATCH_OTHER(e) {
             MEMCLEAR(privateKey);
@@ -37,7 +82,7 @@ static uint8_t set_result_sign_message() {
         }
     }
     END_TRY;
-    return SIGNATURE_LENGTH;
+    return SIGNATURE_LENGTH + 1;  // 1 byte for v
 }
 
 static void send_result_sign_message(void) {
@@ -95,7 +140,6 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
         THROW(ApduReplySdkInvalidParameter);
     }
 
-    cx_sha3_t global_sha3;
     parserStatus_e txResult;
 
     initTx(&txContext, &global_sha3, &tmpContent.txContent, customProcessor, NULL);
@@ -128,7 +172,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
         case CANCEL:
         case FEE_DELEGATED_CANCEL:
         case PARTIAL_FEE_DELEGATED_CANCEL:
-            cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
+            // cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
             txContext.txType = txType;
             txContext.outerRLP = true;
             break;
@@ -137,8 +181,11 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
             THROW(0x6501);
             break;
     }
-
+    // TODO: replace 0 with fee delegation flag
     txResult = processTx(&txContext, workBuffer, dataLength, 0);
+    if (txResult == USTREAM_FINISHED) {
+        finalizeParsing(false);
+    }
     transaction_summary_reset();
     if (process_message_body() != 0) {
         // Message not processed, throw if blind signing is not enabled

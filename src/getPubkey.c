@@ -46,7 +46,6 @@ void handle_get_pubkey(volatile unsigned int *flags, volatile unsigned int *tx) 
         G_command.state != ApduStatePayloadComplete) {
         THROW(ApduReplySdkInvalidParameter);
     }
-    G_publicKey.getChaincode = (G_command.chaincode == P2_CHAINCODE);
 
     get_public_key(&G_publicKey, G_command.derivation_path, G_command.derivation_path_length);
 

@@ -22,8 +22,6 @@ typedef enum rlpTxType {
 typedef struct publicKeyContext_t {
     cx_ecfp_public_key_t publicKey;
     char address[ETH_PUBKEY_LENGTH + 1];
-    uint8_t chainCode[CHAINCODE_LENGTH];
-    bool getChaincode;
 } publicKeyContext_t;
 
 uint32_t set_result_get_publicKey(publicKeyContext_t *publicKeyContext);
@@ -44,6 +42,8 @@ void get_private_key(cx_ecfp_private_key_t *privateKey,
 void get_private_key_with_seed(cx_ecfp_private_key_t *privateKey,
                                const uint32_t *derivationPath,
                                uint8_t pathLength);
+
+void finalizeParsing(bool direct);
 
 /**
  * Deserialize derivation path from raw bytes.
