@@ -2,6 +2,7 @@
 #include "util.h"
 #include "os.h"  // for PRINTF, to remove
 #include "cx.h"
+#include "shared_context.h"
 
 #define OFFCHAIN_MESSAGE_SIGNING_DOMAIN \
     "\xff"                              \
@@ -185,7 +186,6 @@ int parse_tx_type(Parser* parser) {
 
 int parse_legacy(Parser* parser) {
     PRINTF("in parse_legacy\n");
-    cx_sha3_t global_sha3;
     uint8_t txType = *parser->buffer;
     if (txType >= 0x00 && txType <= 0x7f) {
         // Enumerate through all supported txTypes here...

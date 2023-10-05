@@ -19,60 +19,48 @@ int process_message_body() {
 
     InstructionInfo* info = &instruction_info[instruction_count];
 
+    static char fee_delegation_prefix[50];
+    if (G_command.p1 == P1_BASIC) {
+        strcpy(fee_delegation_prefix, "");
+    } else if (G_command.p1 == P1_FEE_DELEGATED) {
+        strcpy(fee_delegation_prefix, "Fee Delegated ");
+    } else if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+        strcpy(fee_delegation_prefix, "Partial Fee Delegated ");
+    }
+
     switch (G_command.instruction) {
         case InsSignLegacyTransaction:
             parse_system_transfer_instruction(&txContext, &info->transaction, "Legacy Transaction");
             break;
         case InsSignValueTransfer:
-            if (G_command.p1 == P1_FEE_DELEGATED) {
-                parse_system_transfer_instruction(&txContext,
-                                                  &info->transaction,
-                                                  "Fee Delegated Value Transfer");
-            } else {
-                parse_system_transfer_instruction(&txContext, &info->transaction, "Value Transfer");
-            }
+            parse_system_transfer_instruction(&txContext,
+                                              &info->transaction,
+                                              strcat(fee_delegation_prefix, "Value Transfer"));
             break;
         case InsSignValueTransferMemo:
-            if (G_command.p1 == P1_FEE_DELEGATED) {
-                parse_system_transfer_instruction(&txContext,
-                                                  &info->transaction,
-                                                  "Fee Delegated Value Transfer Memo");
-            } else {
-                parse_system_transfer_instruction(&txContext,
-                                                  &info->transaction,
-                                                  "Value Transfer Memo");
-            }
+            parse_system_transfer_instruction(&txContext,
+                                              &info->transaction,
+                                              strcat(fee_delegation_prefix, "Value Transfer Memo"));
             break;
         case InsSignSmartContractDeploy:
-            if (G_command.p1 == P1_FEE_DELEGATED) {
-                parse_system_transfer_instruction(&txContext,
-                                                  &info->transaction,
-                                                  "Fee Delegated Smart Contract Deploy");
-            } else {
-                parse_system_transfer_instruction(&txContext,
-                                                  &info->transaction,
-                                                  "Smart Contract Deploy");
-            }
+            parse_system_transfer_instruction(
+                &txContext,
+                &info->transaction,
+                strcat(fee_delegation_prefix, "Smart Contract Deploy"));
+
             break;
         case InsSignSmartContractExecution:
-            if (G_command.p1 == P1_FEE_DELEGATED) {
-                parse_system_transfer_instruction(&txContext,
-                                                  &info->transaction,
-                                                  "Fee Delegated Smart Contract Execution");
-            } else {
-                parse_system_transfer_instruction(&txContext,
-                                                  &info->transaction,
-                                                  "Smart Contract Execution");
-            }
+            parse_system_transfer_instruction(
+                &txContext,
+                &info->transaction,
+                strcat(fee_delegation_prefix, "Smart Contract Execution"));
+
             break;
         case InsSignCancel:
-            if (G_command.p1 == P1_FEE_DELEGATED) {
-                parse_system_transfer_instruction(&txContext,
-                                                  &info->transaction,
-                                                  "Fee Delegated Cancel");
-            } else {
-                parse_system_transfer_instruction(&txContext, &info->transaction, "Cancel");
-            }
+            parse_system_transfer_instruction(&txContext,
+                                              &info->transaction,
+                                              strcat(fee_delegation_prefix, "Cancel"));
+
             break;
         default:
             return 0;

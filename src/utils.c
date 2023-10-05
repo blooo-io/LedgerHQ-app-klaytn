@@ -14,10 +14,6 @@ uint32_t set_result_get_publicKey(publicKeyContext_t *publicKeyContext) {
     G_io_apdu_buffer[tx++] = 40;
     memmove(G_io_apdu_buffer + tx, publicKeyContext->address, 40);
     tx += 40;
-    if (publicKeyContext->getChaincode) {
-        memmove(G_io_apdu_buffer + tx, publicKeyContext->chainCode, 32);
-        tx += 32;
-    }
     return tx;
 }
 
@@ -62,12 +58,11 @@ void get_private_key(cx_ecfp_private_key_t *privateKey,
 
     BEGIN_TRY {
         TRY {
-            os_perso_derive_node_bip32(
-                CX_CURVE_256K1,
-                derivationPath,
-                pathLength,
-                privateKeyData,
-                (publicKeyContext->getChaincode ? publicKeyContext->chainCode : NULL));
+            os_perso_derive_node_bip32(CX_CURVE_256K1,
+                                       derivationPath,
+                                       pathLength,
+                                       privateKeyData,
+                                       NULL);
             io_seproxyhal_io_heartbeat();
             cx_ecfp_init_private_key(CX_CURVE_256K1, privateKeyData, PRIVATEKEY_LENGTH, privateKey);
             io_seproxyhal_io_heartbeat();

@@ -216,3 +216,93 @@ def test_klaytn_signFeeDelegatedCancel(backend, navigator, test_name):
     signature: bytes = sol.get_async_response().data
     # print("signature: ", signature)
     # verify_signature(from_public_key, message, signature)
+
+
+def test_klaytn_signFeeDelegatedValueTransferWithRatio(backend, navigator, test_name):
+    sol = SolanaClient(backend)
+    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+    print("from_public_key", list(from_public_key))
+    message: bytes = bytearray.fromhex(
+        "058000002c80002019800000008000000080000000f841b83af8380a19850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75551e8220198080")
+    with sol.send_async_sign_transaction(message, INS.INS_SIGN_VALUE_TRANSFER, P1_FEE_DELEGATED_WITH_RATIO):
+        navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                  [NavInsID.BOTH_CLICK],
+                                                  "Approve",
+                                                  ROOT_SCREENSHOT_PATH,
+                                                  test_name)
+
+    signature: bytes = sol.get_async_response().data
+    # print("signature: ", signature)
+    # verify_signature(from_public_key, message, signature)
+
+
+def test_klaytn_signFeeDelegatedValueTransferMemoWithRatio(backend, navigator, test_name):
+    sol = SolanaClient(backend)
+    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+    print("from_public_key", list(from_public_key))
+    message: bytes = bytearray.fromhex(
+        "058000002c80002019800000008000000080000000f847b840f83e1219850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558568656c6c6f1e8220198080")
+    with sol.send_async_sign_transaction(message, INS.INS_SIGN_VALUE_TRANSFER_MEMO, P1_FEE_DELEGATED_WITH_RATIO):
+        navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                  [NavInsID.BOTH_CLICK],
+                                                  "Approve",
+                                                  ROOT_SCREENSHOT_PATH,
+                                                  test_name)
+
+    signature: bytes = sol.get_async_response().data
+    # print("signature: ", signature)
+    # verify_signature(from_public_key, message, signature)
+
+
+def test_klaytn_signFeeDelegatedSmartContractDeployWithRatio(backend, navigator, test_name):
+    sol = SolanaClient(backend)
+    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+    print("from_public_key", list(from_public_key))
+    message: bytes = bytearray.fromhex(
+        "058000002c80002019800000008000000080000000f3adec2a19850ba43b7400830493e08001946694d467b419b36fb719e851cd65d54205df75558568656c6c6f801e808220198080")
+    with sol.send_async_sign_transaction(message, INS.INS_SIGN_SMART_CONTRACT_DEPLOY, P1_FEE_DELEGATED_WITH_RATIO):
+        navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                  [NavInsID.BOTH_CLICK],
+                                                  "Approve",
+                                                  ROOT_SCREENSHOT_PATH,
+                                                  test_name)
+
+    signature: bytes = sol.get_async_response().data
+    # print("signature: ", signature)
+    # verify_signature(from_public_key, message, signature)
+
+
+def test_klaytn_signFeeDelegatedSmartContractExecutionWithRatio(backend, navigator, test_name):
+    sol = SolanaClient(backend)
+    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+    print("from_public_key", list(from_public_key))
+    message: bytes = bytearray.fromhex(
+        "058000002c80002019800000008000000080000000f847b840f83e3219850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558568656c6c6f1e8220198080")
+    with sol.send_async_sign_transaction(message, INS.INS_SIGN_SMART_CONTRACT_EXECUTION, P1_FEE_DELEGATED_WITH_RATIO):
+        navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                  [NavInsID.BOTH_CLICK],
+                                                  "Approve",
+                                                  ROOT_SCREENSHOT_PATH,
+                                                  test_name)
+
+    signature: bytes = sol.get_async_response().data
+    # print("signature: ", signature)
+    # verify_signature(from_public_key, message, signature)
+
+
+def test_klaytn_signFeeDelegatedCancelWithRatio(backend, navigator, test_name):
+    sol = SolanaClient(backend)
+    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+    print("from_public_key", list(from_public_key))
+    message: bytes = bytearray.fromhex(
+        "058000002c80002019800000008000000080000000e9a3e23a19850ba43b7400830493e0946694d467b419b36fb719e851cd65d54205df75551e8220198080")
+    with sol.send_async_sign_transaction(message, INS.INS_SIGN_CANCEL, P1_FEE_DELEGATED_WITH_RATIO):
+        navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                  [NavInsID.BOTH_CLICK],
+                                                  "Approve",
+                                                  ROOT_SCREENSHOT_PATH,
+                                                  test_name)
+
+    signature: bytes = sol.get_async_response().data
+    # print("signature: ", signature)
+    # verify_signature(from_public_key, message, signature)

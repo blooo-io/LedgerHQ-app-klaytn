@@ -48,6 +48,7 @@ typedef struct txContent_t {
     uint8_t destinationLength;
     uint8_t v[8];
     uint8_t vLength;
+    uint8_t ratio;
     bool dataPresent;
 } txContent_t;
 
@@ -106,6 +107,11 @@ typedef enum rlpValueTransferTxField_e {
     VALUE_TRANSFER_RLP_GASLIMIT,
     VALUE_TRANSFER_RLP_TO,
     VALUE_TRANSFER_RLP_VALUE,
+    VALUE_TRANSFER_RLP_FROM,
+    VALUE_TRANSFER_RLP_RATIO,
+    VALUE_TRANSFER_RLP_CHAIN_ID,
+    VALUE_TRANSFER_RLP_ZERO1,
+    VALUE_TRANSFER_RLP_ZERO2,
     VALUE_TRANSFER_RLP_DONE
 } rlpValueTransferTxField_e;
 
@@ -120,6 +126,10 @@ typedef enum rlpValueTransferMemoTxField_e {
     VALUE_TRANSFER_MEMO_RLP_VALUE,
     VALUE_TRANSFER_MEMO_RLP_FROM,
     VALUE_TRANSFER_MEMO_RLP_DATA,
+    VALUE_TRANSFER_MEMO_RLP_RATIO,
+    VALUE_TRANSFER_MEMO_RLP_CHAIN_ID,
+    VALUE_TRANSFER_MEMO_RLP_ZERO1,
+    VALUE_TRANSFER_MEMO_RLP_ZERO2,
     VALUE_TRANSFER_MEMO_RLP_DONE
 } rlpValueTransferMemoTxField_e;
 
@@ -135,7 +145,11 @@ typedef enum rlpSmartContractDeployTxField_e {
     SMART_CONTRACT_DEPLOY_RLP_FROM,
     SMART_CONTRACT_DEPLOY_RLP_DATA,
     SMART_CONTRACT_DEPLOY_RLP_HUMAN_READABLE,
+    SMART_CONTRACT_DEPLOY_RLP_RATIO,
     SMART_CONTRACT_DEPLOY_RLP_CODE_FORMAT,
+    SMART_CONTRACT_DEPLOY_RLP_CHAIN_ID,
+    SMART_CONTRACT_DEPLOY_RLP_ZERO1,
+    SMART_CONTRACT_DEPLOY_RLP_ZERO2,
     SMART_CONTRACT_DEPLOY_RLP_DONE
 } rlpSmartContractDeployTxField_e;
 
@@ -150,6 +164,7 @@ typedef enum rlpSmartContractExecutionTxField_e {
     SMART_CONTRACT_EXECUTION_RLP_VALUE,
     SMART_CONTRACT_EXECUTION_RLP_FROM,
     SMART_CONTRACT_EXECUTION_RLP_DATA,
+    SMART_CONTRACT_EXECUTION_RLP_RATIO,
     SMART_CONTRACT_EXECUTION_RLP_DONE
 } rlpSmartContractExecutionTxField_e;
 
@@ -161,6 +176,7 @@ typedef enum rlpCancelTxField_e {
     CANCEL_RLP_GASPRICE,
     CANCEL_RLP_GASLIMIT,
     CANCEL_RLP_FROM,
+    CANCEL_RLP_RATIO,
     CANCEL_RLP_DONE
 } rlpCancelTxField_e;
 
@@ -206,18 +222,23 @@ typedef enum txType_e {
 
     VALUE_TRANSFER = 0x08,
     FEE_DELEGATED_VALUE_TRANSFER = 0x09,
+    PARTIAL_FEE_DELEGATED_VALUE_TRANSFER = 0x0A,
 
     VALUE_TRANSFER_MEMO = 0x10,
     FEE_DELEGATED_VALUE_TRANSFER_MEMO = 0x11,
+    PARTIAL_FEE_DELEGATED_VALUE_TRANSFER_MEMO = 0x12,
 
     SMART_CONTRACT_DEPLOY = 0x28,
     FEE_DELEGATED_SMART_CONTRACT_DEPLOY = 0x29,
+    PARTIAL_FEE_DELEGATED_SMART_CONTRACT_DEPLOY = 0x2A,
 
     SMART_CONTRACT_EXECUTION = 0x30,
     FEE_DELEGATED_SMART_CONTRACT_EXECUTION = 0x31,
+    PARTIAL_FEE_DELEGATED_SMART_CONTRACT_EXECUTION = 0x32,
 
     CANCEL = 0x38,
     FEE_DELEGATED_CANCEL = 0x39,
+    PARTIAL_FEE_DELEGATED_CANCEL = 0x3A,
 
     LEGACY = 0xc0  // Legacy tx are greater than or equal to 0xc0.
 } txType_e;
@@ -229,6 +250,8 @@ static inline uint8_t getTxType() {
         case InsSignValueTransfer:
             if (G_command.p1 == P1_FEE_DELEGATED) {
                 return FEE_DELEGATED_VALUE_TRANSFER;
+            } else if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+                return PARTIAL_FEE_DELEGATED_VALUE_TRANSFER;
             } else {
                 return VALUE_TRANSFER;
             }
@@ -236,24 +259,32 @@ static inline uint8_t getTxType() {
         case InsSignValueTransferMemo:
             if (G_command.p1 == P1_FEE_DELEGATED) {
                 return FEE_DELEGATED_VALUE_TRANSFER_MEMO;
+            } else if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+                return PARTIAL_FEE_DELEGATED_VALUE_TRANSFER_MEMO;
             } else {
                 return VALUE_TRANSFER_MEMO;
             }
         case InsSignSmartContractDeploy:
             if (G_command.p1 == P1_FEE_DELEGATED) {
                 return FEE_DELEGATED_SMART_CONTRACT_DEPLOY;
+            } else if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+                return PARTIAL_FEE_DELEGATED_SMART_CONTRACT_DEPLOY;
             } else {
                 return SMART_CONTRACT_DEPLOY;
             }
         case InsSignSmartContractExecution:
             if (G_command.p1 == P1_FEE_DELEGATED) {
                 return FEE_DELEGATED_SMART_CONTRACT_EXECUTION;
+            } else if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+                return PARTIAL_FEE_DELEGATED_SMART_CONTRACT_EXECUTION;
             } else {
                 return SMART_CONTRACT_EXECUTION;
             }
         case InsSignCancel:
             if (G_command.p1 == P1_FEE_DELEGATED) {
                 return FEE_DELEGATED_CANCEL;
+            } else if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+                return PARTIAL_FEE_DELEGATED_CANCEL;
             } else {
                 return CANCEL;
             }

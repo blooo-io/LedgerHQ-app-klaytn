@@ -12,7 +12,7 @@ from ragger.utils import app_path_from_app_name
 APPS_DIRECTORY = (Path(__file__).parent.parent / "elfs").resolve()
 
 # Adapt this name part of the compiled app <name>_<device>.elf in the APPS_DIRECTORY
-APP_NAME = "solana"
+APP_NAME = "klaytn"
 
 BACKENDS = ["speculos", "ledgercomm", "ledgerwallet"]
 
@@ -97,7 +97,8 @@ def prepare_speculos_args(firmware: Firmware, display: bool):
     if display:
         speculos_args += ["--display", "qt"]
 
-    app_path = app_path_from_app_name(APPS_DIRECTORY, APP_NAME, firmware.device)
+    app_path = app_path_from_app_name(
+        APPS_DIRECTORY, APP_NAME, firmware.device)
 
     return ([app_path], {"args": speculos_args})
 
@@ -114,7 +115,8 @@ def create_backend(backend_name: str, firmware: Firmware, display: bool, log_apd
         args, kwargs = prepare_speculos_args(firmware, display)
         return SpeculosBackend(*args, firmware=firmware, log_apdu_file=log_apdu_file, **kwargs)
     else:
-        raise ValueError(f"Backend '{backend_name}' is unknown. Valid backends are: {BACKENDS}")
+        raise ValueError(
+            f"Backend '{backend_name}' is unknown. Valid backends are: {BACKENDS}")
 
 
 # This fixture will return the properly configured backend, to be used in tests.
@@ -140,7 +142,8 @@ def navigator(backend, firmware, golden_run):
 @pytest.fixture(autouse=True)
 def use_only_on_backend(request, backend):
     if request.node.get_closest_marker('use_on_backend'):
-        current_backend = request.node.get_closest_marker('use_on_backend').args[0]
+        current_backend = request.node.get_closest_marker(
+            'use_on_backend').args[0]
         if current_backend != backend:
             pytest.skip(f'skipped on this backend: "{current_backend}"')
 

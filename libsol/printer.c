@@ -104,7 +104,7 @@ int print_pubkey(const Pubkey *pubkey, char *out, size_t out_length) {
         out[i * 2 + 1] = hexDigits[pubkey->data[i] & 0x0F];
     }
 
-    out[PUBKEY_SIZE * 2] = '\0';  // Null-terminate the string
+    out[out_length * 2] = '\0';  // Null-terminate the string
     return 0;
 }
 

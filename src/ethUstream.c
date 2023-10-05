@@ -318,6 +318,26 @@ static void processV(txContext_t *context) {
     }
 }
 
+static void processRatio(txContext_t *context) {
+    if (context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP_RATIO\n");
+        THROW(EXCEPTION);
+    }
+    if (context->currentFieldLength > MAX_INT256) {
+        PRINTF("Invalid length for RLP_RATIO\n");
+        THROW(EXCEPTION);
+    }
+    if (context->currentFieldPos < context->currentFieldLength) {
+        uint32_t copySize =
+            MIN(context->commandLength, context->currentFieldLength - context->currentFieldPos);
+        copyTxData(context, &context->content->ratio + context->currentFieldPos, copySize);
+    }
+    if (context->currentFieldPos == context->currentFieldLength) {
+        context->currentField++;
+        context->processingField = false;
+    }
+}
+
 static bool processEIP1559Tx(txContext_t *context) {
     switch (context->currentField) {
         case EIP1559_RLP_CONTENT: {
@@ -484,6 +504,23 @@ static bool processValueTransfer(txContext_t *context) {
         case VALUE_TRANSFER_RLP_VALUE:
             processValue(context);
             break;
+        case VALUE_TRANSFER_RLP_FROM:
+            processAndDiscard(context);
+            // Skip ratio if not partial fee delegated txType
+            if (G_command.p1 != P1_FEE_DELEGATED_WITH_RATIO) {
+                context->currentField++;
+            }
+            break;
+        case VALUE_TRANSFER_RLP_RATIO:
+            processRatio(context);
+            break;
+        case VALUE_TRANSFER_RLP_CHAIN_ID:
+            processChainID(context);
+            break;
+        case VALUE_TRANSFER_RLP_ZERO1:
+        case VALUE_TRANSFER_RLP_ZERO2:
+            processAndDiscard(context);
+            break;
         default:
             PRINTF("Invalid RLP decoder context\n");
             return true;
@@ -519,6 +556,20 @@ static bool processValueTransferMemo(txContext_t *context) {
             break;
         case VALUE_TRANSFER_MEMO_RLP_DATA:
             processData(context);
+            // Skip ratio if not partial fee delegated txType
+            if (G_command.p1 != P1_FEE_DELEGATED_WITH_RATIO) {
+                context->currentField++;
+            }
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_RATIO:
+            processRatio(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_CHAIN_ID:
+            processChainID(context);
+            break;
+        case VALUE_TRANSFER_MEMO_RLP_ZERO1:
+        case VALUE_TRANSFER_MEMO_RLP_ZERO2:
+            processAndDiscard(context);
             break;
         default:
             PRINTF("Invalid RLP decoder context\n");
@@ -558,8 +609,22 @@ static bool processSmartContractDeploy(txContext_t *context) {
             break;
         case SMART_CONTRACT_DEPLOY_RLP_HUMAN_READABLE:
             processAndDiscard(context);
+            // Skip ratio if not partial fee delegated txType
+            if (G_command.p1 != P1_FEE_DELEGATED_WITH_RATIO) {
+                context->currentField++;
+            }
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_RATIO:
+            processRatio(context);
             break;
         case SMART_CONTRACT_DEPLOY_RLP_CODE_FORMAT:
+            processAndDiscard(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_CHAIN_ID:
+            processChainID(context);
+            break;
+        case SMART_CONTRACT_DEPLOY_RLP_ZERO1:
+        case SMART_CONTRACT_DEPLOY_RLP_ZERO2:
             processAndDiscard(context);
             break;
         default:
@@ -597,6 +662,13 @@ static bool processSmartContractExecution(txContext_t *context) {
             break;
         case SMART_CONTRACT_EXECUTION_RLP_DATA:
             processData(context);
+            // Skip ratio if not partial fee delegated txType
+            if (G_command.p1 != P1_FEE_DELEGATED_WITH_RATIO) {
+                context->currentField++;
+            }
+            break;
+        case SMART_CONTRACT_EXECUTION_RLP_RATIO:
+            processRatio(context);
             break;
         default:
             PRINTF("Invalid RLP decoder context\n");
@@ -624,6 +696,13 @@ static bool processCancel(txContext_t *context) {
             break;
         case CANCEL_RLP_FROM:
             processAndDiscard(context);
+            // Skip ratio if not partial fee delegated txType
+            if (G_command.p1 != P1_FEE_DELEGATED_WITH_RATIO) {
+                context->currentField++;
+            }
+            break;
+        case CANCEL_RLP_RATIO:
+            processRatio(context);
             break;
         default:
             PRINTF("Invalid RLP decoder context\n");
@@ -714,8 +793,8 @@ static parserStatus_e processTxInternal(txContext_t *context) {
             PRINTF("parsing is done\n");
             return USTREAM_FINISHED;
         }
-        // Old style transaction (pre EIP-155). Transactions could just skip `v,r,s` so we needed to
-        // cut parsing here. commandLength == 0 could happen in two cases :
+        // Old style transaction (pre EIP-155). Transactions could just skip `v,r,s` so we
+        // needed to cut parsing here. commandLength == 0 could happen in two cases :
         // 1. We are in an old style transaction : just return `USTREAM_FINISHED`.
         // 2. We are at the end of an APDU in a multi-apdu process. This would make us return
         // `USTREAM_FINISHED` preemptively. Case number 2 should NOT happen as it is up to
@@ -778,6 +857,7 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                     }
                 case VALUE_TRANSFER:
                 case FEE_DELEGATED_VALUE_TRANSFER:
+                case PARTIAL_FEE_DELEGATED_VALUE_TRANSFER:
                     fault = processValueTransfer(context);
                     if (fault) {
                         return USTREAM_FAULT;
@@ -786,6 +866,7 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                     }
                 case VALUE_TRANSFER_MEMO:
                 case FEE_DELEGATED_VALUE_TRANSFER_MEMO:
+                case PARTIAL_FEE_DELEGATED_VALUE_TRANSFER_MEMO:
                     fault = processValueTransferMemo(context);
                     if (fault) {
                         return USTREAM_FAULT;
@@ -794,6 +875,7 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                     }
                 case SMART_CONTRACT_DEPLOY:
                 case FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
+                case PARTIAL_FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
                     fault = processSmartContractDeploy(context);
                     if (fault) {
                         return USTREAM_FAULT;
@@ -802,6 +884,7 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                     }
                 case SMART_CONTRACT_EXECUTION:
                 case FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
+                case PARTIAL_FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
                     fault = processSmartContractExecution(context);
                     if (fault) {
                         return USTREAM_FAULT;
@@ -810,6 +893,7 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                     }
                 case CANCEL:
                 case FEE_DELEGATED_CANCEL:
+                case PARTIAL_FEE_DELEGATED_CANCEL:
                     fault = processCancel(context);
                     if (fault) {
                         return USTREAM_FAULT;

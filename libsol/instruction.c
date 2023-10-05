@@ -70,6 +70,9 @@ int parse_system_transfer_instruction(txContext_t* context,
     // Gas
     info->gas = convertUint256ToUint64(&context->content->startgas);
 
+    // Fee Ratio
+    info->fee_ratio = context->content->ratio;
+
     return 1;
 }
 
@@ -118,6 +121,11 @@ int print_value_transfer_info(const SystemTransferInfo* info) {
     item = transaction_summary_general_item();
     summary_item_set_u64(item, "Gas", info->gas);
 
+    if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+        item = transaction_summary_general_item();
+        summary_item_set_u64(item, "Fee Ratio", info->fee_ratio);
+    }
+
     return 0;
 }
 
@@ -138,6 +146,11 @@ int print_smart_contract_deploy_info(const SystemTransferInfo* info) {
 
     item = transaction_summary_general_item();
     summary_item_set_u64(item, "Gas", info->gas);
+
+    if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+        item = transaction_summary_general_item();
+        summary_item_set_u64(item, "Fee Ratio", info->fee_ratio);
+    }
 
     return 0;
 }
@@ -163,6 +176,11 @@ int print_smart_contract_execution_info(const SystemTransferInfo* info) {
     item = transaction_summary_general_item();
     summary_item_set_u64(item, "Gas", info->gas);
 
+    if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+        item = transaction_summary_general_item();
+        summary_item_set_u64(item, "Fee Ratio", info->fee_ratio);
+    }
+
     return 0;
 }
 
@@ -180,6 +198,11 @@ int print_cancel_info(const SystemTransferInfo* info) {
 
     item = transaction_summary_general_item();
     summary_item_set_u64(item, "Gas", info->gas);
+
+    if (G_command.p1 == P1_FEE_DELEGATED_WITH_RATIO) {
+        item = transaction_summary_general_item();
+        summary_item_set_u64(item, "Fee Ratio", info->fee_ratio);
+    }
 
     return 0;
 }

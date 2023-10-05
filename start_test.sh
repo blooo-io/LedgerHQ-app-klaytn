@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
+
 device_label=${1:-"nanos"} # "nanos", "nanox", "nanosp"
-app_name=${2:-"solana"} # "solana", "ethereum"
-if [[ $app_name == "solana" ]]; then
-    mkdir -p tests/elfs
-    [ -f bin/app.elf ] && cp bin/app.elf tests/elfs/solana_${device_label}.elf
-else
-    mkdir -p tests/elfs
-    [ -f bin_eth/app.elf ] && cp bin_eth/app.elf tests/elfs/solana_${device_label}.elf
-fi
+golden_run=${2:-false} # true or false, treated as a boolean
 
-echo "Running tests for ${app_name} on ${device_label}"
+mkdir -p tests/elfs
+[ -f bin/app.elf ] && cp bin/app.elf tests/elfs/klaytn_${device_label}.elf
 
-pytest -s tests/python/ -v --tb=short --device ${device_label} #--golden_run
+echo "Running tests on ${device_label}"
+
+# Construct pytest_cmd in one go, using a conditional expression to append the --golden_run flag if necessary
+pytest_cmd="pytest -s tests/python/ -v --tb=short --device ${device_label}"
+[[ $golden_run == true ]] && pytest_cmd="$pytest_cmd --golden_run"
+
+eval $pytest_cmd
