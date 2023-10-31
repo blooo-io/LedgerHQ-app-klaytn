@@ -1,5 +1,5 @@
 # ****************************************************************************
-#    Ledger App Solana
+#    Ledger App Klaytn
 #    (c) 2020 Ledger SAS.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,12 +34,12 @@ ifeq ($(TARGET_NAME), TARGET_NANOX)
 else
     APP_LOAD_PARAMS += --appFlags 0x000
 endif
-APP_LOAD_PARAMS += --path "44'/501'"
+APP_LOAD_PARAMS += --path "44'/8217'"
 APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
-APPNAME      = "Solana"
-APPVERSION_M = 1
-APPVERSION_N = 3
+APPNAME      = "Klaytn"
+APPVERSION_M = 0
+APPVERSION_N = 0
 APPVERSION_P = 1
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
