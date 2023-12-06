@@ -1,0 +1,30 @@
+{
+  "files.associations": {
+      "*.h": "c"
+  },
+  "C_Cpp.clang_format_path": "/usr/bin/clang-format",
+  "editor.formatOnSave": false,
+  "task.autoDetect": "off",
+  "python.terminal.activateEnvironment": false,
+  "buid_dir_relative_path":".",
+  "linux_udev_ledgerblue_rule_file":"20-ledger.ledgerblue.rules",
+  "docker_image": "ghcr.io/ledgerhq/ledger-app-builder/ledger-app-dev-tools:latest",
+  "container_name": "${workspaceFolderBasename}-container",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#91032f",
+    "activityBar.activeBorder": "#000000",
+    "activityBar.background": "#91032f",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#000000",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "statusBar.background": "#5f021f",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#91032f",
+    "titleBar.activeBackground": "#5f021f",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#5f021f99",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.remoteColor": "#5f021f",
+}

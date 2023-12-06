@@ -9,10 +9,10 @@ src/glyphs.c
 src/glyphs.h
 *.core
 .idea
-.vscode
 gitignore
 .vagrant
 libsol/target
+myenv
 
 # Python
 __pycache__
