@@ -96,18 +96,7 @@
             "label": "Run functional tests",
             "type": "shell",
             // Runs functional tests inside the docker container (with Qt display disabled).
-            "command": "docker exec -it ${config:container_name} bash -c 'pytest tests/python/ --tb=short -v --device ${input:model}'",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Run functional tests (with display)",
-            "type": "shell",
-            // Runs functional tests inside the docker container (with Qt display enabled).
-            "command": "docker exec -it ${config:container_name} bash -c 'pytest tests/python/ --tb=short -v --device ${input:model} --display'",
+            "command": "docker exec -it ${config:container_name} bash -c 'pytest -s tests/python/ --tb=short -v --device ${input:model}'",
             "group": {
                 "kind": "build",
                 "isDefault": true
