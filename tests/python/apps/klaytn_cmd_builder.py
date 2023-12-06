@@ -1,8 +1,8 @@
 from typing import List
 from enum import IntEnum
 import base58
-from nacl.signing import VerifyKey
-
+from ecdsa import VerifyingKey, SECP256k1, BadSignatureError
+import hashlib
 
 PROGRAM_ID_SYSTEM = "11111111111111111111111111111111"
 
@@ -13,11 +13,28 @@ ADDRESS_SENDER = ""
 ADDRESS_RECIPIENT = ""
 
 
-def verify_signature(from_public_key: bytes, message: bytes, signature: bytes):
-    assert len(signature) == 64, "signature size incorrect"
-    verify_key = VerifyKey(from_public_key)
-    verify_key.verify(message, signature)
+def verify_transaction_signature_from_public_key(transaction: bytes, signature: bytes, from_public_key: bytes):
+    try:
+        r, s, v= decode_signature(signature)
+        print('r: ', r)
+        print('s: ', s)
+        print('v: ', v)
+        
+        
+        public_key = VerifyingKey.from_string(from_public_key, curve=SECP256k1)
+        print('public_key: ', public_key)
 
+        # Hash the transaction data
+        transaction_hash = hashlib.sha256(transaction).hexdigest()
+
+        # Verify the signature
+        return public_key.verify(signature, transaction_hash.encode())
+    except BadSignatureError:
+        return False   
+
+def decode_signature(signature: bytes) -> list:
+    return signature[:32], signature[32:64], signature[64:]
+    
 
 class KlaytnTransaction:
     def __init__(self, value: int):
