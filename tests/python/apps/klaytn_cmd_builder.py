@@ -12,16 +12,16 @@ FAKE_RECENT_BLOCKHASH = "11111111111111111111111111111111"
 ADDRESS_SENDER = ""
 ADDRESS_RECIPIENT = ""
 
-
-def verify_transaction_signature_from_public_key(transaction: bytes, signature: bytes, from_public_key: bytes):
+# Verify the signature of a transaction using a public key
+def verify_transaction_signature_from_public_key(transaction: str, signature: str, from_public_key: bytes):
     try:
-        r, s, v= decode_signature(signature)
+        v, r, s= decode_signature(signature)
+        print('v: ', v)
         print('r: ', r)
         print('s: ', s)
-        print('v: ', v)
         
         
-        public_key = VerifyingKey.from_string(from_public_key, curve=SECP256k1)
+        verifying_key = VerifyingKey.from_string(from_public_key, curve=SECP256k1)
         print('public_key: ', public_key)
 
         # Hash the transaction data
@@ -32,8 +32,8 @@ def verify_transaction_signature_from_public_key(transaction: bytes, signature: 
     except BadSignatureError:
         return False   
 
-def decode_signature(signature: bytes) -> list:
-    return signature[:32], signature[32:64], signature[64:]
+def decode_signature(signature: str) -> list:
+    return signature[:2], signature[2:66], signature[66:]
     
 
 class KlaytnTransaction:

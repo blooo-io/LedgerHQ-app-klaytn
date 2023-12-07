@@ -44,26 +44,27 @@ def test_klaytn_signValueTransfer(backend, navigator, test_name):
     from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
     print("from_public_key", list(from_public_key))
     data: bytes = bytearray.fromhex(
-        "058000002c80002019800000008000000080000000f83fb838f70819850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558220198080")
+        "058000002c80002019800000000000000000000000f83fb838f70819850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8220198080")
     with sol.send_async_sign_transaction(data, INS.INS_SIGN_VALUE_TRANSFER):
         navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
                                                   [NavInsID.BOTH_CLICK],
                                                   "Approve",
                                                   ROOT_SCREENSHOT_PATH,
                                                   test_name)
-
+    
     signature: bytes = sol.get_async_response().data
-    signature_hexlify = hexlify(signature)
-    from_public_key_hexlify = hexlify(from_public_key)
-    data_hexlify = hexlify(data)
+    address_decoded = address.decode()
+    signature_decoded = hexlify(signature).decode()
+    from_public_key_decoded = hexlify(from_public_key).decode()
+    data_decoded = hexlify(data).decode()
     print('-------------------------------------------------------')
-    print('address: ', address)
-    print("From_public_key", from_public_key)
-    print("data: ", data)
-    print("signature: ", signature)
+    print('address_decoded: ', address_decoded)
+    print('signature_decoded: ', signature_decoded)
+    print('from_public_key_decoded: ', from_public_key_decoded)
+    print('data_decoded: ', data_decoded)
     print('-------------------------------------------------------')
 
-    result = verify_transaction_signature_from_public_key(data, signature, from_public_key )
+    result = verify_transaction_signature_from_public_key(data_decoded, signature, from_public_key)
     print("-----------------RESULT-----------------")
     print(result)
 
