@@ -88,15 +88,31 @@ class SolanaClient:
         self._client = client
 
     def get_public_key(self, derivation_path: bytes) -> Tuple[bytes, bytes]:
-        public_key: RAPDU = self._client.exchange(CLA, INS.INS_GET_PUBKEY,
+        rapdu: RAPDU = self._client.exchange(CLA, INS.INS_GET_PUBKEY,
                                                   P1_NON_CONFIRM, P2_NONE,
                                                   derivation_path)
-        data = public_key.data
-        print("data: ", data.hex())
-        offset = 1 + data[0]
-        address = data[offset + 1: offset + 1 + data[offset]]
+        print('RAPDU: ', rapdu)
+        data = rapdu.data
+        
+        # Extract the public key
+        length_of_public_key = data[0]
+        public_key = data[1:1 + length_of_public_key]
 
-        return data, address
+        # Convert public key to hexadecimal format for readability
+        public_key_hex = public_key.hex()
+        print('Public Key:', public_key_hex)
+
+        # Extract the address
+        # Assuming the address immediately follows the public key
+        offset = 1 + length_of_public_key
+        length_of_address = data[offset]  # The length of the address
+        address = data[offset + 1: offset + 1 + length_of_address]
+
+        # Convert address to hexadecimal format for readability
+        address_hex = address.hex()
+        print('Address:', address_hex)
+
+        return public_key, address
 
     def split_and_prefix_message(self, derivation_path: bytes, message: bytes) -> List[bytes]:
         assert len(message) <= 65535, "Message to send is too long"
