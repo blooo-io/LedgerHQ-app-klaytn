@@ -1,3 +1,4 @@
 base58
 ecdsa
+pysha3
 ragger[tests,speculos]==1.8.0

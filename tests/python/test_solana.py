@@ -43,8 +43,12 @@ def test_klaytn_signValueTransfer(backend, navigator, test_name):
     sol = SolanaClient(backend)
     from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
     print("from_public_key", list(from_public_key))
-    data: bytes = bytearray.fromhex(
-        "058000002c80002019800000000000000000000000f83fb838f70819850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8220198080")
+    derivation_path_hex = '058000002c80002019800000000000000000000000'
+    derivation_path_bytes = bytearray.fromhex(derivation_path_hex)
+    message_hex = 'f83fb838f70819850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8220198080'
+    message_bytes = bytearray.fromhex(message_hex)
+    # data = derivation_path_bytes + message_bytes
+    data: bytes = derivation_path_bytes + message_bytes
     with sol.send_async_sign_transaction(data, INS.INS_SIGN_VALUE_TRANSFER):
         navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
                                                   [NavInsID.BOTH_CLICK],
@@ -53,20 +57,9 @@ def test_klaytn_signValueTransfer(backend, navigator, test_name):
                                                   test_name)
     
     signature: bytes = sol.get_async_response().data
-    address_decoded = address.decode()
-    signature_decoded = hexlify(signature).decode()
-    from_public_key_decoded = hexlify(from_public_key).decode()
-    data_decoded = hexlify(data).decode()
-    print('-------------------------------------------------------')
-    print('address_decoded: ', address_decoded)
-    print('signature_decoded: ', signature_decoded)
-    print('from_public_key_decoded: ', from_public_key_decoded)
-    print('data_decoded: ', data_decoded)
-    print('-------------------------------------------------------')
-
-    result = verify_transaction_signature_from_public_key(data_decoded, signature, from_public_key)
-    print("-----------------RESULT-----------------")
-    print(result)
+    result = verify_transaction_signature_from_public_key(message_bytes, signature, from_public_key)
+    print("-----------------RESULT-----------------", result)
+    assert result
 
 
 # def test_klaytn_signValueTransferMemo(backend, navigator, test_name):

@@ -1,8 +1,7 @@
 from typing import List
 from enum import IntEnum
-import base58
 from ecdsa import VerifyingKey, SECP256k1, BadSignatureError
-import hashlib
+import sha3 
 
 PROGRAM_ID_SYSTEM = "11111111111111111111111111111111"
 
@@ -12,29 +11,24 @@ FAKE_RECENT_BLOCKHASH = "11111111111111111111111111111111"
 ADDRESS_SENDER = ""
 ADDRESS_RECIPIENT = ""
 
-# Verify the signature of a transaction using a public key
-def verify_transaction_signature_from_public_key(transaction: str, signature: str, from_public_key: bytes):
+
+def verify_transaction_signature_from_public_key(transaction: bytes, signature: bytes, from_public_key: bytes):
     try:
-        v, r, s= decode_signature(signature)
-        print('v: ', v)
-        print('r: ', r)
-        print('s: ', s)
-        
-        
-        verifying_key = VerifyingKey.from_string(from_public_key, curve=SECP256k1)
-        print('public_key: ', public_key)
-
-        # Hash the transaction data
-        transaction_hash = hashlib.sha256(transaction).hexdigest()
-
-        # Verify the signature
-        return public_key.verify(signature, transaction_hash.encode())
+        if len(signature) == 65:
+            signature = strip_v_from_signature(signature)
+        verifying_key = VerifyingKey.from_string(from_public_key, curve=SECP256k1)    
+        return verifying_key.verify(signature, transaction, hashfunc=sha3.keccak_256)
     except BadSignatureError:
-        return False   
+        return False  
+     
+def strip_v_from_signature(signature: bytes) -> bytes:
+    return signature[1:]
 
-def decode_signature(signature: str) -> list:
-    return signature[:2], signature[2:66], signature[66:]
-    
+def extract_r_and_s(signature_RS: bytes) -> List[bytes]:
+    r = signature_RS[0:32]
+    s = signature_RS[32:64]
+    return [r, s]
+
 
 class KlaytnTransaction:
     def __init__(self, value: int):
