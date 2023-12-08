@@ -13,7 +13,8 @@ gitignore
 .vagrant
 libsol/target
 myenv
-
+.vscode/settings.json
+.vscode/extensions.json
 # Python
 __pycache__
 .egg
