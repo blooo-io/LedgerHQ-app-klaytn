@@ -11,12 +11,14 @@ from .utils import ROOT_SCREENSHOT_PATH
 from binascii import hexlify
 
 
-
 def perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, ins_value, p1_value=None):
     sol = SolanaClient(backend)
     from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
     print("from_public_key", list(from_public_key))
-    data: bytes = bytearray.fromhex(message_hex)
+    derivation_path_hex = '058000002c80002019800000000000000000000000'
+    derivation_path_bytes = bytearray.fromhex(derivation_path_hex)
+    message_bytes = bytearray.fromhex(message_hex)
+    data: bytes = derivation_path_bytes + message_bytes
 
     if p1_value is not None:
         with sol.send_async_sign_transaction(data, ins_value, p1_value):
@@ -34,10 +36,10 @@ def perform_test_that_verifies_signature(backend, navigator, test_name, message_
                                                       test_name)
 
     signature: bytes = sol.get_async_response().data
-    result = verify_transaction_signature_from_public_key(data, signature, from_public_key)
+    result = verify_transaction_signature_from_public_key(message_bytes, signature, from_public_key)
     print("-----------------RESULT-----------------", result)
     assert result
-    
+
 def test_klaytn_get_public_key(backend, navigator, test_name):
     sol = SolanaClient(backend)
     from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
