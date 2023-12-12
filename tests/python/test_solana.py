@@ -38,7 +38,7 @@ def perform_test_that_verifies_signature(backend, navigator, test_name, message_
     signature: bytes = sol.get_async_response().data
     result = verify_transaction_signature_from_public_key(message_bytes, signature, from_public_key)
     print("-----------------RESULT-----------------", result)
-    assert result
+    assert result, "Signature is not valid"
 
 def test_klaytn_get_public_key(backend, navigator, test_name):
     sol = SolanaClient(backend)
