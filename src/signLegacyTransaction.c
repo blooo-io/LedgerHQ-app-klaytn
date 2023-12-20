@@ -55,14 +55,14 @@ static uint8_t set_result_sign_message() {
             //                                     MIN(4, tmpContent.txContent.vLength));
             // Hardcoded klaytn chain id
             // TODO: replace with parsed v value
-            G_io_apdu_buffer[0] = (0x2019 * 2) + 35;
+            G_io_apdu_buffer[0] = (0x3e9 * 2) + 35;
             if (info & CX_ECCINFO_PARITY_ODD) {
                 G_io_apdu_buffer[0]++;
             }
             if (info & CX_ECCINFO_xGTn) {
                 G_io_apdu_buffer[0] += 2;
             }
-            // uint64_t v = (0x2019 * 2) + 35;
+            // uint64_t v = (0x3e9 * 2) + 35;
             // if (info & CX_ECCINFO_PARITY_ODD) {
             //     v++;
             // }

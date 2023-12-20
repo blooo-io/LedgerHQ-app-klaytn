@@ -189,7 +189,7 @@ void prepareNetworkDisplay() {
     const char *name = "Klaytn";
     if (name == NULL) {
         // No network name found so simply copy the chain ID as the network name.
-        uint64_t chain_id = 0x2019;  // 8217
+        uint64_t chain_id = 0x3e9;  // 1001
         u64_to_string(chain_id, strings.common.network_name, sizeof(strings.common.network_name));
     } else {
         // Network name found, simply copy it.
