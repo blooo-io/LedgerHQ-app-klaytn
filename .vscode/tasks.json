@@ -93,6 +93,17 @@
             "problemMatcher": []
         },
         {
+            "label": "Generate screenshots to validate test (golden run)",
+            "type": "shell",
+            // Runs functional tests inside the docker container (with Qt display disabled) and save screenshots.
+            "command": "docker exec -it ${config:container_name} bash -c 'pytest tests/python/ --tb=short -v --device ${input:model} --golden_run'",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },        
+        {
             "label": "Run functional tests (without logs)",
             "type": "shell",
             // Runs functional tests inside the docker container (with Qt display disabled).
