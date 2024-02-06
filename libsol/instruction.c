@@ -8,6 +8,9 @@
 #include "ethUstream.h"
 #include "sol/parser.h"
 
+const SYMBOL = "KLAY";
+const int DECIMALS = 18;
+
 void instruction_accounts_iterator_init(InstructionAccountsIterator* it,
                                         const MessageHeader* header,
                                         const Instruction* instruction) {
@@ -59,7 +62,11 @@ int parse_system_transfer_instruction(txContext_t* context,
     info->to = context->content->destination;
 
     // Amount
-    info->amount = convertUint256ToUint64(&context->content->value);
+    // info->amount = convertUint256ToUint64(&context->content->value); //0x2b5e3af16b1880000
+    
+    // Display Amount
+
+    info->display_amount = context->content->value; // maybe display_amount.value
 
     // Nonce
     info->nonce = convertUint256ToUint64(&context->content->nonce);
@@ -83,7 +90,7 @@ int print_legacy_transaction_info(const SystemTransferInfo* info) {
     summary_item_set_sized_string(item, "Transaction", &info->method_name);
 
     item = transaction_summary_general_item();
-    summary_item_set_amount(item, "Amount", info->amount);
+    summary_item_set_token_amount(item, "Amount", info->display_amount, SYMBOL, DECIMALS);
 
     item = transaction_summary_general_item();
     summary_item_set_pubkey(item, "Recipient", info->to);
@@ -107,7 +114,7 @@ int print_value_transfer_info(const SystemTransferInfo* info) {
     summary_item_set_sized_string(item, "Transaction", &info->method_name);
 
     item = transaction_summary_general_item();
-    summary_item_set_amount(item, "Amount", info->amount);
+    summary_item_set_token_amount(item, "Amount", info->display_amount, SYMBOL, DECIMALS);
 
     item = transaction_summary_general_item();
     summary_item_set_pubkey(item, "Recipient", info->to);

@@ -2,6 +2,7 @@
 
 #include "sol/parser.h"
 #include "sol/printer.h"
+#include "ethUstream.h"
 
 // TransactionSummary management
 //
@@ -28,7 +29,7 @@
     )
 
 typedef struct TokenAmount {
-    uint64_t value;
+    txInt256_t value;
     const char* symbol;
     uint8_t decimals;
 } TokenAmount;
@@ -75,7 +76,7 @@ int transaction_summary_set_fee_payer_pubkey(const Pubkey* pubkey);
 void summary_item_set_amount(SummaryItem* item, const char* title, uint64_t value);
 void summary_item_set_token_amount(SummaryItem* item,
                                    const char* title,
-                                   uint64_t value,
+                                   txInt256_t value,
                                    const char* symbol,
                                    uint8_t decimals);
 void summary_item_set_i64(SummaryItem* item, const char* title, int64_t value);

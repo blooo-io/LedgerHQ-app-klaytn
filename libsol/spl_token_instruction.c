@@ -496,9 +496,10 @@ int print_spl_token_transfer_info(const SplTokenTransferInfo* info,
     }
 
     const char* symbol = get_token_symbol(info->mint_account);
+    const txInt256_t amount256 = convert_uint64_to_txInt256(info->body.amount);
     summary_item_set_token_amount(item,
                                   "Transfer tokens",
-                                  info->body.amount,
+                                  amount256,
                                   symbol,
                                   info->body.decimals);
 
@@ -522,9 +523,10 @@ static int print_spl_token_approve_info(const SplTokenApproveInfo* info,
 
     item = transaction_summary_general_item();
     const char* symbol = get_token_symbol(info->mint_account);
+    const txInt256_t amount256= convert_uint64_to_txInt256(info->body.amount);
     summary_item_set_token_amount(item,
                                   "Allowance",
-                                  info->body.amount,
+                                  amount256,
                                   symbol,
                                   info->body.decimals);
 
@@ -585,9 +587,10 @@ static int print_spl_token_mint_to_info(const SplTokenMintToInfo* info,
 
     item = transaction_summary_primary_item();
     const char* symbol = get_token_symbol(info->mint_account);
+    const txInt256_t amount256= convert_uint64_to_txInt256(info->body.amount);
     summary_item_set_token_amount(item,
                                   "Mint tokens",
-                                  info->body.amount,
+                                  amount256,
                                   symbol,
                                   info->body.decimals);
 
@@ -612,9 +615,10 @@ static int print_spl_token_burn_info(const SplTokenBurnInfo* info,
 
     item = transaction_summary_primary_item();
     const char* symbol = get_token_symbol(info->mint_account);
+    const txInt256_t amount256= convert_uint64_to_txInt256(info->body.amount);
     summary_item_set_token_amount(item,
                                   "Burn tokens",
-                                  info->body.amount,
+                                  amount256,
                                   symbol,
                                   info->body.decimals);
 
