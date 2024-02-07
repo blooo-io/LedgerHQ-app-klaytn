@@ -61,54 +61,54 @@ def test_klaytn_signValueTransferMemo(backend, navigator, test_name):
     message_hex = 'f846b83ff83d1019850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8568656c6c6f8203e98080'
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_VALUE_TRANSFER_MEMO)
 
-def test_klaytn_signSmartContractDeploy(backend, navigator, test_name):
-    message_hex = ("f2aceb2819850ba43b7400830493e08001946694d467b419b36fb719e851cd65d54205df75558568656c6c6f80808203e98080")
-    perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_SMART_CONTRACT_DEPLOY)
-
-def test_klaytn_signSmartContractExecution(backend, navigator, test_name):
-    message_hex = ("f846b83ff83d3019850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558568656c6c6f8203e98080")
-    perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_SMART_CONTRACT_EXECUTION)
-
 def test_klaytn_signCancel(backend, navigator, test_name):
     message_hex = ("e8a2e13819850ba43b7400830493e0946e93a3acfbadf457f29fb0e57fa42274004c32ea8203e98080")
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_CANCEL)
 
+def test_klaytn_signSmartContractDeploy(backend, navigator, test_name):
+    message_hex = ("f2aceb2819850ba43b7400830493e08001946e93a3acfbadf457f29fb0e57fa42274004c32ea8568656c6c6f80808203e98080")
+    perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_SMART_CONTRACT_DEPLOY)
+
+def test_klaytn_signSmartContractExecution(backend, navigator, test_name):
+    message_hex = ("f846b83ff83d3019850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8568656c6c6f8203e98080")
+    perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_SMART_CONTRACT_EXECUTION)
+
+def test_klaytn_signFeeDelegatedCancel(backend, navigator, test_name):
+    message_hex = ("e8a2e13919850ba43b7400830493e0946e93a3acfbadf457f29fb0e57fa42274004c32ea8203e98080")
+    perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_CANCEL, P1_FEE_DELEGATED)
+
+def test_klaytn_signFeeDelegatedCancelWithRatio(backend, navigator, test_name):
+    message_hex = ("e9a3e23a19850ba43b7400830493e0946e93a3acfbadf457f29fb0e57fa42274004c32ea1e8203e98080")
+    perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_CANCEL, P1_FEE_DELEGATED_WITH_RATIO)
+
 def test_klaytn_signFeeDelegatedValueTransfer(backend, navigator, test_name):
-    message_hex = ("f83fb838f70919850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558203e98080")
+    message_hex = ("f83fb838f70919850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8203e98080")
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_VALUE_TRANSFER, P1_FEE_DELEGATED)
 
 def test_klaytn_signFeeDelegatedValueTransferMemo(backend, navigator, test_name):
-    message_hex = ("f846b83ff83d1119850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558568656c6c6f8203e98080")
+    message_hex = ("f846b83ff83d1119850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8568656c6c6f8203e98080")
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_VALUE_TRANSFER_MEMO, P1_FEE_DELEGATED)
 
 def test_klaytn_signFeeDelegatedSmartContractDeploy(backend, navigator, test_name):
-    message_hex = ("f846b83ff83d1119850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558568656c6c6f8203e98080")
+    message_hex = ("f846b83ff83d1119850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8568656c6c6f8203e98080")
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_SMART_CONTRACT_DEPLOY, P1_FEE_DELEGATED)
 
 def test_klaytn_signFeeDelegatedSmartContractExecution(backend, navigator, test_name):
-    message_hex = ("f846b83ff83d3119850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558568656c6c6f8203e98080")
+    message_hex = ("f846b83ff83d3119850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8568656c6c6f8203e98080")
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_SMART_CONTRACT_EXECUTION, P1_FEE_DELEGATED)
 
-def test_klaytn_signFeeDelegatedCancel(backend, navigator, test_name):
-    message_hex = ("e8a2e13919850ba43b7400830493e0946694d467b419b36fb719e851cd65d54205df75558203e98080")
-    perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_CANCEL, P1_FEE_DELEGATED)
-
 def test_klaytn_signFeeDelegatedValueTransferWithRatio(backend, navigator, test_name):
-    message_hex = ("f841b83af8380a19850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75551e8203e98080")
+    message_hex = ("f841b83af8380a19850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea1e8203e98080")
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_VALUE_TRANSFER, P1_FEE_DELEGATED_WITH_RATIO)
 
 def test_klaytn_signFeeDelegatedValueTransferMemoWithRatio(backend, navigator, test_name):
-    message_hex = ("f847b840f83e1219850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558568656c6c6f1e8203e98080")
+    message_hex = ("f847b840f83e1219850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8568656c6c6f1e8203e98080")
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_VALUE_TRANSFER_MEMO, P1_FEE_DELEGATED_WITH_RATIO)
 
 def test_klaytn_signFeeDelegatedSmartContractDeployWithRatio(backend, navigator, test_name):
-    message_hex = ("f3adec2a19850ba43b7400830493e08001946694d467b419b36fb719e851cd65d54205df75558568656c6c6f801e808203e98080")
+    message_hex = ("f3adec2a19850ba43b7400830493e08001946e93a3acfbadf457f29fb0e57fa42274004c32ea8568656c6c6f801e808203e98080")
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_SMART_CONTRACT_DEPLOY, P1_FEE_DELEGATED_WITH_RATIO)
 
 def test_klaytn_signFeeDelegatedSmartContractExecutionWithRatio(backend, navigator, test_name):
-    message_hex = ("f847b840f83e3219850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946694d467b419b36fb719e851cd65d54205df75558568656c6c6f1e8203e98080")
+    message_hex = ("f847b840f83e3219850ba43b7400830493e0940ee56b604c869e3792c99e35c1c424f88f87dc8a01946e93a3acfbadf457f29fb0e57fa42274004c32ea8568656c6c6f1e8203e98080")
     perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_SMART_CONTRACT_EXECUTION, P1_FEE_DELEGATED_WITH_RATIO)
-
-def test_klaytn_signFeeDelegatedCancelWithRatio(backend, navigator, test_name):
-    message_hex = ("e9a3e23a19850ba43b7400830493e0946694d467b419b36fb719e851cd65d54205df75551e8203e98080")
-    perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, INS.INS_SIGN_CANCEL, P1_FEE_DELEGATED_WITH_RATIO)
