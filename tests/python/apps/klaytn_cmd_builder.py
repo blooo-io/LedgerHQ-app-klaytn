@@ -18,8 +18,8 @@ def verify_transaction_signature_from_public_key(transaction: bytes, signature: 
             signature = strip_v_from_signature(signature)
         verifying_key = VerifyingKey.from_string(from_public_key, curve=SECP256k1)    
         return verifying_key.verify(signature, transaction, hashfunc=sha3.keccak_256)
-    except BadSignatureError:
-        return False  
+    except Exception as e:
+        raise e 
      
 def strip_v_from_signature(signature: bytes) -> bytes:
     return signature[1:]
