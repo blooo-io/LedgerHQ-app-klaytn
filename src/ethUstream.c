@@ -670,6 +670,13 @@ static bool processSmartContractExecution(txContext_t *context) {
         case SMART_CONTRACT_EXECUTION_RLP_RATIO:
             processRatio(context);
             break;
+        case SMART_CONTRACT_EXECUTION_RLP_CHAIN_ID:
+            processChainID(context);
+            break;
+        case SMART_CONTRACT_EXECUTION_RLP_ZERO1:
+        case SMART_CONTRACT_EXECUTION_RLP_ZERO2:
+            processAndDiscard(context);
+            break;
         default:
             PRINTF("Invalid RLP decoder context\n");
             return true;
@@ -703,6 +710,13 @@ static bool processCancel(txContext_t *context) {
             break;
         case CANCEL_RLP_RATIO:
             processRatio(context);
+            break;
+        case CANCEL_RLP_CHAIN_ID:
+            processChainID(context);
+            break;
+        case CANCEL_RLP_ZERO1:
+        case CANCEL_RLP_ZERO2:
+            processAndDiscard(context);
             break;
         default:
             PRINTF("Invalid RLP decoder context\n");
