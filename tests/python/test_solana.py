@@ -2,7 +2,7 @@ from ragger.backend import RaisePolicy
 from ragger.navigator import NavInsID
 from ragger.utils import RAPDU
 
-from .apps.solana import SolanaClient, ErrorType, INS, P1_FEE_DELEGATED, P1_FEE_DELEGATED_WITH_RATIO
+from .apps.solana import SolanaClient, ErrorType, INS, P1_FEE_DELEGATED, P1_FEE_DELEGATED_WITH_RATIO, P1_BASIC
 from .apps.solana_cmd_builder import SystemInstructionTransfer, Message
 from .apps.klaytn_cmd_builder import verify_transaction_signature_from_public_key
 from .apps.solana_utils import FOREIGN_PUBLIC_KEY, FOREIGN_PUBLIC_KEY_2, AMOUNT, AMOUNT_2, SOL_PACKED_DERIVATION_PATH, SOL_PACKED_DERIVATION_PATH_2, KLAYTN_DERIVATION_PATH
@@ -11,7 +11,7 @@ from .utils import ROOT_SCREENSHOT_PATH
 from binascii import hexlify
 
 
-def perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, ins_value, p1_value=None):
+def perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, ins_value, p1_value=P1_BASIC):
     sol = SolanaClient(backend)
     from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
     print("from_public_key", list(from_public_key))
@@ -20,20 +20,12 @@ def perform_test_that_verifies_signature(backend, navigator, test_name, message_
     message_bytes = bytearray.fromhex(message_hex)
     data: bytes = derivation_path_bytes + message_bytes
 
-    if p1_value is not None:
-        with sol.send_async_sign_transaction(data, ins_value, p1_value):
-            navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
-                                                      [NavInsID.BOTH_CLICK],
-                                                      "Approve",
-                                                      ROOT_SCREENSHOT_PATH,
-                                                      test_name)
-    else:
-        with sol.send_async_sign_transaction(data, ins_value):
-            navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
-                                                      [NavInsID.BOTH_CLICK],
-                                                      "Approve",
-                                                      ROOT_SCREENSHOT_PATH,
-                                                      test_name)
+    with sol.send_async_sign_transaction(data, ins_value, p1_value):
+        navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                    [NavInsID.BOTH_CLICK],
+                                                    "Approve",
+                                                    ROOT_SCREENSHOT_PATH,
+                                                    test_name)
 
     signature: bytes = sol.get_async_response().data
     result = verify_transaction_signature_from_public_key(message_bytes, signature, from_public_key)
