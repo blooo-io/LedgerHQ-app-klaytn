@@ -111,10 +111,10 @@ $(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
 endif
 
 CC      := $(CLANGPATH)clang
-CFLAGS  += -O3 -Os
+CFLAGS  += -ggdb -O0 #-O3 -Os
 AS      := $(GCCPATH)arm-none-eabi-gcc
 LD      := $(GCCPATH)arm-none-eabi-gcc
-LDFLAGS += -O3 -Os
+LDFLAGS += #-O3 -Os
 LDLIBS  += -lm -lgcc -lc
 
 include $(BOLOS_SDK)/Makefile.glyphs

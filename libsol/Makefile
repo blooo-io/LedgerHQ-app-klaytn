@@ -19,7 +19,7 @@ ifeq ($(COVERAGE),1)
 endif
 
 debug_CFLAGS = -g -fsanitize=address -fsanitize=undefined
-release_CFLAGS = -O2
+release_CFLAGS = #-O2
 
 libsol_source_files = $(filter-out %_test.c,$(wildcard *.c))
 libsol_object_files = $(patsubst %.c,$o/%.o,$(libsol_source_files))

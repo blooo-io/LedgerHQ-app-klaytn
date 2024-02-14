@@ -1,0 +1,29 @@
+display/x txContext->txType
+display/x txContext->commandLength
+display/x *txContext->workBuffer
+display/x txContext->rlpBuffer
+display/x txContext->currentField
+display/x txContext->currentFieldPos
+display/x txContext->currentFieldLength
+display/x global_sha3.block 
+
+
+info breakpoint
+
+b processValueTransfer
+b signLegacyTransaction.c:189
+b ethUstream.c:806
+b set_result_sign_message
+
+
+
+------------------
+display rx
+display *tx
+display *flags
+
+display/x G_io_apdu_buffer
+display/x G_command
+display/x txContext->content
+b apdu_handle_message
+b handleApdu
