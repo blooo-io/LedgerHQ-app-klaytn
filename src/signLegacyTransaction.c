@@ -51,26 +51,16 @@ static uint8_t set_result_sign_message() {
                                    &sig_len,
                                    &info);
             // Taking only the 4 highest bytes
-            // uint32_t v = (uint32_t) u64_from_BE(tmpContent.txContent.v,
-            //                                     MIN(4, tmpContent.txContent.vLength));
-            // Hardcoded klaytn chain id
-            // TODO: replace with parsed v value
-            G_io_apdu_buffer[0] = (0x3e9 * 2) + 35;
+            uint32_t v = (uint32_t) u64_from_BE(txContext.content->chainID.value,
+                                                MIN(4, txContext.content->chainID.length));
+
+            G_io_apdu_buffer[0] = (v * 2) + 35;
             if (info & CX_ECCINFO_PARITY_ODD) {
                 G_io_apdu_buffer[0]++;
             }
             if (info & CX_ECCINFO_xGTn) {
                 G_io_apdu_buffer[0] += 2;
             }
-            // uint64_t v = (0x3e9 * 2) + 35;
-            // if (info & CX_ECCINFO_PARITY_ODD) {
-            //     v++;
-            // }
-            // if (info & CX_ECCINFO_xGTn) {
-            //     v += 2;
-            // }
-            // G_io_apdu_buffer[0] = ((v >> 8) & 0xff);
-            // G_io_apdu_buffer[1] = (v & 0xff);
             format_signature_out(signature);
         }
         CATCH_OTHER(e) {
