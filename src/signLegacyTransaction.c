@@ -171,7 +171,6 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
             THROW(0x6501);
             break;
     }
-    // TODO: replace 0 with fee delegation flag
     txResult = processTx(&txContext, workBuffer, dataLength, 0);
     if (txResult == USTREAM_FINISHED) {
         finalizeParsing(false);

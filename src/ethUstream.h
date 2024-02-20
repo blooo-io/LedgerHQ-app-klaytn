@@ -90,9 +90,9 @@ typedef enum rlpLegacyTxField_e {
     LEGACY_RLP_TO,
     LEGACY_RLP_VALUE,
     LEGACY_RLP_DATA,
-    LEGACY_RLP_V,
-    LEGACY_RLP_R,
-    LEGACY_RLP_S,
+    LEGACY_RLP_CHAIN_ID,
+    LEGACY_RLP_ZERO1,
+    LEGACY_RLP_ZERO2,
     LEGACY_RLP_DONE
 } rlpLegacyTxField_e;
 

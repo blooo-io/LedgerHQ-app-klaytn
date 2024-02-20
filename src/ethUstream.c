@@ -467,12 +467,12 @@ static bool processLegacyTx(txContext_t *context) {
         case LEGACY_RLP_DATA:
             processData(context);
             break;
-        case LEGACY_RLP_R:
-        case LEGACY_RLP_S:
-            processAndDiscard(context);
+        case LEGACY_RLP_CHAIN_ID:
+            processChainID(context);
             break;
-        case LEGACY_RLP_V:
-            processV(context);
+        case LEGACY_RLP_ZERO1:
+        case LEGACY_RLP_ZERO2:
+            processAndDiscard(context);
             break;
         default:
             PRINTF("Invalid RLP decoder context\n");
@@ -814,7 +814,7 @@ static parserStatus_e processTxInternal(txContext_t *context) {
         // `USTREAM_FINISHED` preemptively. Case number 2 should NOT happen as it is up to
         // `ledgerjs` to correctly decrease the size of the APDU (`commandLength`) so that this
         // situation doesn't happen.
-        if ((context->txType == LEGACY && context->currentField == LEGACY_RLP_V) &&
+        if ((context->txType == LEGACY && context->currentField == LEGACY_RLP_CHAIN_ID) &&
             (context->commandLength == 0)) {
             context->content->vLength = 0;
             PRINTF("finished\n");
