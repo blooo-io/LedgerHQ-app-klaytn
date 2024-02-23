@@ -55,7 +55,10 @@ static __attribute__((no_instrument_function)) inline int allzeroes(const void *
     return 1;
 }
 
-static inline bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out, size_t out_len) {
+static inline bool uint256_to_decimal(const uint8_t *value,
+                                      size_t value_len,
+                                      char *out,
+                                      size_t out_len) {
     if (value_len > INT256_LENGTH) {
         // value len is bigger than INT256_LENGTH ?!
         return false;
@@ -98,12 +101,11 @@ static inline bool uint256_to_decimal(const uint8_t *value, size_t value_len, ch
     return true;
 }
 
-
 static inline bool adjustDecimals(const char *src,
-                    size_t srcLength,
-                    char *target,
-                    size_t targetLength,
-                    uint8_t decimals) {
+                                  size_t srcLength,
+                                  char *target,
+                                  size_t targetLength,
+                                  uint8_t decimals) {
     uint32_t startOffset;
     uint32_t lastZeroOffset = 0;
     uint32_t offset = 0;
@@ -166,13 +168,12 @@ static inline bool adjustDecimals(const char *src,
     return true;
 }
 
-
 static inline bool amountToString(const uint8_t *amount,
-                    uint8_t amount_size,
-                    uint8_t decimals,
-                    const char *ticker,
-                    char *out_buffer,
-                    size_t out_buffer_size) {
+                                  uint8_t amount_size,
+                                  uint8_t decimals,
+                                  const char *ticker,
+                                  char *out_buffer,
+                                  size_t out_buffer_size) {
     char tmp_buffer[100] = {0};
 
     if (uint256_to_decimal(amount, amount_size, tmp_buffer, sizeof(tmp_buffer)) == false) {
@@ -181,8 +182,7 @@ static inline bool amountToString(const uint8_t *amount,
 
     uint8_t amount_len = strnlen(tmp_buffer, sizeof(tmp_buffer));
     uint8_t ticker_len = strnlen(ticker, 11);
-    uint32_t copySize = MIN(out_buffer_size, ticker_len)
-    memcpy(out_buffer, ticker, copySize);
+    uint32_t copySize = MIN(out_buffer_size, ticker_len) memcpy(out_buffer, ticker, copySize);
     if (ticker_len > 0) {
         out_buffer[ticker_len++] = ' ';
     }

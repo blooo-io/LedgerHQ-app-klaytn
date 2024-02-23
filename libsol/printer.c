@@ -63,17 +63,16 @@ int print_token_amount(uint64_t amount,
 }
 
 int print_token_amount_256(txInt256_t amount,
-                       const char *const asset,
-                       uint8_t decimals,
-                       char *out,
-                       const size_t out_length) {
+                           const char *const asset,
+                           uint8_t decimals,
+                           char *out,
+                           const size_t out_length) {
     char temp[100] = {0};
 
-    if(!amountToString(amount.value, amount.length, decimals, asset, temp, out_length)) {
+    if (!amountToString(amount.value, amount.length, decimals, asset, temp, out_length)) {
         return 1;
     }
     return print_sized_string(&((SizedString){strlen(temp), temp}), out, out_length);
-   
 }
 
 #define KLAY_DECIMALS 18

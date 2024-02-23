@@ -158,10 +158,10 @@ static int transaction_summary_update_display_for_item(const SummaryItem* item,
             break;
         case SummaryItemTokenAmount:
             BAIL_IF(print_token_amount_256(item->token_amount.value,
-                                       item->token_amount.symbol,
-                                       item->token_amount.decimals,
-                                       G_transaction_summary_text,
-                                       TEXT_BUFFER_LENGTH));
+                                           item->token_amount.symbol,
+                                           item->token_amount.decimals,
+                                           G_transaction_summary_text,
+                                           TEXT_BUFFER_LENGTH));
             break;
         case SummaryItemI64:
             BAIL_IF(print_i64(item->i64, G_transaction_summary_text, TEXT_BUFFER_LENGTH));

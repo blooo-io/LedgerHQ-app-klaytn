@@ -191,7 +191,8 @@ void prepareNetworkDisplay() {
         // No network name found so simply copy the chain ID as the network name.
 
         uint64_t chain_id = u64_from_BE(txContext.content->chainID.value,
-                                        MIN(4, txContext.content->chainID.length));;  // 1001
+                                        MIN(4, txContext.content->chainID.length));
+        ;  // 1001
         u64_to_string(chain_id, strings.common.network_name, sizeof(strings.common.network_name));
     } else {
         // Network name found, simply copy it.

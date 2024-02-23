@@ -70,15 +70,27 @@ typedef customStatus_e (*ustreamProcess_t)(struct txContext_t *context);
 // First variant of every Tx enum.
 #define RLP_NONE 0
 
-#define PARSING_IS_DONE(ctx)                                                                      \
-    ((ctx->txType == LEGACY && ctx->currentField == LEGACY_RLP_DONE) ||                           \
-     (ctx->txType == EIP2930 && ctx->currentField == EIP2930_RLP_DONE) ||                         \
-     (ctx->txType == EIP1559 && ctx->currentField == EIP1559_RLP_DONE) ||                         \
-     ((ctx->txType == VALUE_TRANSFER || ctx->txType == FEE_DELEGATED_VALUE_TRANSFER || ctx->txType == PARTIAL_FEE_DELEGATED_VALUE_TRANSFER) &&  ctx->currentField == VALUE_TRANSFER_RLP_DONE) ||           \
-     ((ctx->txType == VALUE_TRANSFER_MEMO || ctx->txType == FEE_DELEGATED_VALUE_TRANSFER_MEMO || ctx->txType == PARTIAL_FEE_DELEGATED_VALUE_TRANSFER_MEMO) && ctx->currentField == VALUE_TRANSFER_MEMO_RLP_DONE) || \
-     ((ctx->txType == SMART_CONTRACT_DEPLOY || ctx->txType == FEE_DELEGATED_SMART_CONTRACT_DEPLOY || ctx->txType == PARTIAL_FEE_DELEGATED_SMART_CONTRACT_DEPLOY) && ctx->currentField == SMART_CONTRACT_DEPLOY_RLP_DONE) ||                                     \
-     ((ctx->txType == SMART_CONTRACT_EXECUTION || ctx->txType == FEE_DELEGATED_SMART_CONTRACT_EXECUTION || ctx->txType == PARTIAL_FEE_DELEGATED_SMART_CONTRACT_EXECUTION) && ctx->currentField == SMART_CONTRACT_EXECUTION_RLP_DONE) ||                                  \
-     ((ctx->txType == CANCEL || ctx->txType == FEE_DELEGATED_CANCEL || ctx->txType == PARTIAL_FEE_DELEGATED_CANCEL) && ctx->currentField == CANCEL_RLP_DONE))
+#define PARSING_IS_DONE(ctx)                                                                     \
+    ((ctx->txType == LEGACY && ctx->currentField == LEGACY_RLP_DONE) ||                          \
+     (ctx->txType == EIP2930 && ctx->currentField == EIP2930_RLP_DONE) ||                        \
+     (ctx->txType == EIP1559 && ctx->currentField == EIP1559_RLP_DONE) ||                        \
+     ((ctx->txType == VALUE_TRANSFER || ctx->txType == FEE_DELEGATED_VALUE_TRANSFER ||           \
+       ctx->txType == PARTIAL_FEE_DELEGATED_VALUE_TRANSFER) &&                                   \
+      ctx->currentField == VALUE_TRANSFER_RLP_DONE) ||                                           \
+     ((ctx->txType == VALUE_TRANSFER_MEMO || ctx->txType == FEE_DELEGATED_VALUE_TRANSFER_MEMO || \
+       ctx->txType == PARTIAL_FEE_DELEGATED_VALUE_TRANSFER_MEMO) &&                              \
+      ctx->currentField == VALUE_TRANSFER_MEMO_RLP_DONE) ||                                      \
+     ((ctx->txType == SMART_CONTRACT_DEPLOY ||                                                   \
+       ctx->txType == FEE_DELEGATED_SMART_CONTRACT_DEPLOY ||                                     \
+       ctx->txType == PARTIAL_FEE_DELEGATED_SMART_CONTRACT_DEPLOY) &&                            \
+      ctx->currentField == SMART_CONTRACT_DEPLOY_RLP_DONE) ||                                    \
+     ((ctx->txType == SMART_CONTRACT_EXECUTION ||                                                \
+       ctx->txType == FEE_DELEGATED_SMART_CONTRACT_EXECUTION ||                                  \
+       ctx->txType == PARTIAL_FEE_DELEGATED_SMART_CONTRACT_EXECUTION) &&                         \
+      ctx->currentField == SMART_CONTRACT_EXECUTION_RLP_DONE) ||                                 \
+     ((ctx->txType == CANCEL || ctx->txType == FEE_DELEGATED_CANCEL ||                           \
+       ctx->txType == PARTIAL_FEE_DELEGATED_CANCEL) &&                                           \
+      ctx->currentField == CANCEL_RLP_DONE))
 
 typedef enum rlpLegacyTxField_e {
     LEGACY_RLP_NONE = RLP_NONE,
@@ -167,6 +179,7 @@ typedef enum rlpSmartContractExecutionTxField_e {
     SMART_CONTRACT_EXECUTION_RLP_ZERO1,
     SMART_CONTRACT_EXECUTION_RLP_ZERO2,
     SMART_CONTRACT_EXECUTION_RLP_DONE
+
 } rlpSmartContractExecutionTxField_e;
 
 typedef enum rlpCancelTxField_e {
