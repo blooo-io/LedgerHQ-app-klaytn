@@ -17,10 +17,10 @@ int print_token_amount(uint64_t amount,
                        size_t out_length);
 
 int print_token_amount_256(txInt256_t amount,
-                       const char *const asset,
-                       uint8_t decimals,
-                       char *out,
-                       const size_t out_length);
+                           const char *const asset,
+                           uint8_t decimals,
+                           char *out,
+                           const size_t out_length);
 
 int print_amount(uint64_t amount, char *out, size_t out_length);
 
