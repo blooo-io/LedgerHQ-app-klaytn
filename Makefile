@@ -43,7 +43,7 @@ APPVERSION_N = 0
 APPVERSION_P = 0
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
-ifeq ($(TARGET_NAME),TARGET_NANOS)
+ifeq ($(TARGET_NAME),TARGET_NANOSP)
     ICONNAME=icons/nanos_app_solana.gif
 else
     ICONNAME=icons/nanox_app_solana.gif

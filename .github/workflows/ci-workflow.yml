@@ -15,10 +15,11 @@ jobs:
         sdk:
           # - path: $NANOS_SDK
           #   name: nanos
-          - path: $NANOX_SDK
-            name: nanox
           - path: $NANOSP_SDK
             name: nanosp
+          - path: $NANOX_SDK
+            name: nanox
+
 
     runs-on: ubuntu-latest
 
@@ -32,13 +33,13 @@ jobs:
       - name: Build application
         run: |
           make BOLOS_SDK=${{ matrix.sdk.path }} DEBUG=1
-          cp bin/app.elf bin/solana_${{ matrix.sdk.name }}.elf
+          cp bin/app.elf bin/klaytn_${{ matrix.sdk.name }}.elf
 
       - name: Upload application binaries
         uses: actions/upload-artifact@v3
         with:
-          name: solana_binaries
-          path: ./bin/solana_${{ matrix.sdk.name }}.elf
+          name: klaytn_binaries
+          path: ./bin/klaytn_${{ matrix.sdk.name }}.elf
           if-no-files-found: error
 
   job_scan_build:
@@ -60,7 +61,7 @@ jobs:
           path: scan-build
 
   python_tests_nano:
-    name: NanoS Ragger tests
+    name: NanoSP Ragger tests
     needs: build_application
     runs-on: ubuntu-latest
     steps:

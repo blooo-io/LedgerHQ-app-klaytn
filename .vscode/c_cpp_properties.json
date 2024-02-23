@@ -1,11 +1,11 @@
 {
   "env": {
-      "BOLOS_SDK": "/opt/nanos-secure-sdk",
+      "BOLOS_SDK": "/opt/nanosp-secure-sdk",
       "BOLOS_ENV": "/opt/bolos-devenv"
   },
   "configurations": [
       {
-          "name": "Nano S",
+          "name": "Nano S Plus",
           "includePath": [
               "/usr/include",
               "${workspaceFolder}/src",
@@ -29,7 +29,7 @@
               "MAJOR_VERSION=1",
               "MINOR_VERSION=0",
               "PATCH_VERSION=0",
-              "IO_SEPROXYHAL_BUFFER_SIZE_B=128",
+              "IO_SEPROXYHAL_BUFFER_SIZE_B=300",
               "HAVE_UX_FLOW",
               "DEBUG=1",
               "HAVE_PRINTF",
