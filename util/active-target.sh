@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-declare -r nanos_sdk=NANOS_SDK
+# declare -r nanos_sdk=NANOS_SDK
 declare -r nanox_sdk=NANOX_SDK
 declare -r nanosp_sdk=NANOSP_SDK
 
@@ -8,9 +8,9 @@ sdk_mnemonic_to_bolos_variable() {
   local -r sdk_mnemonic="${1:?}"
   local bolos_sdk_var=
   case "$sdk_mnemonic" in
-    s)
-      bolos_sdk_var="$nanos_sdk"
-      ;;
+    # s)
+    #   bolos_sdk_var="$nanos_sdk"
+    #   ;;
     x)
       bolos_sdk_var="$nanox_sdk"
       ;;
