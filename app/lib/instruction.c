@@ -52,7 +52,7 @@ uint64_t convertUint256ToUint64(const txInt256_t* bytes) {
 const Pubkey *convertToPubkey(const uint8_t rawKey[20]) {
     static Pubkey pubkey;
     // Populate pubkey fields using rawKey data
-    memcpy(pubkey.data, rawKey, sizeof(pubkey.data)); // Copy rawKey into pubkey.key
+    memcpy(pubkey->data, rawKey, sizeof(pubkey->data)); // Copy rawKey into pubkey->data
     return &pubkey;
 }
 
