@@ -66,7 +66,9 @@ int parse_system_transfer_instruction(txContext_t* context,
     // info->amount = convertUint256ToUint64(&context->content->value); //0x2b5e3af16b1880000
 
     // Display Amount
-    memcpy(info->display_amount.value,context->content->value.value,context->content->value.length);
+    memcpy(info->display_amount.value,
+           context->content->value.value,
+           context->content->value.length);
     // info->display_amount.value = context->content->value.value;  // maybe display_amount.value
 
     // Nonce

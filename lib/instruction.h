@@ -79,3 +79,4 @@ int print_legacy_transaction_info(const SystemTransferInfo* info);
 int print_value_transfer_info(const SystemTransferInfo* info);
 int print_smart_contract_deploy_info(const SystemTransferInfo* info);
 int print_smart_contract_execution_info(const SystemTransferInfo* info);
+int print_cancel_info(const SystemTransferInfo* info);
