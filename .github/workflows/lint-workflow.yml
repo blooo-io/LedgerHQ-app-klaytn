@@ -24,10 +24,10 @@ jobs:
           extensions: 'h,c'
           clangFormatVersion: 12.0.0
 
-      - name: Lint libsol
+      - name: Lint lib
         uses: DoozyX/clang-format-lint-action@v0.13
         with:
-          source: './libsol'
+          source: './lib'
           extensions: 'h,c'
           clangFormatVersion: 12.0.0
 
@@ -45,4 +45,4 @@ jobs:
         # Use Config file when the github action supports it
         builtin: clear,rare
         check_filenames: true
-        skip: ./libsol,./tests
+        skip: ./lib,./tests

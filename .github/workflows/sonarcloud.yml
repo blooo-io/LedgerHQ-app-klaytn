@@ -47,7 +47,7 @@ jobs:
           echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
       # TODO: To be enabled after adding dependencies to the Makefile
       # - name: Generate code coverage
-      #   working-directory: libsol
+      #   working-directory: lib
       #   run: |
       #     make COVERAGE=1
       #     gcovr --root .. --sonarqube ../coverage.xml

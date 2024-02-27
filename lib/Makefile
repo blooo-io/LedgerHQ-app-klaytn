@@ -7,7 +7,7 @@ test_files := $(wildcard *_test.c)
 test_exes = $(patsubst %.c,$o/%,$(test_files))
 test_oks = $(addsuffix .ok,$(test_exes))
 
-all: $(test_oks) $(test_exes) $o/libsol.a
+all: $(test_oks) $(test_exes) $o/lib.a
 
 CFLAGS += -Werror -Wall -Wextra -pedantic -Wshadow -Wcast-qual -Wcast-align -Wno-unused-parameter
 CFLAGS += -fPIC
@@ -21,11 +21,11 @@ endif
 debug_CFLAGS = -g -fsanitize=address -fsanitize=undefined
 release_CFLAGS = -O2
 
-libsol_source_files = $(filter-out %_test.c,$(wildcard *.c))
-libsol_object_files = $(patsubst %.c,$o/%.o,$(libsol_source_files))
-libsol_depend_files = $(patsubst %.c,$o/%.d,$(libsol_source_files))
+lib_source_files = $(filter-out %_test.c,$(wildcard *.c))
+lib_object_files = $(patsubst %.c,$o/%.o,$(lib_source_files))
+lib_depend_files = $(patsubst %.c,$o/%.d,$(lib_source_files))
 
--include $(libsol_depend_files)
+-include $(lib_depend_files)
 
 $o/%.o: %.c
 	@echo "==> Compile $<"
@@ -41,14 +41,14 @@ $o/%_test.ok: $o/%_test
 	@$<
 	@touch $@
 
-$o/%_test: $o/%_test.o $o/libsol.a
+$o/%_test: $o/%_test.o $o/lib.a
 	@echo "==> Link test $@"
 	$(CC) $(CFLAGS) -o $@ $^
 
 #
-# libsol
+# lib
 #
-$o/libsol.a: $(libsol_object_files)
+$o/lib.a: $(lib_object_files)
 	@echo "==> Create static library $@"
 	ar rcs $@ $^
 

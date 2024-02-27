@@ -27,7 +27,7 @@ void summary_item_set_amount(SummaryItem* item, const char* title, uint64_t valu
 
 void summary_item_set_token_amount(SummaryItem* item,
                                    const char* title,
-                                   uint64_t value,
+                                   txInt256_t value,
                                    const char* symbol,
                                    uint8_t decimals) {
     item->kind = SummaryItemTokenAmount;
@@ -157,11 +157,11 @@ static int transaction_summary_update_display_for_item(const SummaryItem* item,
             BAIL_IF(print_amount(item->u64, G_transaction_summary_text, BASE58_PUBKEY_LENGTH));
             break;
         case SummaryItemTokenAmount:
-            BAIL_IF(print_token_amount(item->token_amount.value,
-                                       item->token_amount.symbol,
-                                       item->token_amount.decimals,
-                                       G_transaction_summary_text,
-                                       TEXT_BUFFER_LENGTH));
+            BAIL_IF(print_token_amount_256(item->token_amount.value,
+                                           item->token_amount.symbol,
+                                           item->token_amount.decimals,
+                                           G_transaction_summary_text,
+                                           TEXT_BUFFER_LENGTH));
             break;
         case SummaryItemI64:
             BAIL_IF(print_i64(item->i64, G_transaction_summary_text, TEXT_BUFFER_LENGTH));

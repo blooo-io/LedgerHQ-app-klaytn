@@ -10,7 +10,7 @@ before_install:
 
 script:
   - source ./prepare-devenv.sh s
-  - make -C libsol
+  - make -C lib
   - make
   - make -f host.mk release
   - export PATH="${HOME}/.cargo/bin:${PATH}"

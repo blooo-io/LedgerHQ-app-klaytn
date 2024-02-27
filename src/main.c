@@ -201,7 +201,7 @@ unsigned char io_event(unsigned char channel) {
 
         case SEPROXYHAL_TAG_TICKER_EVENT:
             UX_TICKER_EVENT(G_io_seproxyhal_spi_buffer, {
-#if !defined(TARGET_NANOX) && !defined(TARGET_NANOS2)
+#if !defined(TARGET_NANOX) && !defined(TARGET_NANOSP)
                 if (UX_ALLOWED) {
                     if (ux_step_count) {
                         // prepare next screen
@@ -265,7 +265,7 @@ void nv_app_state_init() {
     if (N_storage.initialized != 0x01) {
         internalStorage_t storage;
         storage.settings.allow_blind_sign = BlindSignDisabled;
-#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
+#if defined(TARGET_NANOX) || defined(TARGET_NANOSP)
         storage.settings.pubkey_display = PubkeyDisplayLong;
 #else
         storage.settings.pubkey_display = PubkeyDisplayShort;

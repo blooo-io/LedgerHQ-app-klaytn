@@ -9,11 +9,11 @@ src/glyphs.c
 src/glyphs.h
 *.core
 .idea
-.vscode
 gitignore
 .vagrant
-libsol/target
-
+lib/target
+myenv
+.vscode/extensions.json
 # Python
 __pycache__
 .egg

@@ -29,6 +29,7 @@ typedef struct SystemTransferInfo {
     SizedString ticker;
     // TODO: change following to int256
     uint64_t amount;
+    txInt256_t display_amount;
     uint64_t nonce;
     uint64_t gas_price;
     uint64_t gas;

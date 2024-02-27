@@ -3,6 +3,7 @@
 #include "sol/parser.h"
 #include <stdint.h>
 #include <stddef.h>
+#include "ethUstream.h"
 
 #define SUMMARY_LENGTH       7
 #define TITLE_SIZE           32
@@ -15,7 +16,15 @@ int print_token_amount(uint64_t amount,
                        char *out,
                        size_t out_length);
 
+int print_token_amount_256(txInt256_t amount,
+                           const char *const asset,
+                           uint8_t decimals,
+                           char *out,
+                           const size_t out_length);
+
 int print_amount(uint64_t amount, char *out, size_t out_length);
+
+int print_amount_256(txInt256_t amount, char *out, size_t out_length);
 
 int print_i64(int64_t i64, char *out, size_t out_length);
 

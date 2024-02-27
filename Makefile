@@ -1,5 +1,5 @@
 # ****************************************************************************
-#    Ledger App Solana
+#    Ledger App Klaytn
 #    (c) 2020 Ledger SAS.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,16 +34,16 @@ ifeq ($(TARGET_NAME), TARGET_NANOX)
 else
     APP_LOAD_PARAMS += --appFlags 0x000
 endif
-APP_LOAD_PARAMS += --path "44'/501'"
+APP_LOAD_PARAMS += --path "44'/8217'"
 APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
-APPNAME      = "Solana"
+APPNAME      = "Klaytn"
 APPVERSION_M = 1
-APPVERSION_N = 3
-APPVERSION_P = 1
+APPVERSION_N = 0
+APPVERSION_P = 0
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
-ifeq ($(TARGET_NAME),TARGET_NANOS)
+ifeq ($(TARGET_NAME),TARGET_NANOSP)
     ICONNAME=icons/nanos_app_solana.gif
 else
     ICONNAME=icons/nanox_app_solana.gif
@@ -133,10 +133,10 @@ ifneq ($(WITH_U2F),0)
 		SDK_SOURCE_PATH += lib_u2f
 endif
 
-WITH_LIBSOL=1
-ifneq ($(WITH_LIBSOL),0)
-    SOURCE_FILES += $(filter-out %_test.c,$(wildcard libsol/*.c))
-    CFLAGS       += -Ilibsol/include
+WITH_LIB=1
+ifneq ($(WITH_LIB),0)
+    SOURCE_FILES += $(filter-out %_test.c,$(wildcard lib/*.c))
+    CFLAGS       += -Ilib/include
     DEFINES      += HAVE_SNPRINTF_FORMAT_U
     DEFINES      += NDEBUG
 endif
