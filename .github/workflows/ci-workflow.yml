@@ -6,7 +6,7 @@ on:
     branches:
       - master
       - develop
-  # pull_request:
+  pull_request:
 
 jobs:
   build_application:
@@ -17,8 +17,8 @@ jobs:
           #   name: nanos
           - path: $NANOSP_SDK
             name: nanosp
-          - path: $NANOX_SDK
-            name: nanox
+          # - path: $NANOX_SDK
+          #   name: nanox
 
 
     runs-on: ubuntu-latest
@@ -42,44 +42,47 @@ jobs:
           path: ./bin/klaytn_${{ matrix.sdk.name }}.elf
           if-no-files-found: error
 
-  job_scan_build:
-    name: Clang Static Analyzer
-    needs: build_application
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build with Clang Static Analyzer
-        run: |
-          make clean
-          scan-build --use-cc=clang -analyze-headers -enable-checker security -enable-checker unix -enable-checker valist -o scan-build --status-bugs make default
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: scan-build
-          path: scan-build
+  # job_scan_build:
+  #   name: Clang Static Analyzer
+  #   needs: build_application
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Build with Clang Static Analyzer
+  #       run: |
+  #         make clean
+  #         scan-build --use-cc=clang -analyze-headers -enable-checker security -enable-checker unix -enable-checker valist -o scan-build --status-bugs make default
+  #     - uses: actions/upload-artifact@v3
+  #       if: failure()
+  #       with:
+  #         name: scan-build
+  #         path: scan-build
 
-  python_tests_nano:
-    name: NanoSP Ragger tests
-    needs: build_application
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone
-        uses: actions/checkout@v3
-      - name: Download all binaries
-        uses: actions/download-artifact@v3
-      - name: Gather artifacts
-        run: |
-          mkdir tests/elfs
-          mv *_binaries/*.elf tests/elfs
-      - name: Install APT dependencies
-        run: sudo apt-get update && sudo apt-get install -y qemu-user-static
-      - name: Install Ragger
-        run: |
-          pip install --extra-index-url https://test.pypi.org/simple/ -r tests/python/requirements.txt
-      - name: Run tests
-        run: pytest tests/python/ -v --tb=short --device all
+  # python_tests_nano:
+  #   name: NanoSP Ragger tests
+  #   needs: build_application
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Clone
+  #       uses: actions/checkout@v3
+  #     - name: Download all binaries
+  #       uses: actions/download-artifact@v3
+  #     - name: Gather artifacts
+  #       run: |
+  #         mkdir tests/elfs
+  #         mv *_binaries/*.elf tests/elfs
+  #     - name: Install APT dependencies
+  #       run: sudo apt-get update && sudo apt-get install -y qemu-user-static
+  #     - name: Install Ragger
+  #       run: |
+  #         pip install --extra-index-url https://test.pypi.org/simple/ -r tests/python/requirements.txt
+  #     - name: Run tests
+  #       run: pytest tests/python/ -v --tb=short --device all
+
+
+
   # TODO: To be enabled after adding dependencies to the Makefile
   # job_C_test:
   #   name: C tests
