@@ -17,8 +17,8 @@ jobs:
           #   name: nanos
           - path: $NANOSP_SDK
             name: nanosp
-          # - path: $NANOX_SDK
-          #   name: nanox
+          - path: $NANOX_SDK
+            name: nanox
 
 
     runs-on: ubuntu-latest
