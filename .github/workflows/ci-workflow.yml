@@ -23,8 +23,8 @@ jobs:
         sdk:
           # - path: $NANOS_SDK
           #   name: nanos
-          - path: $NANOSP_SDK
-            name: nanosp
+          # - path: $NANOSP_SDK
+          #   name: nanosp
           - path: $NANOX_SDK
             name: nanox
 
@@ -56,10 +56,10 @@ jobs:
         sdk:
           # - path: $NANOS_SDK
           #   name: nanos
-          - path: $NANOSP_SDK
-            name: nanosp
-          # - path: $NANOX_SDK
-          #   name: nanox
+          # - path: $NANOSP_SDK
+          #   name: nanosp
+          - path: $NANOX_SDK
+            name: nanox
     name: Clang Static Analyzer
     needs: build_application
     runs-on: ubuntu-latest
@@ -104,6 +104,9 @@ jobs:
           pip install --extra-index-url https://test.pypi.org/simple/ -r tests/python/requirements.txt
       - name: Run tests
         run: pytest tests/python/ -v --tb=short --device all
+
+
+        
   # TODO: To be enabled after adding dependencies to the Makefile
   # job_C_test:
   #   name: C tests
