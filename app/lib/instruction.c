@@ -58,8 +58,15 @@ int parse_system_transfer_instruction(txContext_t* context,
     // Method name
     info->method_name = method_name_ss;
 
+    // Example function to convert a raw key to a Pubkey structure
+    const Pubkey *convertToPubkey(const uint8_t rawKey[20]) {
+        static Pubkey pubkey;
+        // Populate pubkey fields using rawKey data
+        return &pubkey;
+    }
+
     // Address to
-    info->to = context->content->destination;
+    info->to = convertToPubkey(context->content->destination);
 
     // Amount
     // info->amount = convertUint256ToUint64(&context->content->value); //0x2b5e3af16b1880000

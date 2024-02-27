@@ -4,9 +4,9 @@ services:
   nanosp:
     image: ghcr.io/blooo-io/speculos:latest
     volumes:
-      - ./bin:/speculos/apps
-      - ./src:/speculos/sources
-      - ./lib:/speculos/lib
+      - ./app/bin:/speculos/apps
+      - ./app/src:/speculos/sources
+      - ./app/lib:/speculos/lib
     ports:
       - "5000:5000" # api
       - "40000:40000" # apdu
