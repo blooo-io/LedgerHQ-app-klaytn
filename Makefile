@@ -133,10 +133,10 @@ ifneq ($(WITH_U2F),0)
 		SDK_SOURCE_PATH += lib_u2f
 endif
 
-WITH_LIBSOL=1
-ifneq ($(WITH_LIBSOL),0)
-    SOURCE_FILES += $(filter-out %_test.c,$(wildcard libsol/*.c))
-    CFLAGS       += -Ilibsol/include
+WITH_LIB=1
+ifneq ($(WITH_LIB),0)
+    SOURCE_FILES += $(filter-out %_test.c,$(wildcard lib/*.c))
+    CFLAGS       += -Ilib/include
     DEFINES      += HAVE_SNPRINTF_FORMAT_U
     DEFINES      += NDEBUG
 endif

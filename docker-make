@@ -37,7 +37,7 @@ owner="$user:$group"
 IFS='' read -r -d '' container_script <<EOF
 export "BOLOS_SDK=\$$bolos_sdk_var"
 make ${*}
-chown -fR $owner /app/{bin,debug,dep,libsol/target_sdk,obj,src/glyphs.{c,h}}
+chown -fR $owner /app/{bin,debug,dep,lib/target_sdk,obj,src/glyphs.{c,h}}
 EOF
 
 docker run --rm -t -v "$here:/app" "ledger-app-builder:$docker_tag" /bin/bash -c "$container_script"

@@ -11,7 +11,7 @@ src/glyphs.h
 .idea
 gitignore
 .vagrant
-libsol/target
+lib/target
 myenv
 .vscode/extensions.json
 # Python
