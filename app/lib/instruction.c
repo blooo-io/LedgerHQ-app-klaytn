@@ -8,7 +8,7 @@
 #include "ethUstream.h"
 #include "sol/parser.h"
 
-const SYMBOL = "KLAY";
+const char* SYMBOL = "KLAY";
 const int DECIMALS = 18;
 
 void instruction_accounts_iterator_init(InstructionAccountsIterator* it,

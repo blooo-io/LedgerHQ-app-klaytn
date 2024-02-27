@@ -181,7 +181,10 @@ static inline bool amountToString(const uint8_t *amount,
 
     uint8_t amount_len = strnlen(tmp_buffer, sizeof(tmp_buffer));
     uint8_t ticker_len = strnlen(ticker, 11);
-    uint32_t copySize = MIN(out_buffer_size, ticker_len) memcpy(out_buffer, ticker, copySize);
+    uint32_t copySize = MIN(out_buffer_size, ticker_len);
+    
+    memcpy(out_buffer, ticker, copySize);
+    
     if (ticker_len > 0) {
         out_buffer[ticker_len++] = ' ';
     }
