@@ -44,9 +44,9 @@ APPVERSION_P = 0
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 ifeq ($(TARGET_NAME),TARGET_NANOSP)
-    ICONNAME=icons/nanos_app_solana.gif
+    ICONNAME=icons/nanos_app_klaytn.gif
 else
-    ICONNAME=icons/nanox_app_solana.gif
+    ICONNAME=icons/nanox_app_klaytn.gif
 endif
 
 ################
@@ -156,4 +156,4 @@ include $(BOLOS_SDK)/Makefile.rules
 dep/%.d: %.c Makefile
 
 listvariants:
-	@echo VARIANTS COIN solana
+	@echo VARIANTS COIN klaytn

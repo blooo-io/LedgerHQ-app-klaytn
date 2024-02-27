@@ -116,15 +116,15 @@ int read_derivation_path(const uint8_t *data_buffer,
         return ApduReplySdkInvalidParameter;
     }
     if (!data_size) {
-        return ApduReplySolanaInvalidMessageSize;
+        return ApduReplyKlaytnInvalidMessageSize;
     }
     const size_t len = data_buffer[0];
     data_buffer += 1;
     if (len < 1 || len > MAX_BIP32_PATH_LENGTH) {
-        return ApduReplySolanaInvalidMessage;
+        return ApduReplyKlaytnInvalidMessage;
     }
     if (1 + 4 * len > data_size) {
-        return ApduReplySolanaInvalidMessageSize;
+        return ApduReplyKlaytnInvalidMessageSize;
     }
 
     for (size_t i = 0; i < len; i++) {

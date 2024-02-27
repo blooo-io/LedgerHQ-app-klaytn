@@ -139,7 +139,7 @@ UX_STEP_NOCB_INIT(ux_sign_msg_summary_step,
                           flags |= DisplayFlagLongPubkeys;
                       }
                       if (transaction_summary_display_item(step_index, flags)) {
-                          THROW(ApduReplySolanaSummaryUpdateFailed);
+                          THROW(ApduReplyKlaytnSummaryUpdateFailed);
                       }
                   },
                   {
@@ -183,13 +183,13 @@ void handle_sign_offchain_message(volatile unsigned int *flags, volatile unsigne
     Parser parser = {G_command.message, G_command.message_length};
     OffchainMessageHeader header;
     if (parse_offchain_message_header(&parser, &header)) {
-        THROW(ApduReplySolanaInvalidMessageHeader);
+        THROW(ApduReplyKlaytnInvalidMessageHeader);
     }
 
     // validate message
     if (header.version != 0 || header.format > 1 || header.length > MAX_OFFCHAIN_MESSAGE_LENGTH ||
         header.length + OFFCHAIN_MESSAGE_HEADER_LENGTH != G_command.message_length) {
-        THROW(ApduReplySolanaInvalidMessageHeader);
+        THROW(ApduReplyKlaytnInvalidMessageHeader);
     }
     const bool is_ascii =
         is_data_ascii(G_command.message + OFFCHAIN_MESSAGE_HEADER_LENGTH, header.length);
@@ -197,7 +197,7 @@ void handle_sign_offchain_message(volatile unsigned int *flags, volatile unsigne
         is_ascii ? true
                  : is_data_utf8(G_command.message + OFFCHAIN_MESSAGE_HEADER_LENGTH, header.length);
     if (!is_ascii && (!is_utf8 || header.format == 0)) {
-        THROW(ApduReplySolanaInvalidMessageFormat);
+        THROW(ApduReplyKlaytnInvalidMessageFormat);
     } else if (!is_ascii && N_storage.settings.allow_blind_sign != BlindSignEnabled) {
         THROW(ApduReplySdkNotSupported);
     }
@@ -237,7 +237,7 @@ void handle_sign_offchain_message(volatile unsigned int *flags, volatile unsigne
     size_t num_flow_steps = 0;
     size_t num_summary_steps = 0;
     if (transaction_summary_finalize(summary_step_kinds, &num_summary_steps)) {
-        THROW(ApduReplySolanaSummaryFinalizeFailed);
+        THROW(ApduReplyKlaytnSummaryFinalizeFailed);
     }
     for (size_t i = 0; i < num_summary_steps; i++) {
         flow_steps[num_flow_steps++] = &ux_sign_msg_summary_step;
