@@ -48,14 +48,6 @@ uint64_t convertUint256ToUint64(const txInt256_t* bytes) {
     return result;
 }
 
-// Example function to convert a raw key to a Pubkey structure
-const Pubkey *convertToPubkey(const uint8_t rawKey[20]) {
-    static Pubkey pubkey;
-    // Populate pubkey fields using rawKey data
-    memcpy(pubkey->data, rawKey, sizeof(pubkey->data)); // Copy rawKey into pubkey->data
-    return &pubkey;
-}
-
 int parse_system_transfer_instruction(txContext_t* context,
                                       SystemTransferInfo* info,
                                       char* method_name) {
@@ -66,16 +58,13 @@ int parse_system_transfer_instruction(txContext_t* context,
     // Method name
     info->method_name = method_name_ss;
 
-    
-
     // Address to
-    info->to = convertToPubkey(context->content->destination);
+    info->to = (const Pubkey *)(context->content->destination);
 
     // Amount
     // info->amount = convertUint256ToUint64(&context->content->value); //0x2b5e3af16b1880000
 
     // Display Amount
-
     info->display_amount = context->content->value;  // maybe display_amount.value
 
     // Nonce
