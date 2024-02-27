@@ -30,7 +30,7 @@ int process_message_body() {
 
     switch (G_command.instruction) {
         case InsSignLegacyTransaction:
-            parse_system_transfer_instruction(&txContext, &info->transaction, "Legacy Transaction");
+            parse_system_transfer_instruction(&txContext, &info->transaction, (char *)"Legacy Transaction");
             break;
         case InsSignValueTransfer:
             parse_system_transfer_instruction(&txContext,

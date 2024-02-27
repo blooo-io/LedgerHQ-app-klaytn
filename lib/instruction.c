@@ -59,14 +59,15 @@ int parse_system_transfer_instruction(txContext_t* context,
     info->method_name = method_name_ss;
 
     // Address to
-    info->to = context->content->destination;
+    memcpy(info->to->data, context->content->destination, ADDRESS_LENGTH);
+    // info->to->data = context->content->destination;
 
     // Amount
     // info->amount = convertUint256ToUint64(&context->content->value); //0x2b5e3af16b1880000
 
     // Display Amount
-
-    info->display_amount = context->content->value;  // maybe display_amount.value
+    memcpy(info->display_amount.value,context->content->value.value,context->content->value.length);
+    // info->display_amount.value = context->content->value.value;  // maybe display_amount.value
 
     // Nonce
     info->nonce = convertUint256ToUint64(&context->content->nonce);

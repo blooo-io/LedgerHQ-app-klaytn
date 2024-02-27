@@ -1,6 +1,27 @@
 {
     "files.associations": {
-        "*.h": "c"
+        "*.h": "c",
+        "atomic": "c",
+        "*.tcc": "c",
+        "chrono": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "optional": "c",
+        "random": "c",
+        "fstream": "c",
+        "functional": "c",
+        "istream": "c",
+        "limits": "c",
+        "streambuf": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "memory_resource": "c",
+        "algorithm": "c",
+        "numeric": "c",
+        "ostream": "c",
+        "ratio": "c",
+        "string_view": "c",
+        "array": "c"
     },
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
     "editor.formatOnSave": false,
