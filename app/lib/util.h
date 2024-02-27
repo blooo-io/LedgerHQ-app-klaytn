@@ -9,7 +9,6 @@
         int err = x;         \
         if (err) return err; \
     } while (0)
-#define MIN(a, b) ((a) < (b) ? (a) : (b));
 
 #define assert_string_equal(actual, expected) assert(strcmp(actual, expected) == 0)
 
