@@ -6,8 +6,8 @@
 #include "sol/parser.h"
 #include "spl_associated_token_account_instruction.h"
 #include "spl_token_instruction.h"
-#include "stake_instruction.h"
-#include "vote_instruction.h"
+// #include "stake_instruc tion.h"
+// #include "vote_instruction.h"
 
 enum ProgramId {
     ProgramIdUnknown = 0,

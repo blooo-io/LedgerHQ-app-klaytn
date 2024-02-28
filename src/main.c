@@ -15,6 +15,14 @@
  *  limitations under the License.
  ********************************************************************************/
 
+
+
+#ifdef HAVE_NBGL
+#include "nbgl_touch.h"
+#include "nbgl_page.h"
+#endif  // HAVE_NBGL
+
+
 #include "apdu.h"
 #include "ethUstream.h"
 #include "getPubkey.h"
@@ -163,65 +171,55 @@ void app_main(void) {
     }
 }
 
+#ifdef HAVE_BAGL
 // override point, but nothing more to do
 void io_seproxyhal_display(const bagl_element_t *element) {
-    io_seproxyhal_display_default((bagl_element_t *) element);
+    io_seproxyhal_display_default(element);
 }
+#endif  // HAVE_BAGL
 
-unsigned char io_event(unsigned char channel) {
-    UNUSED(channel);
+uint8_t io_event(uint8_t channel) {
+    (void) channel;
 
-    // nothing done with the event, throw an error on the transport layer if
-    // needed
-
-    // can't have more than one tag in the reply, not supported yet.
     switch (G_io_seproxyhal_spi_buffer[0]) {
-        case SEPROXYHAL_TAG_FINGER_EVENT:
-            UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
-            break;
-
         case SEPROXYHAL_TAG_BUTTON_PUSH_EVENT:
+#ifdef HAVE_BAGL
             UX_BUTTON_PUSH_EVENT(G_io_seproxyhal_spi_buffer);
+#endif  // HAVE_BAGL
             break;
-
         case SEPROXYHAL_TAG_STATUS_EVENT:
-            if (G_io_apdu_media == IO_APDU_MEDIA_USB_HID &&
-                !(U4BE(G_io_seproxyhal_spi_buffer, 3) &
+            if (G_io_apdu_media == IO_APDU_MEDIA_USB_HID &&  //
+                !(U4BE(G_io_seproxyhal_spi_buffer, 3) &      //
                   SEPROXYHAL_TAG_STATUS_EVENT_FLAG_USB_POWERED)) {
                 THROW(ApduReplySdkExceptionIoReset);
             }
+            /* fallthrough */
             __attribute__((fallthrough));
-            // no break is intentional
+        case SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT:
+#ifdef HAVE_BAGL
+            UX_DISPLAYED_EVENT({});
+#endif  // HAVE_BAGL
+#ifdef HAVE_NBGL
+            UX_DEFAULT_EVENT();
+#endif  // HAVE_NBGL
+            break;
+#ifdef HAVE_NBGL
+        case SEPROXYHAL_TAG_FINGER_EVENT:
+            UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
+            break;
+#endif  // HAVE_NBGL
+        case SEPROXYHAL_TAG_TICKER_EVENT:
+            UX_TICKER_EVENT(G_io_seproxyhal_spi_buffer, {});
+            break;
         default:
             UX_DEFAULT_EVENT();
             break;
-
-        case SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT:
-            UX_DISPLAYED_EVENT({});
-            break;
-
-        case SEPROXYHAL_TAG_TICKER_EVENT:
-            UX_TICKER_EVENT(G_io_seproxyhal_spi_buffer, {
-#if !defined(TARGET_NANOX) && !defined(TARGET_NANOSP)
-                if (UX_ALLOWED) {
-                    if (ux_step_count) {
-                        // prepare next screen
-                        ux_step = (ux_step + 1) % ux_step_count;
-                        // redisplay screen
-                        UX_REDISPLAY();
-                    }
-                }
-#endif  // TARGET_NANOX
-            });
-            break;
     }
 
-    // close the event if not done previously (by a display or whatever)
     if (!io_seproxyhal_spi_is_status_sent()) {
         io_seproxyhal_general_status();
     }
 
-    // command has been processed, DO NOT reset the current APDU transport
     return 1;
 }
 
@@ -266,7 +264,7 @@ void nv_app_state_init() {
     if (N_storage.initialized != 0x01) {
         internalStorage_t storage;
         storage.settings.allow_blind_sign = BlindSignDisabled;
-#if defined(TARGET_NANOX) || defined(TARGET_NANOSP)
+#if defined(TARGET_NANOX) || defined(TARGET_NANOSP) || defined(TARGET_STAX)
         storage.settings.pubkey_display = PubkeyDisplayLong;
 #else
         storage.settings.pubkey_display = PubkeyDisplayShort;

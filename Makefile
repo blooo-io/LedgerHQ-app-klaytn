@@ -29,7 +29,7 @@ endif
 include $(BOLOS_SDK)/Makefile.defines
 
 APP_LOAD_PARAMS  = --curve secp256k1
-ifeq ($(TARGET_NAME), TARGET_NANOX)
+ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
     APP_LOAD_PARAMS += --appFlags 0x200  # APPLICATION_FLAG_BOLOS_SETTINGS
 else
     APP_LOAD_PARAMS += --appFlags 0x000
@@ -43,8 +43,10 @@ APPVERSION_N = 0
 APPVERSION_P = 0
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
-ifeq ($(TARGET_NAME),TARGET_NANOSP)
+ifeq ($(TARGET_NAME),TARGET_NANOS)
     ICONNAME=icons/nanos_app_klaytn.gif
+else ifeq ($(TARGET_NAME),TARGET_STAX)
+    ICONNAME=icons/stax_app_klaytn.gif
 else
     ICONNAME=icons/nanox_app_klaytn.gif
 endif
@@ -59,14 +61,14 @@ DEFINES += APPNAME=\"$(APPNAME)\"
 DEFINES += APPVERSION=\"$(APPVERSION)\"
 DEFINES += MAJOR_VERSION=$(APPVERSION_M) MINOR_VERSION=$(APPVERSION_N) PATCH_VERSION=$(APPVERSION_P)
 DEFINES += OS_IO_SEPROXYHAL
-DEFINES += HAVE_BAGL HAVE_UX_FLOW HAVE_SPRINTF
+DEFINES += HAVE_SPRINTF
 DEFINES += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=6 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
 DEFINES += USB_SEGMENT_SIZE=64
 DEFINES += BLE_SEGMENT_SIZE=32
 DEFINES += HAVE_WEBUSB WEBUSB_URL_SIZE_B=0 WEBUSB_URL=""
 DEFINES += UNUSED\(x\)=\(void\)x
 
-ifeq ($(TARGET_NAME),TARGET_NANOX)
+ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
     DEFINES += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000 HAVE_BLE_APDU
 endif
 
@@ -74,17 +76,25 @@ ifeq ($(TARGET_NAME),TARGET_NANOS)
     DEFINES += IO_SEPROXYHAL_BUFFER_SIZE_B=128
 else
     DEFINES += IO_SEPROXYHAL_BUFFER_SIZE_B=300
-    DEFINES += HAVE_GLO096
-    DEFINES += BAGL_WIDTH=128 BAGL_HEIGHT=64
-    DEFINES += HAVE_BAGL_ELLIPSIS
-    DEFINES += HAVE_BAGL_FONT_OPEN_SANS_REGULAR_11PX
-    DEFINES += HAVE_BAGL_FONT_OPEN_SANS_EXTRABOLD_11PX
-    DEFINES += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
 endif
 
-DEBUG := 0
+ifeq ($(TARGET_NAME),TARGET_STAX)
+    DEFINES += NBGL_QRCODE
+    SDK_SOURCE_PATH += qrcode
+else
+    DEFINES += HAVE_BAGL HAVE_UX_FLOW
+    ifneq ($(TARGET_NAME),TARGET_NANOS)
+        DEFINES += HAVE_GLO096
+        DEFINES += BAGL_WIDTH=128 BAGL_HEIGHT=64
+        DEFINES += HAVE_BAGL_ELLIPSIS
+        DEFINES += HAVE_BAGL_FONT_OPEN_SANS_REGULAR_11PX
+        DEFINES += HAVE_BAGL_FONT_OPEN_SANS_EXTRABOLD_11PX
+        DEFINES += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
+    endif
+endif
+
+DEBUG = 0
 ifneq ($(DEBUG),0)
-    $(info DEBUG ENABLED)
     DEFINES += HAVE_PRINTF
     ifeq ($(TARGET_NAME),TARGET_NANOS)
         DEFINES += PRINTF=screen_printf
@@ -92,8 +102,7 @@ ifneq ($(DEBUG),0)
         DEFINES += PRINTF=mcu_usb_printf
     endif
 else
-    $(info DEBUG DISABLED)
-    DEFINES += PRINTF\(...\)=
+        DEFINES += PRINTF\(...\)=
 endif
 
 ifneq ($(BOLOS_ENV),)
@@ -120,9 +129,16 @@ LDLIBS  += -lm -lgcc -lc
 include $(BOLOS_SDK)/Makefile.glyphs
 
 APP_SOURCE_PATH += src
-SDK_SOURCE_PATH += lib_stusb lib_stusb_impl lib_ux
+SDK_SOURCE_PATH += lib_stusb lib_stusb_impl
 
-ifeq ($(TARGET_NAME),TARGET_NANOX)
+# Allow usage of function from lib_standard_app/crypto_helpers.c
+APP_SOURCE_FILES += ${BOLOS_SDK}/lib_standard_app/crypto_helpers.c
+
+ifneq ($(TARGET_NAME),TARGET_STAX)
+SDK_SOURCE_PATH += lib_ux
+endif
+
+ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
     SDK_SOURCE_PATH += lib_blewbxx lib_blewbxx_impl
 endif
 
@@ -136,8 +152,6 @@ endif
 WITH_LIB=1
 ifneq ($(WITH_LIB),0)
     SOURCE_FILES += $(filter-out %_test.c,$(wildcard lib/*.c))
-    SOURCE_FILES += $(filter-out %_test.c,$(wildcard lib/include/*.c))
-
     CFLAGS       += -Ilib/include
     DEFINES      += HAVE_SNPRINTF_FORMAT_U
     DEFINES      += NDEBUG

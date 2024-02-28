@@ -7,7 +7,6 @@
 #include "sol/parser.h"
 #include "spl_memo_instruction.h"
 #include "spl_token_instruction.h"
-#include "stake_instruction.h"
 #include "util.h"
 
 const char SYMBOL[5] = "KLAY";
