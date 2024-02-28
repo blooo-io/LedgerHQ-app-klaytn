@@ -1,4 +1,3 @@
-#include "utils_copy.h"
 #include "apdu.h"
 #include "cx.h"
 #include "ethUstream.h"
@@ -9,6 +8,7 @@
 #include "sol/message.h"
 #include "uint_common.h"
 #include "utils.h"
+#include "utils_copy.h"
 #include "ux.h"
 
 void format_signature_out(const uint8_t *signature) {
