@@ -32,7 +32,7 @@ int process_message_body() {
         case InsSignLegacyTransaction:
             parse_system_transfer_instruction(&txContext, 
                                               &info->transaction, 
-                                              (char *)"Legacy Transaction");
+                                              (char *) "Legacy Transaction");
             break;
         case InsSignValueTransfer:
             parse_system_transfer_instruction(&txContext,
