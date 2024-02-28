@@ -191,7 +191,6 @@ int parse_tx_type(Parser* parser) {
 //         // Enumerate through all supported txTypes here...
 //         if (txType == 1 || txType == 2) {
 //             cx_hash_no_throw((cx_hash_t*) &global_sha3, 0, parser->buffer, 1, NULL, 0);
-//             // cx_hash((cx_hash_t*) &global_sha3, 0, parser->buffer, 1, NULL, 0);
 //             parser->buffer++;
 //             parser->buffer_length--;
 //         } else {

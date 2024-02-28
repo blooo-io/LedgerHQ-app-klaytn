@@ -1,6 +1,6 @@
+#include "ethUtils.h"
 #include "shared_context.h"
 #include "utils_copy.h"
-#include "ethUtils.h"
 
 #define ERR_SILENT_MODE_CHECK_FAILED 0x6001
 
@@ -155,14 +155,14 @@ static void feesToString(uint256_t *rawFee, char *displayBuffer, uint32_t displa
         tickerOffset++;
     }
     while (G_io_apdu_buffer[i]) {
-        if ((uint32_t) (tickerOffset) + i >= displayBufferSize) {
+        if ((uint32_t)(tickerOffset) + i >= displayBufferSize) {
             break;
         }
         displayBuffer[tickerOffset + i] = G_io_apdu_buffer[i];
         i++;
     }
 
-    if ((uint32_t) (tickerOffset) + i < displayBufferSize) {
+    if ((uint32_t)(tickerOffset) + i < displayBufferSize) {
         displayBuffer[tickerOffset + i] = '\0';
     }
 }
@@ -200,32 +200,16 @@ void prepareNetworkDisplay() {
     }
 }
 
-static void get_public_key(uint8_t *out, uint8_t outLength) {
-    uint8_t privateKeyData[INT256_LENGTH] = {0};
-    cx_ecfp_private_key_t privateKey = {0};
-    cx_ecfp_public_key_t publicKey = {0};
-
-    if (outLength < ADDRESS_LENGTH) {
-        return;
-    }
-    os_perso_derive_node_bip32(CX_CURVE_256K1,
-                               G_command.derivation_path,
-                               G_command.derivation_path_length,
-                               privateKeyData,
-                               NULL);
-    cx_ecfp_init_private_key(CX_CURVE_256K1, privateKeyData, 32, &privateKey);
-    cx_ecfp_generate_pair(CX_CURVE_256K1, &publicKey, &privateKey, 1);
-    explicit_bzero(&privateKey, sizeof(privateKey));
-    explicit_bzero(privateKeyData, sizeof(privateKeyData));
-    getEthAddressFromKey(&publicKey, out, &global_sha3);
-}
-
-void finalizeParsing(bool direct) {
+void finalizeParsing() {
     // Store the hash
-    cx_hash_no_throw((cx_hash_t *) &global_sha3,
-                     CX_LAST,
-                     G_command.message_hash.data,
-                     0,
-                     G_command.message_hash.data,
-                     32);
+    cx_err_t result = cx_hash_no_throw((cx_hash_t *) &global_sha3,
+                                       CX_LAST,
+                                       G_command.message_hash.data,
+                                       0,
+                                       G_command.message_hash.data,
+                                       32);
+    if (result != CX_OK) {
+        PRINTF("Hash update error\n");
+        THROW(EXCEPTION);
+    }
 }

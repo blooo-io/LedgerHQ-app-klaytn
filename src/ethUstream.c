@@ -15,14 +15,15 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include "ethUstream.h"
+
 #include <stdint.h>
 #include <string.h>
 
-#include "ethUstream.h"
 #include "ethUtils.h"
-#include "utils_copy.h"
 #include "globals.h"
 #include "shared_context.h"
+#include "utils_copy.h"
 
 #define MAX_INT256  32
 #define MAX_ADDRESS 20
@@ -38,7 +39,12 @@ void initTx(txContext_t *context,
     context->customProcessor = customProcessor;
     context->extra = extra;
     context->currentField = RLP_NONE + 1;
-    cx_keccak_init(context->sha3, 256);
+
+    cx_err_t result = cx_keccak_init_no_throw(context->sha3, 256);
+    if (result != CX_OK) {
+        PRINTF("Hash init error\n");
+        THROW(EXCEPTION);
+    }
 }
 
 uint8_t readTxByte(txContext_t *context) {
@@ -54,7 +60,11 @@ uint8_t readTxByte(txContext_t *context) {
         context->currentFieldPos++;
     }
     if (!(context->processingField && context->fieldSingleByte)) {
-        cx_hash((cx_hash_t *) context->sha3, 0, &data, 1, NULL, 0);
+        cx_err_t result = cx_hash_no_throw((cx_hash_t *) context->sha3, 0, &data, 1, NULL, 0);
+        if (result != CX_OK) {
+            PRINTF("Hash update error\n");
+            THROW(EXCEPTION);
+        }
     }
     return data;
 }
@@ -68,7 +78,12 @@ void copyTxData(txContext_t *context, uint8_t *out, uint32_t length) {
         memmove(out, context->workBuffer, length);
     }
     if (!(context->processingField && context->fieldSingleByte)) {
-        cx_hash((cx_hash_t *) context->sha3, 0, context->workBuffer, length, NULL, 0);
+        cx_err_t result =
+            cx_hash_no_throw((cx_hash_t *) context->sha3, 0, context->workBuffer, length, NULL, 0);
+        if (result != CX_OK) {
+            PRINTF("Hash update error\n");
+            THROW(EXCEPTION);
+        }
     }
     context->workBuffer += length;
     context->commandLength -= length;
@@ -288,31 +303,6 @@ static void processAndDiscard(txContext_t *context) {
         copyTxData(context, NULL, copySize);
     }
     if (context->currentFieldPos == context->currentFieldLength) {
-        context->currentField++;
-        context->processingField = false;
-    }
-}
-
-static void processV(txContext_t *context) {
-    if (context->currentFieldIsList) {
-        PRINTF("Invalid type for RLP_V\n");
-        THROW(EXCEPTION);
-    }
-
-    if (context->currentFieldLength > sizeof(context->content->v)) {
-        PRINTF("Invalid length for RLP_V\n");
-        THROW(EXCEPTION);
-    }
-
-    if (context->currentFieldPos < context->currentFieldLength) {
-        uint32_t copySize =
-            MIN(context->commandLength, context->currentFieldLength - context->currentFieldPos);
-        // Make sure we do not copy more than the size of v.
-        copySize = MIN(copySize, sizeof(context->content->v));
-        copyTxData(context, context->content->v + context->currentFieldPos, copySize);
-    }
-    if (context->currentFieldPos == context->currentFieldLength) {
-        context->content->vLength = context->currentFieldLength;
         context->currentField++;
         context->processingField = false;
     }

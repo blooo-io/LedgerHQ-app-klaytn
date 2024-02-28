@@ -43,7 +43,7 @@ void get_private_key_with_seed(cx_ecfp_private_key_t *privateKey,
                                const uint32_t *derivationPath,
                                uint8_t pathLength);
 
-void finalizeParsing(bool direct);
+void finalizeParsing();
 
 /**
  * Deserialize derivation path from raw bytes.

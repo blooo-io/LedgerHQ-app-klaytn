@@ -190,6 +190,7 @@ unsigned char io_event(unsigned char channel) {
                   SEPROXYHAL_TAG_STATUS_EVENT_FLAG_USB_POWERED)) {
                 THROW(ApduReplySdkExceptionIoReset);
             }
+            __attribute__((fallthrough));
             // no break is intentional
         default:
             UX_DEFAULT_EVENT();

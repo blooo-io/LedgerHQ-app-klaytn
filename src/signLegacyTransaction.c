@@ -1,13 +1,13 @@
 #include "apdu.h"
-#include "sol/parser.h"
-#include "sol/print_config.h"
+#include "cx.h"
 #include "ethUstream.h"
 #include "shared_context.h"
-#include "ux.h"
-#include "cx.h"
-#include "utils.h"
+#include "sol/parser.h"
+#include "sol/print_config.h"
 #include "sol/transaction_summary.h"
 #include "uint_common.h"
+#include "utils.h"
+#include "ux.h"
 
 void format_signature_out(const uint8_t *signature) {
     memset(G_io_apdu_buffer + 1, 0x00, 64);
@@ -42,14 +42,20 @@ static uint8_t set_result_sign_message() {
                             NULL,
                             G_command.derivation_path,
                             G_command.derivation_path_length);
-            cx_ecdsa_sign_no_throw(&privateKey,
-                                   CX_RND_RFC6979 | CX_LAST,
-                                   CX_SHA256,
-                                   G_command.message_hash.data,
-                                   sizeof(G_command.message_hash.data),
-                                   signature,
-                                   &sig_len,
-                                   &info);
+
+            cx_err_t result_ecdsa = cx_ecdsa_sign_no_throw(&privateKey,
+                                                           CX_RND_RFC6979 | CX_LAST,
+                                                           CX_SHA256,
+                                                           G_command.message_hash.data,
+                                                           sizeof(G_command.message_hash.data),
+                                                           signature,
+                                                           &sig_len,
+                                                           &info);
+
+            if (result_ecdsa != CX_OK) {
+                THROW(result_ecdsa);
+            }
+
             // Taking only the 4 highest bytes
             uint32_t v = (uint32_t) u64_from_BE(txContext.content->chainID.value,
                                                 MIN(4, txContext.content->chainID.length));
@@ -162,7 +168,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
         case CANCEL:
         case FEE_DELEGATED_CANCEL:
         case PARTIAL_FEE_DELEGATED_CANCEL:
-            // cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
+            // cx_hash_no_throw((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
             txContext.txType = txType;
             txContext.outerRLP = true;
             break;
@@ -173,7 +179,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     }
     txResult = processTx(&txContext, workBuffer, dataLength, 0);
     if (txResult == USTREAM_FINISHED) {
-        finalizeParsing(false);
+        finalizeParsing();
     }
     transaction_summary_reset();
     if (process_message_body() != 0) {
