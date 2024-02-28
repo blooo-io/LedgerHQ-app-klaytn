@@ -136,6 +136,8 @@ endif
 WITH_LIB=1
 ifneq ($(WITH_LIB),0)
     SOURCE_FILES += $(filter-out %_test.c,$(wildcard lib/*.c))
+    SOURCE_FILES += $(filter-out %_test.c,$(wildcard lib/include/*.c))
+
     CFLAGS       += -Ilib/include
     DEFINES      += HAVE_SNPRINTF_FORMAT_U
     DEFINES      += NDEBUG

@@ -1,5 +1,6 @@
 #include "ethUtils.h"
 #include "shared_context.h"
+#include "ethUstream.h"
 #include "utils_copy.h"
 
 #define ERR_SILENT_MODE_CHECK_FAILED 0x6001

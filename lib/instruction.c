@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "ethUstream.h"
+// #include "ethUstream.h"
 #include "serum_assert_owner_instruction.h"
 #include "sol/parser.h"
 #include "spl_memo_instruction.h"
