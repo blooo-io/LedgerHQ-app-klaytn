@@ -97,6 +97,8 @@ int process_message_body() {
             return print_smart_contract_execution_info(&display_instruction_info[0]->transaction);
         case InsSignCancel:
             return print_cancel_info(&display_instruction_info[0]->transaction);
+        default:
+            break;
     };
     return 1;
 }
