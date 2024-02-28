@@ -58,7 +58,7 @@ uint32_t readUint32BE(uint8_t *buffer) {
 void get_private_key(cx_ecfp_private_key_t *privateKey,
                      const uint32_t *derivationPath,
                      size_t pathLength) {
-    uint8_t privateKeyData[PRIVATEKEY_LENGTH];
+    uint8_t privateKeyData[64];
 
     BEGIN_TRY {
         TRY {
@@ -92,7 +92,7 @@ void get_private_key(cx_ecfp_private_key_t *privateKey,
 void get_private_key_with_seed(cx_ecfp_private_key_t *privateKey,
                                const uint32_t *derivationPath,
                                uint8_t pathLength) {
-    uint8_t privateKeyData[PRIVATEKEY_LENGTH];
+    uint8_t privateKeyData[64];
     BEGIN_TRY {
         TRY {
             cx_err_t result_derive =
