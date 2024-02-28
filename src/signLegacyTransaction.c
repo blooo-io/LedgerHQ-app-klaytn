@@ -1,3 +1,4 @@
+#include "utils_copy.h"
 #include "apdu.h"
 #include "cx.h"
 #include "ethUstream.h"
