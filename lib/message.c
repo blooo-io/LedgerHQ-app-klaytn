@@ -35,40 +35,46 @@ int process_message_body() {
             parse_system_transfer_instruction(&txContext, &info->transaction, "Legacy Transaction");
             break;
         case InsSignValueTransfer:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              strncat(fee_delegation_prefix,
-                                                      "Value Transfer",
-                                                      sizeof(fee_delegation_prefix) - 1));
+            parse_system_transfer_instruction(
+                &txContext,
+                &info->transaction,
+                strncat(fee_delegation_prefix,
+                        "Value Transfer",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
             break;
         case InsSignValueTransferMemo:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              strncat(fee_delegation_prefix,
-                                                      "Value Transfer Memo",
-                                                      sizeof(fee_delegation_prefix) - 1));
+            parse_system_transfer_instruction(
+                &txContext,
+                &info->transaction,
+                strncat(fee_delegation_prefix,
+                        "Value Transfer Memo",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
             break;
         case InsSignSmartContractDeploy:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              strncat(fee_delegation_prefix,
-                                                      "Smart Contract Deploy",
-                                                      sizeof(fee_delegation_prefix) - 1));
+            parse_system_transfer_instruction(
+                &txContext,
+                &info->transaction,
+                strncat(fee_delegation_prefix,
+                        "Smart Contract Deploy",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
 
             break;
         case InsSignSmartContractExecution:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              strncat(fee_delegation_prefix,
-                                                      "Smart Contract Execution",
-                                                      sizeof(fee_delegation_prefix) - 1));
+            parse_system_transfer_instruction(
+                &txContext,
+                &info->transaction,
+                strncat(fee_delegation_prefix,
+                        "Smart Contract Execution",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
 
             break;
         case InsSignCancel:
             parse_system_transfer_instruction(
                 &txContext,
                 &info->transaction,
-                strncat(fee_delegation_prefix, "Cancel", sizeof(fee_delegation_prefix) - 1));
+                strncat(fee_delegation_prefix,
+                        "Cancel",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
 
             break;
         default:

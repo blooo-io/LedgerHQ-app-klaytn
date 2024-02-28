@@ -1,8 +1,9 @@
 #include "sol/parser.h"
-#include "util.h"
-#include "os.h"  // for PRINTF, to remove
+
 #include "cx.h"
+#include "os.h"  // for PRINTF, to remove
 #include "shared_context.h"
+#include "util.h"
 
 #define OFFCHAIN_MESSAGE_SIGNING_DOMAIN \
     "\xff"                              \
@@ -179,7 +180,6 @@ int parse_instruction(Parser* parser, Instruction* instruction) {
 
 int parse_tx_type(Parser* parser) {
     BAIL_IF(check_buffer_length(parser, 1));
-    const uint8_t tx_type = *parser->buffer;
     advance(parser, 1);
     return 0;
 }
@@ -197,9 +197,8 @@ int parse_legacy(Parser* parser) {
             PRINTF("Transaction type %d not supported\n", txType);
             THROW(0x6501);
         }
-    } else {
-        txType = 0xc0;
     }
+
     PRINTF("TxType: %x\n", txType);
     return 0;
 }
