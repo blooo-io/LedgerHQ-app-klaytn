@@ -24,7 +24,7 @@ void get_public_key(publicKeyContext_t *publicKeyContext,
                     size_t pathLength) {
     cx_ecfp_private_key_t privateKey;
 
-    get_private_key(&privateKey, publicKeyContext, derivationPath, pathLength);
+    get_private_key(&privateKey, derivationPath, pathLength);
     BEGIN_TRY {
         TRY {
             CX_THROW(cx_ecfp_generate_pair_no_throw(CX_CURVE_256K1,
@@ -56,7 +56,6 @@ uint32_t readUint32BE(uint8_t *buffer) {
 }
 
 void get_private_key(cx_ecfp_private_key_t *privateKey,
-                     publicKeyContext_t *publicKeyContext,
                      const uint32_t *derivationPath,
                      size_t pathLength) {
     uint8_t privateKeyData[PRIVATEKEY_LENGTH];

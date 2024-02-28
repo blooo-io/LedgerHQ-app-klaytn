@@ -41,7 +41,6 @@ static uint8_t set_result_sign_message() {
     BEGIN_TRY {
         TRY {
             get_private_key(&privateKey,
-                            NULL,
                             G_command.derivation_path,
                             G_command.derivation_path_length);
 

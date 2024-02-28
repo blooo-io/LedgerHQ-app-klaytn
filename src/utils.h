@@ -34,8 +34,7 @@ void get_public_key(publicKeyContext_t *publicKeyContext,
 
 uint32_t readUint32BE(uint8_t *buffer);
 
-void get_private_key(cx_ecfp_private_key_t *privateKey,
-                     publicKeyContext_t *publicKeyContext,
+void get_private_key(cx_ecfp_private_key_t *privateKey,                     
                      const uint32_t *derivationPath,
                      size_t pathLength);
 
