@@ -1,14 +1,16 @@
 #include "instruction.h"
+
+#include <string.h>
+
+#include "ethUstream.h"
 #include "serum_assert_owner_instruction.h"
+#include "sol/parser.h"
 #include "spl_memo_instruction.h"
 #include "spl_token_instruction.h"
 #include "stake_instruction.h"
 #include "util.h"
-#include <string.h>
-#include "ethUstream.h"
-#include "sol/parser.h"
 
-const SYMBOL = "KLAY";
+const char SYMBOL[5] = "KLAY";
 const int DECIMALS = 18;
 
 void instruction_accounts_iterator_init(InstructionAccountsIterator* it,
