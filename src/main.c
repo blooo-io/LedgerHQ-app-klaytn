@@ -15,15 +15,15 @@
  *  limitations under the License.
  ********************************************************************************/
 
-#include "shared_context.h"
-#include "utils.h"
-#include "getPubkey.h"
-#include "signMessage.h"
-#include "signLegacyTransaction.h"
-#include "signOffchainMessage.h"
 #include "apdu.h"
-#include "menu.h"
 #include "ethUstream.h"
+#include "getPubkey.h"
+#include "menu.h"
+#include "shared_context.h"
+#include "signLegacyTransaction.h"
+#include "signMessage.h"
+#include "signOffchainMessage.h"
+#include "utils.h"
 
 ApduCommand G_command;
 txContext_t txContext;

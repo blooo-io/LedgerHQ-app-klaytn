@@ -1,12 +1,13 @@
 #pragma once
 
+#include <stdbool.h>
+
+#include "ethUstream.h"
 #include "sol/parser.h"
 #include "spl_associated_token_account_instruction.h"
 #include "spl_token_instruction.h"
 #include "stake_instruction.h"
 #include "vote_instruction.h"
-#include <stdbool.h>
-#include "ethUstream.h"
 
 enum ProgramId {
     ProgramIdUnknown = 0,
@@ -79,3 +80,4 @@ int print_legacy_transaction_info(const SystemTransferInfo* info);
 int print_value_transfer_info(const SystemTransferInfo* info);
 int print_smart_contract_deploy_info(const SystemTransferInfo* info);
 int print_smart_contract_execution_info(const SystemTransferInfo* info);
+int print_cancel_info(const SystemTransferInfo* info);

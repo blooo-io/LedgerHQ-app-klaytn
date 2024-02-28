@@ -195,7 +195,7 @@ static void display_mode_data_selector(unsigned int idx) {
 UX_STEP_NOCB(ux_idle_flow_1_step,
              pnn,
              {
-                 &C_solana_logo,
+                 &C_klaytn_logo,
                  "Application",
                  "is ready",
              });
