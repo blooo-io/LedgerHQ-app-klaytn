@@ -20,5 +20,5 @@ __pycache__
 .pyc
 *~
 
-tests/elfs/
+tests/elfs/*
 tests/python/snapshots-tmp/
