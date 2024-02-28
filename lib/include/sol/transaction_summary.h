@@ -60,7 +60,7 @@ enum DisplayFlags {
     DisplayFlagLongPubkeys = 1 << 0,
     DisplayFlagAll = DisplayFlagLongPubkeys,
 };
-int transaction_summary_display_item(size_t item_index, enum DisplayFlags flags);
+int transaction_summary_display_item(size_t item_index);
 int transaction_summary_finalize(enum SummaryItemKind* item_kinds, size_t* item_kinds_len);
 
 // Get a pointer to the requested SummaryItem. NULL if it has already been set

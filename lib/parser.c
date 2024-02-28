@@ -184,21 +184,22 @@ int parse_tx_type(Parser* parser) {
     return 0;
 }
 
-int parse_legacy(Parser* parser) {
-    PRINTF("in parse_legacy\n");
-    uint8_t txType = *parser->buffer;
-    if (txType >= 0x00 && txType <= 0x7f) {
-        // Enumerate through all supported txTypes here...
-        if (txType == 1 || txType == 2) {
-            cx_hash((cx_hash_t*) &global_sha3, 0, parser->buffer, 1, NULL, 0);
-            parser->buffer++;
-            parser->buffer_length--;
-        } else {
-            PRINTF("Transaction type %d not supported\n", txType);
-            THROW(0x6501);
-        }
-    }
+// int parse_legacy(Parser* parser) {
+//     PRINTF("in parse_legacy\n");
+//     uint8_t txType = *parser->buffer;
+//     if (txType >= 0x00 && txType <= 0x7f) {
+//         // Enumerate through all supported txTypes here...
+//         if (txType == 1 || txType == 2) {
+//             cx_hash_no_throw((cx_hash_t*) &global_sha3, 0, parser->buffer, 1, NULL, 0);
+//             // cx_hash((cx_hash_t*) &global_sha3, 0, parser->buffer, 1, NULL, 0);
+//             parser->buffer++;
+//             parser->buffer_length--;
+//         } else {
+//             PRINTF("Transaction type %d not supported\n", txType);
+//             THROW(0x6501);
+//         }
+//     }
 
-    PRINTF("TxType: %x\n", txType);
-    return 0;
-}
+//     PRINTF("TxType: %x\n", txType);
+//     return 0;
+// }

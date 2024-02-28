@@ -103,7 +103,7 @@ UX_STEP_NOCB_INIT(ux_summary_step,  // rename after deleting the singmessage one
                       if (N_storage.settings.pubkey_display == PubkeyDisplayLong) {
                           flags |= DisplayFlagLongPubkeys;
                       }
-                      if (transaction_summary_display_item(step_index, flags)) {
+                      if (transaction_summary_display_item(step_index)) {
                           THROW(ApduReplySolanaSummaryUpdateFailed);
                       }
                   },

@@ -138,7 +138,7 @@ UX_STEP_NOCB_INIT(ux_sign_msg_summary_step,
                       if (N_storage.settings.pubkey_display == PubkeyDisplayLong) {
                           flags |= DisplayFlagLongPubkeys;
                       }
-                      if (transaction_summary_display_item(step_index, flags)) {
+                      if (transaction_summary_display_item(step_index)) {
                           THROW(ApduReplySolanaSummaryUpdateFailed);
                       }
                   },
