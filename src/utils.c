@@ -1,10 +1,12 @@
-#include "os.h"
-#include "cx.h"
+#include "utils.h"
+
 #include <stdbool.h>
 #include <stdlib.h>
-#include "utils.h"
-#include "menu.h"
+
+#include "cx.h"
 #include "ethUtils.h"
+#include "menu.h"
+#include "os.h"
 
 uint32_t set_result_get_publicKey(publicKeyContext_t *publicKeyContext) {
     uint32_t tx = 0;
@@ -25,7 +27,10 @@ void get_public_key(publicKeyContext_t *publicKeyContext,
     get_private_key(&privateKey, publicKeyContext, derivationPath, pathLength);
     BEGIN_TRY {
         TRY {
-            cx_ecfp_generate_pair(CX_CURVE_256K1, &(publicKeyContext->publicKey), &privateKey, 1);
+            CX_THROW(cx_ecfp_generate_pair_no_throw(CX_CURVE_256K1,
+                                                    &(publicKeyContext->publicKey),
+                                                    &privateKey,
+                                                    1));
         }
         CATCH_OTHER(e) {
             MEMCLEAR(privateKey);
@@ -58,13 +63,16 @@ void get_private_key(cx_ecfp_private_key_t *privateKey,
 
     BEGIN_TRY {
         TRY {
-            os_perso_derive_node_bip32(CX_CURVE_256K1,
-                                       derivationPath,
-                                       pathLength,
-                                       privateKeyData,
-                                       NULL);
+            CX_THROW(os_derive_bip32_no_throw(CX_CURVE_256K1,
+                                              derivationPath,
+                                              pathLength,
+                                              privateKeyData,
+                                              NULL));
             io_seproxyhal_io_heartbeat();
-            cx_ecfp_init_private_key(CX_CURVE_256K1, privateKeyData, PRIVATEKEY_LENGTH, privateKey);
+            CX_THROW(cx_ecfp_init_private_key_no_throw(CX_CURVE_256K1,
+                                                       privateKeyData,
+                                                       PRIVATEKEY_LENGTH,
+                                                       privateKey));
             io_seproxyhal_io_heartbeat();
         }
         CATCH_OTHER(e) {
@@ -84,18 +92,18 @@ void get_private_key_with_seed(cx_ecfp_private_key_t *privateKey,
     uint8_t privateKeyData[PRIVATEKEY_LENGTH];
     BEGIN_TRY {
         TRY {
-            os_perso_derive_node_bip32_seed_key(HDW_ED25519_SLIP10,
-                                                CX_CURVE_Ed25519,
-                                                derivationPath,
-                                                pathLength,
-                                                privateKeyData,
-                                                NULL,
-                                                (unsigned char *) "ed25519 seed",
-                                                12);
-            cx_ecfp_init_private_key(CX_CURVE_Ed25519,
-                                     privateKeyData,
-                                     PRIVATEKEY_LENGTH,
-                                     privateKey);
+            CX_THROW(os_derive_bip32_with_seed_no_throw(HDW_ED25519_SLIP10,
+                                                        CX_CURVE_Ed25519,
+                                                        derivationPath,
+                                                        pathLength,
+                                                        privateKeyData,
+                                                        NULL,
+                                                        (unsigned char *) "ed25519 seed",
+                                                        12));
+            CX_THROW(cx_ecfp_init_private_key_no_throw(CX_CURVE_Ed25519,
+                                                       privateKeyData,
+                                                       PRIVATEKEY_LENGTH,
+                                                       privateKey));
         }
         CATCH_OTHER(e) {
             MEMCLEAR(privateKeyData);

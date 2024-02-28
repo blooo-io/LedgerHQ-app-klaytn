@@ -202,14 +202,10 @@ void prepareNetworkDisplay() {
 
 void finalizeParsing() {
     // Store the hash
-    cx_err_t result = cx_hash_no_throw((cx_hash_t *) &global_sha3,
-                                       CX_LAST,
-                                       G_command.message_hash.data,
-                                       0,
-                                       G_command.message_hash.data,
-                                       32);
-    if (result != CX_OK) {
-        PRINTF("Hash update error\n");
-        THROW(EXCEPTION);
-    }
+    CX_THROW(cx_hash_no_throw((cx_hash_t *) &global_sha3,
+                              CX_LAST,
+                              G_command.message_hash.data,
+                              0,
+                              G_command.message_hash.data,
+                              32));
 }

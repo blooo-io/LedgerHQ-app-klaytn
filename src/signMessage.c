@@ -102,7 +102,7 @@ void handle_sign_message_ui(volatile unsigned int *flags) {
     SummaryItemKind_t summary_step_kinds[MAX_TRANSACTION_SUMMARY_ITEMS];
     size_t num_summary_steps = 0;
     if (transaction_summary_finalize(summary_step_kinds, &num_summary_steps) == 0) {
-        size_t num_flow_steps = 0;
+        // size_t num_flow_steps = 0;
 
         // for (size_t i = 0; i < num_summary_steps; i++) {
         //     flow_steps[num_flow_steps++] = &ux_summary_step;

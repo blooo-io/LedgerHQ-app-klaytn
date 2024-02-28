@@ -1,16 +1,16 @@
-#include "getPubkey.h"
-#include "os.h"
-#include "ux.h"
-#include "cx.h"
-#include "menu.h"
-#include "utils.h"
-#include "sol/parser.h"
-#include "sol/printer.h"
-#include "sol/print_config.h"
-#include "sol/message.h"
-#include "sol/transaction_summary.h"
-#include "globals.h"
 #include "apdu.h"
+#include "cx.h"
+#include "getPubkey.h"
+#include "globals.h"
+#include "menu.h"
+#include "os.h"
+#include "sol/message.h"
+#include "sol/parser.h"
+#include "sol/print_config.h"
+#include "sol/printer.h"
+#include "sol/transaction_summary.h"
+#include "utils.h"
+#include "ux.h"
 
 /**
  * Checks if data is in UTF-8 format.
@@ -84,16 +84,14 @@ static uint8_t set_result_sign_message() {
             get_private_key_with_seed(&privateKey,
                                       G_command.derivation_path,
                                       G_command.derivation_path_length);
-            cx_eddsa_sign(&privateKey,
-                          CX_LAST,
-                          CX_SHA512,
-                          G_command.message,
-                          G_command.message_length,
-                          NULL,
-                          0,
-                          signature,
-                          SIGNATURE_LENGTH,
-                          NULL);
+
+            CX_THROW(cx_eddsa_sign_no_throw(&privateKey,
+                                            CX_SHA512,
+                                            G_command.message,
+                                            G_command.message_length,
+                                            signature,
+                                            SIGNATURE_LENGTH));
+
             memcpy(G_io_apdu_buffer, signature, SIGNATURE_LENGTH);
         }
         CATCH_OTHER(e) {

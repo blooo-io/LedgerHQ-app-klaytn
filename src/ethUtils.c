@@ -150,22 +150,14 @@ void getEthAddressStringFromBinary(uint8_t *address,
         locals_union.tmp[offset + 2 * i + 1] = HEXDIGITS[digit & 0x0f];
     }
 
-    cx_err_t result_keccak = cx_keccak_init_no_throw(sha3Context, 256);
-    if (result_keccak != CX_OK) {
-        PRINTF("Hash init error\n");
-        THROW(EXCEPTION);
-    }
+    CX_THROW(cx_keccak_init_no_throw(sha3Context, 256));
 
-    cx_err_t result_hash = cx_hash_no_throw((cx_hash_t *) sha3Context,
-                                       CX_LAST,
-                                       locals_union.tmp,
-                                       offset + 40,
-                                       locals_union.hashChecksum,
-                                       32);
-    if (result_hash != CX_OK) {
-        PRINTF("Hash update error\n");
-        THROW(EXCEPTION);
-    }
+    CX_THROW(cx_hash_no_throw((cx_hash_t *) sha3Context,
+                              CX_LAST,
+                              locals_union.tmp,
+                              offset + 40,
+                              locals_union.hashChecksum,
+                              32));
 
     for (i = 0; i < 40; i++) {
         uint8_t digit = address[i / 2];
@@ -191,18 +183,14 @@ void getEthAddressStringFromBinary(uint8_t *address,
 void getEthAddressFromKey(cx_ecfp_public_key_t *publicKey, uint8_t *out, cx_sha3_t *sha3Context) {
     uint8_t hashAddress[INT256_LENGTH];
 
-    cx_err_t result = cx_keccak_init_no_throw(sha3Context, 256);
-    if (result != CX_OK) {
-        PRINTF("Hash init error\n");
-        THROW(EXCEPTION);
-    }
+    CX_THROW(cx_keccak_init_no_throw(sha3Context, 256));
 
-    cx_err_t result_hash =
-        cx_hash_no_throw((cx_hash_t *) sha3Context, CX_LAST, publicKey->W + 1, 64, hashAddress, 32);
-    if (result_hash != CX_OK) {
-        PRINTF("Hash update error\n");
-        THROW(EXCEPTION);
-    }
+    CX_THROW(cx_hash_no_throw((cx_hash_t *) sha3Context,
+                              CX_LAST,
+                              publicKey->W + 1,
+                              64,
+                              hashAddress,
+                              32));
 
     memmove(out, hashAddress + 12, 20);
 }
@@ -213,18 +201,14 @@ void getEthAddressStringFromKey(cx_ecfp_public_key_t *publicKey,
                                 uint64_t chainId) {
     uint8_t hashAddress[HASH_LENGTH];
 
-    cx_err_t result = cx_keccak_init_no_throw(sha3Context, 256);
-    if (result != CX_OK) {
-        PRINTF("Hash init error\n");
-        THROW(EXCEPTION);
-    }
+    CX_THROW(cx_keccak_init_no_throw(sha3Context, 256));
 
-    cx_err_t result_hash =
-        cx_hash_no_throw((cx_hash_t *) sha3Context, CX_LAST, publicKey->W + 1, 64, hashAddress, 32);
-    if (result_hash != CX_OK) {
-        PRINTF("Hash update error\n");
-        THROW(EXCEPTION);
-    }
+    CX_THROW(cx_hash_no_throw((cx_hash_t *) sha3Context,
+                              CX_LAST,
+                              publicKey->W + 1,
+                              64,
+                              hashAddress,
+                              32));
 
     getEthAddressStringFromBinary(hashAddress + 12, out, sha3Context, chainId);
 }

@@ -40,11 +40,7 @@ void initTx(txContext_t *context,
     context->extra = extra;
     context->currentField = RLP_NONE + 1;
 
-    cx_err_t result = cx_keccak_init_no_throw(context->sha3, 256);
-    if (result != CX_OK) {
-        PRINTF("Hash init error\n");
-        THROW(EXCEPTION);
-    }
+    CX_THROW(cx_keccak_init_no_throw(context->sha3, 256));
 }
 
 uint8_t readTxByte(txContext_t *context) {
@@ -60,11 +56,7 @@ uint8_t readTxByte(txContext_t *context) {
         context->currentFieldPos++;
     }
     if (!(context->processingField && context->fieldSingleByte)) {
-        cx_err_t result = cx_hash_no_throw((cx_hash_t *) context->sha3, 0, &data, 1, NULL, 0);
-        if (result != CX_OK) {
-            PRINTF("Hash update error\n");
-            THROW(EXCEPTION);
-        }
+        CX_THROW(cx_hash_no_throw((cx_hash_t *) context->sha3, 0, &data, 1, NULL, 0));
     }
     return data;
 }
@@ -78,12 +70,8 @@ void copyTxData(txContext_t *context, uint8_t *out, uint32_t length) {
         memmove(out, context->workBuffer, length);
     }
     if (!(context->processingField && context->fieldSingleByte)) {
-        cx_err_t result =
-            cx_hash_no_throw((cx_hash_t *) context->sha3, 0, context->workBuffer, length, NULL, 0);
-        if (result != CX_OK) {
-            PRINTF("Hash update error\n");
-            THROW(EXCEPTION);
-        }
+        CX_THROW(
+            cx_hash_no_throw((cx_hash_t *) context->sha3, 0, context->workBuffer, length, NULL, 0));
     }
     context->workBuffer += length;
     context->commandLength -= length;

@@ -5,6 +5,7 @@
 #include "sol/parser.h"
 #include "sol/print_config.h"
 #include "sol/transaction_summary.h"
+#include "sol/message.h"
 #include "uint_common.h"
 #include "utils.h"
 #include "ux.h"
@@ -32,7 +33,7 @@ void format_signature_out(const uint8_t *signature) {
 }
 
 static uint8_t set_result_sign_message() {
-    uint8_t sig_len = 100;
+    size_t sig_len = 100;
     uint8_t signature[sig_len];
     unsigned int info = 0;
     cx_ecfp_private_key_t privateKey;
@@ -43,18 +44,14 @@ static uint8_t set_result_sign_message() {
                             G_command.derivation_path,
                             G_command.derivation_path_length);
 
-            cx_err_t result_ecdsa = cx_ecdsa_sign_no_throw(&privateKey,
-                                                           CX_RND_RFC6979 | CX_LAST,
-                                                           CX_SHA256,
-                                                           G_command.message_hash.data,
-                                                           sizeof(G_command.message_hash.data),
-                                                           signature,
-                                                           &sig_len,
-                                                           &info);
-
-            if (result_ecdsa != CX_OK) {
-                THROW(result_ecdsa);
-            }
+            CX_THROW(cx_ecdsa_sign_no_throw(&privateKey,
+                                            CX_RND_RFC6979 | CX_LAST,
+                                            CX_SHA256,
+                                            G_command.message_hash.data,
+                                            sizeof(G_command.message_hash.data),
+                                            signature,
+                                            &sig_len,
+                                            &info));
 
             // Taking only the 4 highest bytes
             uint32_t v = (uint32_t) u64_from_BE(txContext.content->chainID.value,
