@@ -39,12 +39,12 @@ typedef enum ApduReply {
 
     ApduReplyNoApduReceived = 0x6982,
 
-    ApduReplySolanaInvalidMessage = 0x6a80,
-    ApduReplySolanaInvalidMessageHeader = 0x6a81,
-    ApduReplySolanaInvalidMessageFormat = 0x6a82,
-    ApduReplySolanaInvalidMessageSize = 0x6a83,
-    ApduReplySolanaSummaryFinalizeFailed = 0x6f00,
-    ApduReplySolanaSummaryUpdateFailed = 0x6f01,
+    ApduReplyKlaytnInvalidMessage = 0x6a80,
+    ApduReplyKlaytnInvalidMessageHeader = 0x6a81,
+    ApduReplyKlaytnInvalidMessageFormat = 0x6a82,
+    ApduReplyKlaytnInvalidMessageSize = 0x6a83,
+    ApduReplyKlaytnSummaryFinalizeFailed = 0x6f00,
+    ApduReplyKlaytnSummaryUpdateFailed = 0x6f01,
 
     ApduReplyUnimplementedInstruction = 0x6d00,
     ApduReplyInvalidCla = 0x6e00,

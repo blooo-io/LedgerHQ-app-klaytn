@@ -107,7 +107,7 @@ UX_STEP_NOCB_INIT(ux_summary_step,  // rename after deleting the singmessage one
                           flags |= DisplayFlagLongPubkeys;
                       }
                       if (transaction_summary_display_item(step_index)) {
-                          THROW(ApduReplySolanaSummaryUpdateFailed);
+                          THROW(ApduReplyKlaytnSummaryUpdateFailed);
                       }
                   },
                   {
@@ -215,7 +215,7 @@ void handle_sign_legacy_transaction_ui(volatile unsigned int *flags) {
 
         ux_flow_init(0, flow_steps, NULL);
     } else {
-        THROW(ApduReplySolanaSummaryFinalizeFailed);
+        THROW(ApduReplyKlaytnSummaryFinalizeFailed);
     }
 
     *flags |= IO_ASYNCH_REPLY;
