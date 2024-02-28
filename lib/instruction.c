@@ -61,13 +61,12 @@ int parse_system_transfer_instruction(txContext_t* context,
     info->method_name = method_name_ss;
 
     // Address to
-    info->to = context->content->destination;
+    info->to = (Pubkey*) context->content->destination;
 
     // Amount
     // info->amount = convertUint256ToUint64(&context->content->value); //0x2b5e3af16b1880000
 
     // Display Amount
-
     info->display_amount = context->content->value;  // maybe display_amount.value
 
     // Nonce
