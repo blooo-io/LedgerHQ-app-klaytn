@@ -63,10 +63,10 @@ void get_private_key(cx_ecfp_private_key_t *privateKey,
     BEGIN_TRY {
         TRY {
             cx_err_t result_derive = os_derive_bip32_no_throw(CX_CURVE_256K1,
-                                                                derivationPath,
-                                                                pathLength,
-                                                                privateKeyData,
-                                                                NULL);
+                                                              derivationPath,
+                                                              pathLength,
+                                                              privateKeyData,
+                                                              NULL);
             if (result_derive != CX_OK) {
                 THROW(result_derive);
             }
