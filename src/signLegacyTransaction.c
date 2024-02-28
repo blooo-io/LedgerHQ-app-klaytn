@@ -34,7 +34,7 @@ void format_signature_out(const uint8_t *signature) {
 
 static uint8_t set_result_sign_message() {
     size_t sig_len = 100;
-    uint8_t signature[sig_len];
+    uint8_t signature[100];
     unsigned int info = 0;
     cx_ecfp_private_key_t privateKey;
     BEGIN_TRY {

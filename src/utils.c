@@ -63,11 +63,15 @@ void get_private_key(cx_ecfp_private_key_t *privateKey,
 
     BEGIN_TRY {
         TRY {
-            CX_THROW(os_derive_bip32_no_throw(CX_CURVE_256K1,
-                                              derivationPath,
-                                              pathLength,
-                                              privateKeyData,
-                                              NULL));
+            cx_err_t result_derive = os_derive_bip32_no_throw(CX_CURVE_256K1,
+                                                                derivationPath,
+                                                                pathLength,
+                                                                privateKeyData,
+                                                                NULL);
+            if (result_derive != CX_OK) {
+                THROW(result_derive);
+            }
+
             io_seproxyhal_io_heartbeat();
             CX_THROW(cx_ecfp_init_private_key_no_throw(CX_CURVE_256K1,
                                                        privateKeyData,
@@ -92,14 +96,19 @@ void get_private_key_with_seed(cx_ecfp_private_key_t *privateKey,
     uint8_t privateKeyData[PRIVATEKEY_LENGTH];
     BEGIN_TRY {
         TRY {
-            CX_THROW(os_derive_bip32_with_seed_no_throw(HDW_ED25519_SLIP10,
-                                                        CX_CURVE_Ed25519,
-                                                        derivationPath,
-                                                        pathLength,
-                                                        privateKeyData,
-                                                        NULL,
-                                                        (unsigned char *) "ed25519 seed",
-                                                        12));
+            cx_err_t result_derive =
+                os_derive_bip32_with_seed_no_throw(HDW_ED25519_SLIP10,
+                                                   CX_CURVE_Ed25519,
+                                                   derivationPath,
+                                                   pathLength,
+                                                   privateKeyData,
+                                                   NULL,
+                                                   (unsigned char *) "ed25519 seed",
+                                                   12);
+            if (result_derive != CX_OK) {
+                THROW(result_derive);
+            }
+
             CX_THROW(cx_ecfp_init_private_key_no_throw(CX_CURVE_Ed25519,
                                                        privateKeyData,
                                                        PRIVATEKEY_LENGTH,
