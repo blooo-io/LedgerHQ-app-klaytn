@@ -98,7 +98,7 @@ int parse_offchain_message_header(Parser* parser, OffchainMessageHeader* header)
 
 int parse_instruction(Parser* parser, Instruction* instruction);
 
-int parse_legacy(Parser* parser);
+// int parse_legacy(Parser* parser);
 
 // FIXME: I don't belong here
 static inline bool pubkeys_equal(const Pubkey* pubkey1, const Pubkey* pubkey2) {

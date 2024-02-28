@@ -1,6 +1,7 @@
 #pragma once
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
+
 #include "ethUstream.h"
 
 #define ARRAY_LEN(a) (sizeof(a) / sizeof((a)[0]))
@@ -9,7 +10,6 @@
         int err = x;         \
         if (err) return err; \
     } while (0)
-#define MIN(a, b) ((a) < (b) ? (a) : (b));
 
 #define assert_string_equal(actual, expected) assert(strcmp(actual, expected) == 0)
 
@@ -182,7 +182,8 @@ static inline bool amountToString(const uint8_t *amount,
 
     uint8_t amount_len = strnlen(tmp_buffer, sizeof(tmp_buffer));
     uint8_t ticker_len = strnlen(ticker, 11);
-    uint32_t copySize = MIN(out_buffer_size, ticker_len) memcpy(out_buffer, ticker, copySize);
+    uint32_t copySize = MIN(out_buffer_size, ticker_len);
+    memcpy(out_buffer, ticker, copySize);
     if (ticker_len > 0) {
         out_buffer[ticker_len++] = ' ';
     }

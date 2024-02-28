@@ -2,7 +2,7 @@
 
 Building the fuzzer requires Clang and CMake.
 
-To quickly get started fuzzing Solana message parserusing libFuzzer:
+To quickly get started fuzzing Klaytn message parserusing libFuzzer:
 
 ```shell
 cd fuzzing

@@ -1,13 +1,15 @@
 #include "apdu.h"
-#include "sol/parser.h"
-#include "sol/print_config.h"
+#include "cx.h"
 #include "ethUstream.h"
 #include "shared_context.h"
-#include "ux.h"
-#include "cx.h"
-#include "utils.h"
+#include "sol/parser.h"
+#include "sol/print_config.h"
 #include "sol/transaction_summary.h"
+#include "sol/message.h"
 #include "uint_common.h"
+#include "utils.h"
+#include "utils_copy.h"
+#include "ux.h"
 
 void format_signature_out(const uint8_t *signature) {
     memset(G_io_apdu_buffer + 1, 0x00, 64);
@@ -32,24 +34,25 @@ void format_signature_out(const uint8_t *signature) {
 }
 
 static uint8_t set_result_sign_message() {
-    uint8_t sig_len = 100;
-    uint8_t signature[sig_len];
+    size_t sig_len = 100;
+    uint8_t signature[100];
     unsigned int info = 0;
     cx_ecfp_private_key_t privateKey;
     BEGIN_TRY {
         TRY {
             get_private_key(&privateKey,
-                            NULL,
                             G_command.derivation_path,
                             G_command.derivation_path_length);
-            cx_ecdsa_sign_no_throw(&privateKey,
-                                   CX_RND_RFC6979 | CX_LAST,
-                                   CX_SHA256,
-                                   G_command.message_hash.data,
-                                   sizeof(G_command.message_hash.data),
-                                   signature,
-                                   &sig_len,
-                                   &info);
+
+            CX_THROW(cx_ecdsa_sign_no_throw(&privateKey,
+                                            CX_RND_RFC6979 | CX_LAST,
+                                            CX_SHA256,
+                                            G_command.message_hash.data,
+                                            sizeof(G_command.message_hash.data),
+                                            signature,
+                                            &sig_len,
+                                            &info));
+
             // Taking only the 4 highest bytes
             uint32_t v = (uint32_t) u64_from_BE(txContext.content->chainID.value,
                                                 MIN(4, txContext.content->chainID.length));
@@ -103,8 +106,8 @@ UX_STEP_NOCB_INIT(ux_summary_step,  // rename after deleting the singmessage one
                       if (N_storage.settings.pubkey_display == PubkeyDisplayLong) {
                           flags |= DisplayFlagLongPubkeys;
                       }
-                      if (transaction_summary_display_item(step_index, flags)) {
-                          THROW(ApduReplySolanaSummaryUpdateFailed);
+                      if (transaction_summary_display_item(step_index)) {
+                          THROW(ApduReplyKlaytnSummaryUpdateFailed);
                       }
                   },
                   {
@@ -162,7 +165,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
         case CANCEL:
         case FEE_DELEGATED_CANCEL:
         case PARTIAL_FEE_DELEGATED_CANCEL:
-            // cx_hash((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
+            // cx_hash_no_throw((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
             txContext.txType = txType;
             txContext.outerRLP = true;
             break;
@@ -173,7 +176,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     }
     txResult = processTx(&txContext, workBuffer, dataLength, 0);
     if (txResult == USTREAM_FINISHED) {
-        finalizeParsing(false);
+        finalizeParsing();
     }
     transaction_summary_reset();
     if (process_message_body() != 0) {
@@ -212,7 +215,7 @@ void handle_sign_legacy_transaction_ui(volatile unsigned int *flags) {
 
         ux_flow_init(0, flow_steps, NULL);
     } else {
-        THROW(ApduReplySolanaSummaryFinalizeFailed);
+        THROW(ApduReplyKlaytnSummaryFinalizeFailed);
     }
 
     *flags |= IO_ASYNCH_REPLY;

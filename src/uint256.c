@@ -17,12 +17,14 @@
 
 // Adapted from https://github.com/calccrypto/uint256_t
 
+#include "uint256.h"
+
 #include <stdio.h>
 #include <string.h>
-#include "uint256.h"
-#include "uint_common.h"
+
 #include "ethUstream.h"  // INT256_LENGTH
 #include "ethUtils.h"    // HEXDIGITS
+#include "uint_common.h"
 
 void readu256BE(const uint8_t *const buffer, uint256_t *const target) {
     readu128BE(buffer, &UPPER_P(target));
@@ -176,7 +178,7 @@ void mul256(const uint256_t *const number1,
         write_u64_be(num1 + i * sizeof(uint64_t), number1->elements[i / 2].elements[i % 2]);
         write_u64_be(num2 + i * sizeof(uint64_t), number2->elements[i / 2].elements[i % 2]);
     }
-    cx_math_mult(result, num1, num2, sizeof(num1));
+    CX_THROW(cx_math_mult_no_throw(result, num1, num2, sizeof(num1)));
     for (uint8_t i = 0; i < 4; i++) {
         read_u64_be(result + 32 + i * sizeof(uint64_t), &target->elements[i / 2].elements[i % 2]);
     }

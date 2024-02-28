@@ -43,6 +43,16 @@ jobs:
           if-no-files-found: error
 
   job_scan_build:
+    strategy:
+      matrix:
+        sdk:
+          # - path: $NANOS_SDK
+          #   name: nanos
+          - path: $NANOSP_SDK
+            name: nanosp
+          # - path: $NANOX_SDK
+          #   name: nanox
+
     name: Clang Static Analyzer
     needs: build_application
     runs-on: ubuntu-latest
@@ -52,8 +62,11 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build with Clang Static Analyzer
         run: |
+          eval "BOLOS_SDK=\$$(echo ${{ matrix.sdk.name }} | tr [:lower:] [:upper:])_SDK" && \
+          echo "BOLOS_SDK value will be: ${BOLOS_SDK}" && \
           make clean
-          scan-build --use-cc=clang -analyze-headers -enable-checker security -enable-checker unix -enable-checker valist -o scan-build --status-bugs make default
+          make -j ENABLE_SDK_WERROR=1 BOLOS_SDK=${BOLOS_SDK} scan-build
+          # scan-build --use-cc=clang -analyze-headers -enable-checker security -enable-checker unix -enable-checker valist -o scan-build --status-bugs make default
       - uses: actions/upload-artifact@v3
         if: failure()
         with:

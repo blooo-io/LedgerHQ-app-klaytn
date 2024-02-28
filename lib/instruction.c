@@ -1,14 +1,15 @@
 #include "instruction.h"
+
+#include <string.h>
+
+// #include "ethUstream.h"
 #include "serum_assert_owner_instruction.h"
+#include "sol/parser.h"
 #include "spl_memo_instruction.h"
 #include "spl_token_instruction.h"
-#include "stake_instruction.h"
 #include "util.h"
-#include <string.h>
-#include "ethUstream.h"
-#include "sol/parser.h"
 
-const SYMBOL = "KLAY";
+const char SYMBOL[5] = "KLAY";
 const int DECIMALS = 18;
 
 void instruction_accounts_iterator_init(InstructionAccountsIterator* it,
@@ -59,13 +60,12 @@ int parse_system_transfer_instruction(txContext_t* context,
     info->method_name = method_name_ss;
 
     // Address to
-    info->to = context->content->destination;
+    info->to = (Pubkey*) context->content->destination;
 
     // Amount
     // info->amount = convertUint256ToUint64(&context->content->value); //0x2b5e3af16b1880000
 
     // Display Amount
-
     info->display_amount = context->content->value;  // maybe display_amount.value
 
     // Nonce

@@ -49,8 +49,7 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
     size_t signer_index;
 
     if (parse_message_header(&parser, header) != 0) {
-        // This is not a valid Solana message
-        THROW(ApduReplySolanaInvalidMessage);
+        THROW(ApduReplyKlaytnInvalidMessage);
     }
 
     // Ensure the requested signer is present in the header
@@ -58,7 +57,7 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
                                G_command.derivation_path_length,
                                &signer_index,
                                header) != 0) {
-        THROW(ApduReplySolanaInvalidMessageHeader);
+        THROW(ApduReplyKlaytnInvalidMessageHeader);
     }
     print_config.signer_pubkey = &header->pubkeys[signer_index];
 
@@ -102,7 +101,7 @@ void handle_sign_message_ui(volatile unsigned int *flags) {
     SummaryItemKind_t summary_step_kinds[MAX_TRANSACTION_SUMMARY_ITEMS];
     size_t num_summary_steps = 0;
     if (transaction_summary_finalize(summary_step_kinds, &num_summary_steps) == 0) {
-        size_t num_flow_steps = 0;
+        // size_t num_flow_steps = 0;
 
         // for (size_t i = 0; i < num_summary_steps; i++) {
         //     flow_steps[num_flow_steps++] = &ux_summary_step;
@@ -114,7 +113,7 @@ void handle_sign_message_ui(volatile unsigned int *flags) {
 
         // ux_flow_init(0, flow_steps, NULL);
     } else {
-        THROW(ApduReplySolanaSummaryFinalizeFailed);
+        THROW(ApduReplyKlaytnSummaryFinalizeFailed);
     }
 
     *flags |= IO_ASYNCH_REPLY;

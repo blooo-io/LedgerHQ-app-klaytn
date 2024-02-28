@@ -11,7 +11,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     print_config.signer_pubkey = NULL;
 
     if (parse_message_header(&parser, header)) {
-        // This is not a valid Solana message
+        // This is not a valid Klaytn message
         return 0;
     }
     transaction_summary_reset();
