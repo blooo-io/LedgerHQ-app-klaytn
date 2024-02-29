@@ -35,7 +35,7 @@
 
 ApduCommand G_command;
 txContext_t txContext;
-tmpContent_t tmpContent;
+txContent_t tmpTxContent;
 strings_t strings;
 cx_sha3_t global_sha3;
 

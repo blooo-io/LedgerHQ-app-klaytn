@@ -37,7 +37,7 @@ typedef union {
 
 extern ApduCommand G_command;
 extern txContext_t txContext;
-extern tmpContent_t tmpContent;
+extern txContent_t tmpTxContent;
 extern strings_t strings;
 extern cx_sha3_t global_sha3;
 

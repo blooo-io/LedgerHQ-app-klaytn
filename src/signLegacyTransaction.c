@@ -135,7 +135,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
 
     parserStatus_e txResult;
 
-    initTx(&txContext, &global_sha3, &tmpContent.txContent, customProcessor, NULL);
+    initTx(&txContext, &global_sha3, &tmpTxContent, customProcessor, NULL);
 
     uint8_t *workBuffer = G_command.message;
     uint8_t dataLength = G_command.message_length;

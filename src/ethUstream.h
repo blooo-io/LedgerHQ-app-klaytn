@@ -52,12 +52,6 @@ typedef struct txContent_t {
     bool dataPresent;
 } txContent_t;
 
-typedef union {
-    txContent_t txContent;
-    cx_sha256_t sha2;
-    char tmp[100];
-} tmpContent_t;
-
 typedef enum customStatus_e {
     CUSTOM_NOT_HANDLED,
     CUSTOM_HANDLED,

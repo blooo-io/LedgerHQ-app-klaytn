@@ -29,7 +29,7 @@ customStatus_e customProcessor(txContext_t *context) {
          (context->txType == EIP1559 && context->currentField == EIP1559_RLP_DATA)) &&
         (context->currentFieldLength != 0)) {
         context->content->dataPresent = true;
-        if (tmpContent.txContent.destinationLength == 0) {
+        if (tmpTxContent.destinationLength == 0) {
             return CUSTOM_NOT_HANDLED;
         }
         if (context->currentFieldLength < 4) {
@@ -180,8 +180,8 @@ void prepareAndCopyFees(txInt256_t *BEGasPrice,
 }
 
 void prepareFeeDisplay() {
-    prepareAndCopyFees(&tmpContent.txContent.gasprice,
-                       &tmpContent.txContent.startgas,
+    prepareAndCopyFees(&tmpTxContent.gasprice,
+                       &tmpTxContent.startgas,
                        strings.common.maxFee,
                        sizeof(strings.common.maxFee));
 }
