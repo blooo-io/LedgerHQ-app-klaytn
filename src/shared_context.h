@@ -38,9 +38,6 @@ typedef union {
 extern ApduCommand G_command;
 extern txContext_t txContext;
 extern txContent_t tmpTxContent;
-extern strings_t strings;
 extern cx_sha3_t global_sha3;
-
-customStatus_e customProcessor(txContext_t *context);
 
 #endif  // _SHARED_CONTEXT_H_

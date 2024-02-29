@@ -36,7 +36,6 @@
 ApduCommand G_command;
 txContext_t txContext;
 txContent_t tmpTxContent;
-strings_t strings;
 cx_sha3_t global_sha3;
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];

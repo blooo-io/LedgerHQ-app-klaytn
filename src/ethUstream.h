@@ -52,15 +52,6 @@ typedef struct txContent_t {
     bool dataPresent;
 } txContent_t;
 
-typedef enum customStatus_e {
-    CUSTOM_NOT_HANDLED,
-    CUSTOM_HANDLED,
-    CUSTOM_SUSPENDED,
-    CUSTOM_FAULT
-} customStatus_e;
-
-typedef customStatus_e (*ustreamProcess_t)(struct txContext_t *context);
-
 // First variant of every Tx enum.
 #define RLP_NONE 0
 
@@ -330,7 +321,6 @@ typedef struct txContext_t {
     const uint8_t *workBuffer;
     uint32_t commandLength;
     uint32_t processingFlags;
-    ustreamProcess_t customProcessor;
     txContent_t *content;
     void *extra;
     uint8_t txType;
@@ -339,7 +329,6 @@ typedef struct txContext_t {
 void initTx(txContext_t *context,
             cx_sha3_t *sha3,
             txContent_t *content,
-            ustreamProcess_t customProcessor,
             void *extra);
 parserStatus_e processTx(txContext_t *context,
                          const uint8_t *buffer,

@@ -23,68 +23,6 @@ uint32_t splitBinaryParameterPart(char *result, uint8_t *parameter) {
     }
 }
 
-customStatus_e customProcessor(txContext_t *context) {
-    if (((context->txType == LEGACY && context->currentField == LEGACY_RLP_DATA) ||
-         (context->txType == EIP2930 && context->currentField == EIP2930_RLP_DATA) ||
-         (context->txType == EIP1559 && context->currentField == EIP1559_RLP_DATA)) &&
-        (context->currentFieldLength != 0)) {
-        context->content->dataPresent = true;
-        if (tmpTxContent.destinationLength == 0) {
-            return CUSTOM_NOT_HANDLED;
-        }
-        if (context->currentFieldLength < 4) {
-            return CUSTOM_NOT_HANDLED;
-        }
-        if (context->currentFieldPos == 0) {
-            copyTxData(context, NULL, 4);
-            if (context->currentFieldLength == 4) {
-                return CUSTOM_NOT_HANDLED;
-            }
-        }
-        uint32_t blockSize;
-        uint32_t copySize;
-        uint32_t fieldPos = context->currentFieldPos;
-        blockSize = 32 - (fieldPos % 32);
-        if ((context->currentFieldLength - fieldPos) < blockSize) {
-            blockSize = context->currentFieldLength - fieldPos;
-        }
-        copySize = (context->commandLength < blockSize ? context->commandLength : blockSize);
-        PRINTF("currentFieldPos %d copySize %d\n", context->currentFieldPos, copySize);
-        // copyTxData(context, dataContext.tokenContext.data + fieldPos, copySize); // ORIGINAL
-        copyTxData(context, NULL, copySize);
-        if (context->currentFieldPos == context->currentFieldLength) {
-            PRINTF("\n\nIncrementing one\n");
-            context->currentField++;
-            context->processingField = false;
-        }
-        if (copySize == blockSize) {
-            if (fieldPos == 0) {
-                // array_hexstr(strings.tmp.tmp, dataContext.tokenContext.data, 4);
-                // ux_flow_init(0, ux_confirm_selector_flow, NULL);
-                PRINTF("ux_flow_init\n");
-            } else {
-                uint32_t offset = 0;
-                uint32_t i;
-                snprintf(strings.tmp.tmp2, sizeof(strings.tmp.tmp2), "Field %d", fieldPos / 32);
-                for (i = 0; i < 4; i++) {
-                    // offset +=
-                    //     splitBinaryParameterPart(strings.tmp.tmp + offset,
-                    //                              dataContext.tokenContext.data + fieldPos + 8 *
-                    //                              i);
-                    if (i != 3) {
-                        strings.tmp.tmp[offset++] = ':';
-                    }
-                }
-                // ux_flow_init(0, ux_confirm_parameter_flow, NULL);
-            }
-            return CUSTOM_SUSPENDED;
-        } else {
-            return CUSTOM_HANDLED;
-        }
-    }
-    return CUSTOM_NOT_HANDLED;
-}
-
 void to_uppercase(char *str, unsigned char size) {
     for (unsigned char i = 0; i < size && str[i] != 0; i++) {
         str[i] = str[i] >= 'a' ? str[i] - ('a' - 'A') : str[i];
@@ -177,28 +115,6 @@ void prepareAndCopyFees(txInt256_t *BEGasPrice,
     uint256_t rawFee = {0};
     computeFees(BEGasPrice, BEGasLimit, &rawFee);
     feesToString(&rawFee, displayBuffer, displayBufferSize);
-}
-
-void prepareFeeDisplay() {
-    prepareAndCopyFees(&tmpTxContent.gasprice,
-                       &tmpTxContent.startgas,
-                       strings.common.maxFee,
-                       sizeof(strings.common.maxFee));
-}
-
-void prepareNetworkDisplay() {
-    const char *name = "Klaytn";
-    if (name == NULL) {
-        // No network name found so simply copy the chain ID as the network name.
-
-        uint64_t chain_id = u64_from_BE(txContext.content->chainID.value,
-                                        MIN(4, txContext.content->chainID.length));
-        ;  // 1001
-        u64_to_string(chain_id, strings.common.network_name, sizeof(strings.common.network_name));
-    } else {
-        // Network name found, simply copy it.
-        strlcpy(strings.common.network_name, name, sizeof(strings.common.network_name));
-    }
 }
 
 void finalizeParsing() {

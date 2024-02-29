@@ -31,12 +31,10 @@
 void initTx(txContext_t *context,
             cx_sha3_t *sha3,
             txContent_t *content,
-            ustreamProcess_t customProcessor,
             void *extra) {
     memset(context, 0, sizeof(txContext_t));
     context->sha3 = sha3;
     context->content = content;
-    context->customProcessor = customProcessor;
     context->extra = extra;
     context->currentField = RLP_NONE + 1;
 
@@ -779,7 +777,6 @@ static void parseNestedRlp(txContext_t *context) {
 
 static parserStatus_e processTxInternal(txContext_t *context) {
     for (;;) {
-        customStatus_e customStatus = CUSTOM_NOT_HANDLED;
         // EIP 155 style transaction
         if (PARSING_IS_DONE(context)) {
             PRINTF("parsing is done\n");
@@ -812,98 +809,81 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                 return status;
             }
         }
-        if (context->customProcessor != NULL) {
-            customStatus = context->customProcessor(context);
-            PRINTF("After customprocessor\n");
-            switch (customStatus) {
-                case CUSTOM_NOT_HANDLED:
-                case CUSTOM_HANDLED:
+
+        PRINTF("Current field: %d\n", context->currentField);
+        switch (context->txType) {
+            bool fault;
+            case LEGACY:
+                fault = processLegacyTx(context);
+                if (fault) {
+                    return USTREAM_FAULT;
+                } else {
                     break;
-                case CUSTOM_SUSPENDED:
-                    return USTREAM_SUSPENDED;
-                case CUSTOM_FAULT:
-                    PRINTF("Custom processor aborted\n");
+                }
+            case EIP2930:
+                fault = processEIP2930Tx(context);
+                if (fault) {
                     return USTREAM_FAULT;
-                default:
-                    PRINTF("Unhandled custom processor status\n");
+                } else {
+                    break;
+                }
+            case VALUE_TRANSFER:
+            case FEE_DELEGATED_VALUE_TRANSFER:
+            case PARTIAL_FEE_DELEGATED_VALUE_TRANSFER:
+                fault = processValueTransfer(context);
+                if (fault) {
                     return USTREAM_FAULT;
-            }
+                } else {
+                    break;
+                }
+            case VALUE_TRANSFER_MEMO:
+            case FEE_DELEGATED_VALUE_TRANSFER_MEMO:
+            case PARTIAL_FEE_DELEGATED_VALUE_TRANSFER_MEMO:
+                fault = processValueTransferMemo(context);
+                if (fault) {
+                    return USTREAM_FAULT;
+                } else {
+                    break;
+                }
+            case SMART_CONTRACT_DEPLOY:
+            case FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
+            case PARTIAL_FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
+                fault = processSmartContractDeploy(context);
+                if (fault) {
+                    return USTREAM_FAULT;
+                } else {
+                    break;
+                }
+            case SMART_CONTRACT_EXECUTION:
+            case FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
+            case PARTIAL_FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
+                fault = processSmartContractExecution(context);
+                if (fault) {
+                    return USTREAM_FAULT;
+                } else {
+                    break;
+                }
+            case CANCEL:
+            case FEE_DELEGATED_CANCEL:
+            case PARTIAL_FEE_DELEGATED_CANCEL:
+                fault = processCancel(context);
+                if (fault) {
+                    return USTREAM_FAULT;
+                } else {
+                    break;
+                }
+            case EIP1559:
+                fault = processEIP1559Tx(context);
+                if (fault) {
+                    return USTREAM_FAULT;
+                } else {
+                    break;
+                }
+            default:
+                PRINTF("Transaction type %d is not supported\n", context->txType);
+                return USTREAM_FAULT;
         }
-        if (customStatus == CUSTOM_NOT_HANDLED) {
-            PRINTF("Current field: %d\n", context->currentField);
-            switch (context->txType) {
-                bool fault;
-                case LEGACY:
-                    fault = processLegacyTx(context);
-                    if (fault) {
-                        return USTREAM_FAULT;
-                    } else {
-                        break;
-                    }
-                case EIP2930:
-                    fault = processEIP2930Tx(context);
-                    if (fault) {
-                        return USTREAM_FAULT;
-                    } else {
-                        break;
-                    }
-                case VALUE_TRANSFER:
-                case FEE_DELEGATED_VALUE_TRANSFER:
-                case PARTIAL_FEE_DELEGATED_VALUE_TRANSFER:
-                    fault = processValueTransfer(context);
-                    if (fault) {
-                        return USTREAM_FAULT;
-                    } else {
-                        break;
-                    }
-                case VALUE_TRANSFER_MEMO:
-                case FEE_DELEGATED_VALUE_TRANSFER_MEMO:
-                case PARTIAL_FEE_DELEGATED_VALUE_TRANSFER_MEMO:
-                    fault = processValueTransferMemo(context);
-                    if (fault) {
-                        return USTREAM_FAULT;
-                    } else {
-                        break;
-                    }
-                case SMART_CONTRACT_DEPLOY:
-                case FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
-                case PARTIAL_FEE_DELEGATED_SMART_CONTRACT_DEPLOY:
-                    fault = processSmartContractDeploy(context);
-                    if (fault) {
-                        return USTREAM_FAULT;
-                    } else {
-                        break;
-                    }
-                case SMART_CONTRACT_EXECUTION:
-                case FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
-                case PARTIAL_FEE_DELEGATED_SMART_CONTRACT_EXECUTION:
-                    fault = processSmartContractExecution(context);
-                    if (fault) {
-                        return USTREAM_FAULT;
-                    } else {
-                        break;
-                    }
-                case CANCEL:
-                case FEE_DELEGATED_CANCEL:
-                case PARTIAL_FEE_DELEGATED_CANCEL:
-                    fault = processCancel(context);
-                    if (fault) {
-                        return USTREAM_FAULT;
-                    } else {
-                        break;
-                    }
-                case EIP1559:
-                    fault = processEIP1559Tx(context);
-                    if (fault) {
-                        return USTREAM_FAULT;
-                    } else {
-                        break;
-                    }
-                default:
-                    PRINTF("Transaction type %d is not supported\n", context->txType);
-                    return USTREAM_FAULT;
-            }
-        }
+        
     }
     PRINTF("end of here\n");
 }
