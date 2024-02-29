@@ -1,10 +1,12 @@
-#include "os.h"
-#include "cx.h"
+#include "ethUtils.h"
+
 #include <stdbool.h>
 #include <stdlib.h>
-#include "ethUtils.h"
+
+#include "cx.h"
 #include "ethUstream.h"
 #include "globals.h"
+#include "os.h"
 
 bool rlpCanDecode(uint8_t *buffer, uint32_t bufferLength, bool *valid) {
     if (*buffer <= 0x7f) {
@@ -147,13 +149,16 @@ void getEthAddressStringFromBinary(uint8_t *address,
         locals_union.tmp[offset + 2 * i] = HEXDIGITS[(digit >> 4) & 0x0f];
         locals_union.tmp[offset + 2 * i + 1] = HEXDIGITS[digit & 0x0f];
     }
-    cx_keccak_init(sha3Context, 256);
-    cx_hash((cx_hash_t *) sha3Context,
-            CX_LAST,
-            locals_union.tmp,
-            offset + 40,
-            locals_union.hashChecksum,
-            32);
+
+    CX_THROW(cx_keccak_init_no_throw(sha3Context, 256));
+
+    CX_THROW(cx_hash_no_throw((cx_hash_t *) sha3Context,
+                              CX_LAST,
+                              locals_union.tmp,
+                              offset + 40,
+                              locals_union.hashChecksum,
+                              32));
+
     for (i = 0; i < 40; i++) {
         uint8_t digit = address[i / 2];
         if ((i % 2) == 0) {
@@ -177,8 +182,16 @@ void getEthAddressStringFromBinary(uint8_t *address,
 
 void getEthAddressFromKey(cx_ecfp_public_key_t *publicKey, uint8_t *out, cx_sha3_t *sha3Context) {
     uint8_t hashAddress[INT256_LENGTH];
-    cx_keccak_init(sha3Context, 256);
-    cx_hash((cx_hash_t *) sha3Context, CX_LAST, publicKey->W + 1, 64, hashAddress, 32);
+
+    CX_THROW(cx_keccak_init_no_throw(sha3Context, 256));
+
+    CX_THROW(cx_hash_no_throw((cx_hash_t *) sha3Context,
+                              CX_LAST,
+                              publicKey->W + 1,
+                              64,
+                              hashAddress,
+                              32));
+
     memmove(out, hashAddress + 12, 20);
 }
 
@@ -187,8 +200,15 @@ void getEthAddressStringFromKey(cx_ecfp_public_key_t *publicKey,
                                 cx_sha3_t *sha3Context,
                                 uint64_t chainId) {
     uint8_t hashAddress[HASH_LENGTH];
-    cx_keccak_init(sha3Context, 256);
-    cx_hash((cx_hash_t *) sha3Context, CX_LAST, publicKey->W + 1, 64, hashAddress, 32);
+
+    CX_THROW(cx_keccak_init_no_throw(sha3Context, 256));
+
+    CX_THROW(cx_hash_no_throw((cx_hash_t *) sha3Context,
+                              CX_LAST,
+                              publicKey->W + 1,
+                              64,
+                              hashAddress,
+                              32));
 
     getEthAddressStringFromBinary(hashAddress + 12, out, sha3Context, chainId);
 }

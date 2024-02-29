@@ -21,8 +21,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "os.h"
 #include "cx.h"
+#include "os.h"
 
 #include "apdu.h"
 

@@ -94,6 +94,7 @@
             "dependsOn": [
                 "Install tests requirements",
                 "Copy app.elf from bin to test/elfs directory"
+
             ]
         },
         {
@@ -200,7 +201,8 @@
             "type": "pickString",
             "description": "Choose a SDK to build with",
             "options": [
-                // "$NANOS_SDK",
+
+                "$NANOS_SDK",
                 "$NANOSP_SDK",
                 "$NANOX_SDK",
                 "$STAX_SDK",
@@ -211,7 +213,7 @@
             "type": "pickString",
             "description": "Which model to run speculos for ?",
             "options": [
-                // "nanos",
+                "nanos",
                 "nanosp",
                 "nanox",
                 "stax",

@@ -1,10 +1,12 @@
-#include "os.h"
-#include "cx.h"
+#include "utils.h"
+
 #include <stdbool.h>
 #include <stdlib.h>
-#include "utils.h"
-#include "menu.h"
+
+#include "cx.h"
 #include "ethUtils.h"
+#include "menu.h"
+#include "os.h"
 
 uint32_t set_result_get_publicKey(publicKeyContext_t *publicKeyContext) {
     uint32_t tx = 0;
@@ -22,10 +24,13 @@ void get_public_key(publicKeyContext_t *publicKeyContext,
                     size_t pathLength) {
     cx_ecfp_private_key_t privateKey;
 
-    get_private_key(&privateKey, publicKeyContext, derivationPath, pathLength);
+    get_private_key(&privateKey, derivationPath, pathLength);
     BEGIN_TRY {
         TRY {
-            cx_ecfp_generate_pair(CX_CURVE_256K1, &(publicKeyContext->publicKey), &privateKey, 1);
+            CX_THROW(cx_ecfp_generate_pair_no_throw(CX_CURVE_256K1,
+                                                    &(publicKeyContext->publicKey),
+                                                    &privateKey,
+                                                    1));
         }
         CATCH_OTHER(e) {
             MEMCLEAR(privateKey);
@@ -51,20 +56,26 @@ uint32_t readUint32BE(uint8_t *buffer) {
 }
 
 void get_private_key(cx_ecfp_private_key_t *privateKey,
-                     publicKeyContext_t *publicKeyContext,
                      const uint32_t *derivationPath,
                      size_t pathLength) {
-    uint8_t privateKeyData[PRIVATEKEY_LENGTH];
+    uint8_t privateKeyData[64];
 
     BEGIN_TRY {
         TRY {
-            os_perso_derive_node_bip32(CX_CURVE_256K1,
-                                       derivationPath,
-                                       pathLength,
-                                       privateKeyData,
-                                       NULL);
+            cx_err_t result_derive = os_derive_bip32_no_throw(CX_CURVE_256K1,
+                                                              derivationPath,
+                                                              pathLength,
+                                                              privateKeyData,
+                                                              NULL);
+            if (result_derive != CX_OK) {
+                THROW(result_derive);
+            }
+
             io_seproxyhal_io_heartbeat();
-            cx_ecfp_init_private_key(CX_CURVE_256K1, privateKeyData, PRIVATEKEY_LENGTH, privateKey);
+            CX_THROW(cx_ecfp_init_private_key_no_throw(CX_CURVE_256K1,
+                                                       privateKeyData,
+                                                       PRIVATEKEY_LENGTH,
+                                                       privateKey));
             io_seproxyhal_io_heartbeat();
         }
         CATCH_OTHER(e) {
@@ -81,21 +92,26 @@ void get_private_key(cx_ecfp_private_key_t *privateKey,
 void get_private_key_with_seed(cx_ecfp_private_key_t *privateKey,
                                const uint32_t *derivationPath,
                                uint8_t pathLength) {
-    uint8_t privateKeyData[PRIVATEKEY_LENGTH];
+    uint8_t privateKeyData[64];
     BEGIN_TRY {
         TRY {
-            os_perso_derive_node_bip32_seed_key(HDW_ED25519_SLIP10,
-                                                CX_CURVE_Ed25519,
-                                                derivationPath,
-                                                pathLength,
-                                                privateKeyData,
-                                                NULL,
-                                                (unsigned char *) "ed25519 seed",
-                                                12);
-            cx_ecfp_init_private_key(CX_CURVE_Ed25519,
-                                     privateKeyData,
-                                     PRIVATEKEY_LENGTH,
-                                     privateKey);
+            cx_err_t result_derive =
+                os_derive_bip32_with_seed_no_throw(HDW_ED25519_SLIP10,
+                                                   CX_CURVE_Ed25519,
+                                                   derivationPath,
+                                                   pathLength,
+                                                   privateKeyData,
+                                                   NULL,
+                                                   (unsigned char *) "ed25519 seed",
+                                                   12);
+            if (result_derive != CX_OK) {
+                THROW(result_derive);
+            }
+
+            CX_THROW(cx_ecfp_init_private_key_no_throw(CX_CURVE_Ed25519,
+                                                       privateKeyData,
+                                                       PRIVATEKEY_LENGTH,
+                                                       privateKey));
         }
         CATCH_OTHER(e) {
             MEMCLEAR(privateKeyData);
@@ -116,15 +132,15 @@ int read_derivation_path(const uint8_t *data_buffer,
         return ApduReplySdkInvalidParameter;
     }
     if (!data_size) {
-        return ApduReplySolanaInvalidMessageSize;
+        return ApduReplyKlaytnInvalidMessageSize;
     }
     const size_t len = data_buffer[0];
     data_buffer += 1;
     if (len < 1 || len > MAX_BIP32_PATH_LENGTH) {
-        return ApduReplySolanaInvalidMessage;
+        return ApduReplyKlaytnInvalidMessage;
     }
     if (1 + 4 * len > data_size) {
-        return ApduReplySolanaInvalidMessageSize;
+        return ApduReplyKlaytnInvalidMessageSize;
     }
 
     for (size_t i = 0; i < len; i++) {
@@ -146,18 +162,18 @@ void sendResponse(uint8_t tx, bool approve) {
     ui_idle();
 }
 
-unsigned int ui_prepro(const bagl_element_t *element) {
-    unsigned int display = 1;
-    if (element->component.userid > 0) {
-        display = (ux_step == element->component.userid - 1);
-        if (display) {
-            if (element->component.userid == 1) {
-                UX_CALLBACK_SET_INTERVAL(2000);
-            } else {
-                UX_CALLBACK_SET_INTERVAL(
-                    MAX(3000, 1000 + bagl_label_roundtrip_duration_ms(element, 7)));
-            }
-        }
-    }
-    return display;
-}
+// unsigned int ui_prepro(const bagl_element_t *element) {
+//     unsigned int display = 1;
+//     if (element->component.userid > 0) {
+//         display = (ux_step == element->component.userid - 1);
+//         if (display) {
+//             if (element->component.userid == 1) {
+//                 UX_CALLBACK_SET_INTERVAL(2000);
+//             } else {
+//                 UX_CALLBACK_SET_INTERVAL(
+//                     MAX(3000, 1000 + bagl_label_roundtrip_duration_ms(element, 7)));
+//             }
+//         }
+//     }
+//     return display;
+// }

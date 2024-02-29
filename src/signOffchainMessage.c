@@ -1,16 +1,16 @@
-#include "getPubkey.h"
-#include "os.h"
-#include "ux.h"
-#include "cx.h"
-#include "menu.h"
-#include "utils.h"
-#include "sol/parser.h"
-#include "sol/printer.h"
-#include "sol/print_config.h"
-#include "sol/message.h"
-#include "sol/transaction_summary.h"
-#include "globals.h"
 #include "apdu.h"
+#include "cx.h"
+#include "getPubkey.h"
+#include "globals.h"
+#include "menu.h"
+#include "os.h"
+#include "sol/message.h"
+#include "sol/parser.h"
+#include "sol/print_config.h"
+#include "sol/printer.h"
+#include "sol/transaction_summary.h"
+#include "utils.h"
+#include "ux.h"
 
 /**
  * Checks if data is in UTF-8 format.
@@ -84,16 +84,14 @@ static uint8_t set_result_sign_message() {
             get_private_key_with_seed(&privateKey,
                                       G_command.derivation_path,
                                       G_command.derivation_path_length);
-            cx_eddsa_sign(&privateKey,
-                          CX_LAST,
-                          CX_SHA512,
-                          G_command.message,
-                          G_command.message_length,
-                          NULL,
-                          0,
-                          signature,
-                          SIGNATURE_LENGTH,
-                          NULL);
+
+            CX_THROW(cx_eddsa_sign_no_throw(&privateKey,
+                                            CX_SHA512,
+                                            G_command.message,
+                                            G_command.message_length,
+                                            signature,
+                                            SIGNATURE_LENGTH));
+
             memcpy(G_io_apdu_buffer, signature, SIGNATURE_LENGTH);
         }
         CATCH_OTHER(e) {
@@ -138,8 +136,8 @@ UX_STEP_NOCB_INIT(ux_sign_msg_summary_step,
                       if (N_storage.settings.pubkey_display == PubkeyDisplayLong) {
                           flags |= DisplayFlagLongPubkeys;
                       }
-                      if (transaction_summary_display_item(step_index, flags)) {
-                          THROW(ApduReplySolanaSummaryUpdateFailed);
+                      if (transaction_summary_display_item(step_index)) {
+                          THROW(ApduReplyKlaytnSummaryUpdateFailed);
                       }
                   },
                   {
@@ -183,13 +181,13 @@ void handle_sign_offchain_message(volatile unsigned int *flags, volatile unsigne
     Parser parser = {G_command.message, G_command.message_length};
     OffchainMessageHeader header;
     if (parse_offchain_message_header(&parser, &header)) {
-        THROW(ApduReplySolanaInvalidMessageHeader);
+        THROW(ApduReplyKlaytnInvalidMessageHeader);
     }
 
     // validate message
     if (header.version != 0 || header.format > 1 || header.length > MAX_OFFCHAIN_MESSAGE_LENGTH ||
         header.length + OFFCHAIN_MESSAGE_HEADER_LENGTH != G_command.message_length) {
-        THROW(ApduReplySolanaInvalidMessageHeader);
+        THROW(ApduReplyKlaytnInvalidMessageHeader);
     }
     const bool is_ascii =
         is_data_ascii(G_command.message + OFFCHAIN_MESSAGE_HEADER_LENGTH, header.length);
@@ -197,7 +195,7 @@ void handle_sign_offchain_message(volatile unsigned int *flags, volatile unsigne
         is_ascii ? true
                  : is_data_utf8(G_command.message + OFFCHAIN_MESSAGE_HEADER_LENGTH, header.length);
     if (!is_ascii && (!is_utf8 || header.format == 0)) {
-        THROW(ApduReplySolanaInvalidMessageFormat);
+        THROW(ApduReplyKlaytnInvalidMessageFormat);
     } else if (!is_ascii && N_storage.settings.allow_blind_sign != BlindSignEnabled) {
         THROW(ApduReplySdkNotSupported);
     }
@@ -237,7 +235,7 @@ void handle_sign_offchain_message(volatile unsigned int *flags, volatile unsigne
     size_t num_flow_steps = 0;
     size_t num_summary_steps = 0;
     if (transaction_summary_finalize(summary_step_kinds, &num_summary_steps)) {
-        THROW(ApduReplySolanaSummaryFinalizeFailed);
+        THROW(ApduReplyKlaytnSummaryFinalizeFailed);
     }
     for (size_t i = 0; i < num_summary_steps; i++) {
         flow_steps[num_flow_steps++] = &ux_sign_msg_summary_step;

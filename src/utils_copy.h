@@ -15,8 +15,8 @@
  *  limitations under the License.
  ********************************************************************************/
 
-#ifndef _UTILS_H_
-#define _UTILS_H_
+#ifndef _UTILS_COPY_H_
+#define _UTILS_COPY_H_
 
 #include <stdint.h>
 
@@ -45,4 +45,4 @@ void amountToString(const uint8_t* amount,
 
 bool parse_swap_config(const uint8_t* config, uint8_t config_len, char* ticker, uint8_t* decimals);
 
-#endif  // _UTILS_H_
+#endif  // _UTILS_COPY_H_

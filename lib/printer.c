@@ -1,6 +1,5 @@
 #include <string.h>
 #include <limits.h>
-#include "os_error.h"
 #include "rfc3339.h"
 #include "sol/printer.h"
 #include "util.h"

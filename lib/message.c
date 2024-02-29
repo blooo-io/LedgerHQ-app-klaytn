@@ -1,11 +1,13 @@
-#include "instruction.h"
-#include "sol/parser.h"
 #include "sol/message.h"
+
+#include <string.h>
+
+#include "globals.h"
+#include "instruction.h"
+#include "shared_context.h"
+#include "sol/parser.h"
 #include "sol/print_config.h"
 #include "util.h"
-#include <string.h>
-#include "globals.h"
-#include "shared_context.h"
 
 // change this if you want to be able to add successive tx
 #define MAX_INSTRUCTIONS 1
@@ -30,36 +32,51 @@ int process_message_body() {
 
     switch (G_command.instruction) {
         case InsSignLegacyTransaction:
-            parse_system_transfer_instruction(&txContext, &info->transaction, "Legacy Transaction");
+            parse_system_transfer_instruction(&txContext,
+                                              &info->transaction,
+                                              (char*) "Legacy Transaction");
             break;
         case InsSignValueTransfer:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              strcat(fee_delegation_prefix, "Value Transfer"));
+            parse_system_transfer_instruction(
+                &txContext,
+                &info->transaction,
+                strncat(fee_delegation_prefix,
+                        "Value Transfer",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
             break;
         case InsSignValueTransferMemo:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              strcat(fee_delegation_prefix, "Value Transfer Memo"));
+            parse_system_transfer_instruction(
+                &txContext,
+                &info->transaction,
+                strncat(fee_delegation_prefix,
+                        "Value Transfer Memo",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
             break;
         case InsSignSmartContractDeploy:
             parse_system_transfer_instruction(
                 &txContext,
                 &info->transaction,
-                strcat(fee_delegation_prefix, "Smart Contract Deploy"));
+                strncat(fee_delegation_prefix,
+                        "Smart Contract Deploy",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
 
             break;
         case InsSignSmartContractExecution:
             parse_system_transfer_instruction(
                 &txContext,
                 &info->transaction,
-                strcat(fee_delegation_prefix, "Smart Contract Execution"));
+                strncat(fee_delegation_prefix,
+                        "Smart Contract Execution",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
 
             break;
         case InsSignCancel:
-            parse_system_transfer_instruction(&txContext,
-                                              &info->transaction,
-                                              strcat(fee_delegation_prefix, "Cancel"));
+            parse_system_transfer_instruction(
+                &txContext,
+                &info->transaction,
+                strncat(fee_delegation_prefix,
+                        "Cancel",
+                        sizeof(fee_delegation_prefix) - strlen(fee_delegation_prefix) - 1));
 
             break;
         default:
@@ -80,6 +97,8 @@ int process_message_body() {
             return print_smart_contract_execution_info(&display_instruction_info[0]->transaction);
         case InsSignCancel:
             return print_cancel_info(&display_instruction_info[0]->transaction);
+        default:
+            break;
     };
     return 1;
 }
