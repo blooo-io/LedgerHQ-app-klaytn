@@ -35,7 +35,7 @@
             "label": "Build app",
             "type": "shell",
             // Builds the app in release mode using the make command, inside the docker container.
-            "command": "docker exec -it ${config:container_name} bash -c 'export BOLOS_SDK=$(echo ${input:sdk}) && make -j'",
+            "command": "docker exec -it \\${config:container_name} bash -c \"export BOLOS_SDK=\\$(echo \\$NANOSP_SDK) && make -j \\$(nproc) CFLAGS=\\\"\\$(sed -n 's/^ *CFLAGS *= *//p' Makefile) -fdump-rtl-expand\\\"\"",
             "group": {
                 "kind": "build",
                 "isDefault": true
