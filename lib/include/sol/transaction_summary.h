@@ -60,6 +60,32 @@ enum DisplayFlags {
     DisplayFlagLongPubkeys = 1 << 0,
     DisplayFlagAll = DisplayFlagLongPubkeys,
 };
+
+
+
+struct SummaryItem {
+    const char* title;
+    enum SummaryItemKind kind;
+    union {
+        uint64_t u64;
+        int64_t i64;
+        const Pubkey* pubkey;
+        const Hash* hash;
+        const char* string;
+        SizedString sized_string;
+        TokenAmount token_amount;
+    };
+};
+
+
+typedef struct TransactionSummary {
+    SummaryItem primary;
+    SummaryItem fee_payer;
+    SummaryItem nonce_account;
+    SummaryItem nonce_authority;
+    SummaryItem general[NUM_GENERAL_ITEMS];
+} TransactionSummary;
+
 int transaction_summary_display_item(size_t item_index);
 int transaction_summary_finalize(enum SummaryItemKind* item_kinds, size_t* item_kinds_len);
 

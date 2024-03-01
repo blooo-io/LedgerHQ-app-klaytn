@@ -5,19 +5,6 @@
 #include <string.h>
 #include "ethUstream.h"
 
-struct SummaryItem {
-    const char* title;
-    enum SummaryItemKind kind;
-    union {
-        uint64_t u64;
-        int64_t i64;
-        const Pubkey* pubkey;
-        const Hash* hash;
-        const char* string;
-        SizedString sized_string;
-        TokenAmount token_amount;
-    };
-};
 
 void summary_item_set_amount(SummaryItem* item, const char* title, uint64_t value) {
     item->kind = SummaryItemAmount;
@@ -80,13 +67,6 @@ void summary_item_set_timestamp(SummaryItem* item, const char* title, int64_t va
     item->i64 = value;
 }
 
-typedef struct TransactionSummary {
-    SummaryItem primary;
-    SummaryItem fee_payer;
-    SummaryItem nonce_account;
-    SummaryItem nonce_authority;
-    SummaryItem general[NUM_GENERAL_ITEMS];
-} TransactionSummary;
 
 static TransactionSummary G_transaction_summary;
 
