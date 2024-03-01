@@ -32,6 +32,14 @@ def perform_test_that_verifies_signature(backend, navigator, test_name, message_
     print("-----------------RESULT-----------------", result)
     assert result, "Signature is not valid"
 
+def test_klaytn_get_app_configuration(backend,navigator, test_name):
+    sol = SolanaClient(backend)
+    app_config = sol.get_app_configuration() # (allow_blind_sign, major_version, minor_version, patch_version)
+    allow_blind_sign = app_config[0]
+    version = f"{app_config[1]}.{app_config[2]}.{app_config[3]}"
+    assert allow_blind_sign == False, "Blind sign is not the expected one"
+    assert version == "1.0.0", "Version is not the expected one"
+
 def test_klaytn_get_public_key(backend, navigator, test_name):
     sol = SolanaClient(backend)
     from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)

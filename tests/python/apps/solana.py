@@ -87,6 +87,13 @@ class SolanaClient:
     def __init__(self, client):
         self._client = client
 
+    def get_app_configuration(self) -> bytes:
+        rapdu: RAPDU = self._client.exchange(CLA, INS.INS_GET_APP_CONFIGURATION,
+                                                  P1_NON_CONFIRM, P2_NONE)
+        print('RAPDU: ', rapdu)
+        data = rapdu.data
+        return data
+
     def get_public_key(self, derivation_path: bytes) -> Tuple[bytes, bytes]:
         rapdu: RAPDU = self._client.exchange(CLA, INS.INS_GET_PUBKEY,
                                                   P1_NON_CONFIRM, P2_NONE,
