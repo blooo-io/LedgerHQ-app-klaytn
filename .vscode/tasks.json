@@ -71,34 +71,12 @@
             ]
         },
         {
-            "label": "Test app with Speculos",
-            "type": "shell",
-            // Runs the app on the speculos emulator for the selected device model, in the docker container.
-            "command":"docker exec -it ${config:container_name} bash -c 'speculos --model ${input:model} build/${input:model}/bin/app.elf'",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Kill Speculos",
-            "type": "shell",
-            // Kills speculos emulator in the docker container.
-            "command": "docker exec -it ${config:container_name} bash -c 'pkill -f speculos'",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
             "label": "Generate screenshots to validate test (golden run)",
             "type": "shell",
             // Runs functional tests inside the docker container (with Qt display disabled) and save screenshots.
             "command": "docker exec -it ${config:container_name} bash -c 'pytest tests/python/ --tb=short -v --device ${input:model} --golden_run'",
             "group": {
-                "kind": "build",
+                "kind": "test",
                 "isDefault": true
             },
             "problemMatcher": []
@@ -107,14 +85,16 @@
             "label": "Run functional tests (without logs)",
             "type": "shell",
             // Runs functional tests inside the docker container (with Qt display disabled).
-            "command": "cp bin/app.elf tests/elfs/klaytn_${input:model}.elf && docker exec -it ${config:container_name} bash -c 'pytest tests/python/ --tb=short -v --device ${input:model}'",
+            "command": "docker exec -it ${config:container_name} bash -c 'pytest tests/python/ --tb=short -v --device ${input:model}'",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "problemMatcher": [],
             "dependsOn": [
-                "Build app [debug]"
+                "Install tests requirements",
+                "Copy app.elf from bin to test/elfs directory"
+
             ]
         },
         {
@@ -126,18 +106,11 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": []
-        },
-        {
-            "label": "Install tests requirements",
-            "type": "shell",
-            // Installs functional tests python requirements in the docker container.
-            "command":"docker exec -it -u 0 ${config:container_name} bash -c 'apk add gcc musl-dev python3-dev && pip install -r tests/python/requirements.txt'",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
+            "problemMatcher": [],
+            "dependsOn": [
+                "Install tests requirements",
+                "Copy app.elf from bin to test/elfs directory"
+            ]
         },
         {
             "label": "Load app on device",
@@ -159,7 +132,8 @@
                 "isDefault": true
             },
             "dependsOn": [
-                "Install app loading requirements"
+                "Install app loading requirements",
+                "Build app"
             ],
             "problemMatcher": []
         },
@@ -187,6 +161,39 @@
             },
             "problemMatcher": []
         },
+        {
+            "label": "Install tests requirements",
+            "type": "shell",
+            // Installs functional tests python requirements in the docker container.
+            "command":"docker exec -it -u 0 ${config:container_name} bash -c 'apk add gcc musl-dev python3-dev && pip install -r tests/python/requirements.txt'",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Copy app.elf from bin to test/elfs directory",
+            "type": "shell",
+            // Copies the app.elf file from bin to the tests/elfs directory with the name klaytn_{input:model}.elf.
+            "linux": {
+                "command": "cp bin/app.elf tests/elfs/klaytn_${input:model}.elf",
+            },
+            "windows": {
+                "command": "cmd.exe /C 'copy bin\\app.elf tests\\elfs\\klaytn_${input:model}.elf'",
+            },
+            "osx": {
+                "command": "cp bin/app.elf tests/elfs/klaytn_${input:model}.elf",
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "dependsOn": [
+                "Build app"
+            ]
+        },
     ],
     "inputs": [
         {
@@ -194,9 +201,10 @@
             "type": "pickString",
             "description": "Choose a SDK to build with",
             "options": [
+
                 "$NANOS_SDK",
-                "$NANOX_SDK",
                 "$NANOSP_SDK",
+                "$NANOX_SDK",
                 "$STAX_SDK",
             ]
         },
@@ -206,8 +214,8 @@
             "description": "Which model to run speculos for ?",
             "options": [
                 "nanos",
-                "nanox",
                 "nanosp",
+                "nanox",
                 "stax",
             ]
         }
