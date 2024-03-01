@@ -1,0 +1,1 @@
+gcc hello.c -fdump-rtl-expand && python cally.py hello.c.233r.expand |  dot -Grankdir=LR -Tpng -o full_call_graph.png
