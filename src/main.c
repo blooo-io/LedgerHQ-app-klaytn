@@ -56,7 +56,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         THROW(ApduReplySdkExceptionIoOverflow);
     }
 
-    const int ret = apdu_handle_message(G_io_apdu_buffer, rx, &G_command);
+    int ret = apdu_handle_message(G_io_apdu_buffer, rx, &G_command);
     if (ret != 0) {
         THROW(ret);
     }

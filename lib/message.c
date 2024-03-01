@@ -21,7 +21,7 @@ int process_message_body() {
 
     InstructionInfo* info = &instruction_info[instruction_count];
 
-    static char fee_delegation_prefix[50];
+    char fee_delegation_prefix[50];
     if (G_command.p1 == P1_BASIC) {
         strcpy(fee_delegation_prefix, "");
     } else if (G_command.p1 == P1_FEE_DELEGATED) {
