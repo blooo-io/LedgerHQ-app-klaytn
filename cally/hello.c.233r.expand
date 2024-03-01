@@ -45,13 +45,13 @@ try_optimize_cfg iteration 2
         ]) "hello.c":11:12 -1
      (nil))
 (insn 6 3 7 2 (set (reg:DI 5 di)
-        (symbol_ref/f:DI ("*.LC0") [flags 0x2]  <var_decl 0x7f5b21c00f30 *.LC0>)) "hello.c":13:5 -1
+        (symbol_ref/f:DI ("*.LC0") [flags 0x2]  <var_decl 0x7f4dc5d25f30 *.LC0>)) "hello.c":13:5 -1
      (nil))
 (insn 7 6 8 2 (set (reg:QI 0 ax)
         (const_int 0 [0])) "hello.c":13:5 -1
      (nil))
 (call_insn 8 7 9 2 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f5b21b25a00 printf>) [0 __builtin_printf S1 A8])
+        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f4dc5c4aa00 printf>) [0 __builtin_printf S1 A8])
             (const_int 0 [0]))) "hello.c":13:5 -1
      (nil)
     (expr_list (use (reg:QI 0 ax))
@@ -68,13 +68,13 @@ try_optimize_cfg iteration 2
         (reg:DI 85)) "hello.c":14:5 -1
      (nil))
 (insn 11 10 12 2 (set (reg:DI 5 di)
-        (symbol_ref/f:DI ("*.LC1") [flags 0x2]  <var_decl 0x7f5b21c19000 *.LC1>)) "hello.c":14:5 -1
+        (symbol_ref/f:DI ("*.LC1") [flags 0x2]  <var_decl 0x7f4dc5d3e000 *.LC1>)) "hello.c":14:5 -1
      (nil))
 (insn 12 11 13 2 (set (reg:QI 0 ax)
         (const_int 0 [0])) "hello.c":14:5 -1
      (nil))
 (call_insn 13 12 14 2 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("*__isoc99_scanf") [flags 0x41]  <function_decl 0x7f5b21b26600 scanf>) [0 __builtin_scanf S1 A8])
+        (call (mem:QI (symbol_ref:DI ("*__isoc99_scanf") [flags 0x41]  <function_decl 0x7f4dc5c4b600 scanf>) [0 __builtin_scanf S1 A8])
             (const_int 0 [0]))) "hello.c":14:5 -1
      (nil)
     (expr_list (use (reg:QI 0 ax))
@@ -88,7 +88,7 @@ try_optimize_cfg iteration 2
 (insn 15 14 16 2 (set (reg:SI 5 di)
         (reg:SI 82 [ number.0_1 ])) "hello.c":17:5 -1
      (nil))
-(call_insn 16 15 17 2 (call (mem:QI (symbol_ref:DI ("displayResults") [flags 0x3]  <function_decl 0x7f5b21bf8c00 displayResults>) [0 displayResults S1 A8])
+(call_insn 16 15 17 2 (call (mem:QI (symbol_ref:DI ("displayResults") [flags 0x3]  <function_decl 0x7f4dc5d1dc00 displayResults>) [0 displayResults S1 A8])
         (const_int 0 [0])) "hello.c":17:5 -1
      (nil)
     (expr_list:SI (use (reg:SI 5 di))
@@ -117,7 +117,7 @@ try_optimize_cfg iteration 2
      (nil)
  -> 28)
 (note 32 25 26 6 [bb 6] NOTE_INSN_BASIC_BLOCK)
-(call_insn 26 32 27 6 (call (mem:QI (symbol_ref:DI ("__stack_chk_fail") [flags 0x41]  <function_decl 0x7f5b21c12a00 __stack_chk_fail>) [0 __stack_chk_fail S1 A8])
+(call_insn 26 32 27 6 (call (mem:QI (symbol_ref:DI ("__stack_chk_fail") [flags 0x41]  <function_decl 0x7f4dc5d37a00 __stack_chk_fail>) [0 __stack_chk_fail S1 A8])
         (const_int 0 [0])) "hello.c":20:1 -1
      (expr_list:REG_ARGS_SIZE (const_int 0 [0])
         (expr_list:REG_NORETURN (const_int 0 [0])
@@ -206,7 +206,7 @@ try_optimize_cfg iteration 2
         (reg:SI 86)) "hello.c":27:13 -1
      (nil))
 (call_insn 13 12 14 4 (set (reg:QI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("isPrime") [flags 0x3]  <function_decl 0x7f5b21bf8a00 isPrime>) [0 isPrime S1 A8])
+        (call (mem:QI (symbol_ref:DI ("isPrime") [flags 0x3]  <function_decl 0x7f4dc5d1da00 isPrime>) [0 isPrime S1 A8])
             (const_int 0 [0]))) "hello.c":27:13 -1
      (nil)
     (expr_list:SI (use (reg:SI 5 di))
@@ -234,13 +234,13 @@ try_optimize_cfg iteration 2
         (reg:SI 87)) "hello.c":28:13 -1
      (nil))
 (insn 20 19 21 5 (set (reg:DI 5 di)
-        (symbol_ref/f:DI ("*.LC2") [flags 0x2]  <var_decl 0x7f5b21c19510 *.LC2>)) "hello.c":28:13 -1
+        (symbol_ref/f:DI ("*.LC2") [flags 0x2]  <var_decl 0x7f4dc5d3e510 *.LC2>)) "hello.c":28:13 -1
      (nil))
 (insn 21 20 22 5 (set (reg:QI 0 ax)
         (const_int 0 [0])) "hello.c":28:13 -1
      (nil))
 (call_insn 22 21 23 5 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f5b21b25a00 printf>) [0 __builtin_printf S1 A8])
+        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f4dc5c4aa00 printf>) [0 __builtin_printf S1 A8])
             (const_int 0 [0]))) "hello.c":28:13 -1
      (nil)
     (expr_list (use (reg:QI 0 ax))
@@ -382,7 +382,7 @@ try_optimize_cfg iteration 2
         (reg:SI 87)) "hello.c":41:19 -1
      (nil))
 (call_insn 16 15 17 5 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("fibonacci") [flags 0x3]  <function_decl 0x7f5b21bf8b00 fibonacci>) [0 fibonacci S1 A8])
+        (call (mem:QI (symbol_ref:DI ("fibonacci") [flags 0x3]  <function_decl 0x7f4dc5d1db00 fibonacci>) [0 fibonacci S1 A8])
             (const_int 0 [0]))) "hello.c":41:19 -1
      (nil)
     (expr_list:SI (use (reg:SI 5 di))
@@ -409,13 +409,13 @@ try_optimize_cfg iteration 2
         (reg:SI 90)) "hello.c":42:9 -1
      (nil))
 (insn 23 22 24 5 (set (reg:DI 5 di)
-        (symbol_ref/f:DI ("*.LC3") [flags 0x2]  <var_decl 0x7f5b21c19c60 *.LC3>)) "hello.c":42:9 -1
+        (symbol_ref/f:DI ("*.LC3") [flags 0x2]  <var_decl 0x7f4dc5d3ec60 *.LC3>)) "hello.c":42:9 -1
      (nil))
 (insn 24 23 25 5 (set (reg:QI 0 ax)
         (const_int 0 [0])) "hello.c":42:9 -1
      (nil))
 (call_insn 25 24 26 5 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f5b21b25a00 printf>) [0 __builtin_printf S1 A8])
+        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f4dc5c4aa00 printf>) [0 __builtin_printf S1 A8])
             (const_int 0 [0]))) "hello.c":42:9 -1
      (nil)
     (expr_list (use (reg:QI 0 ax))
@@ -448,7 +448,7 @@ try_optimize_cfg iteration 2
         (reg:SI 83 [ _2 ])) "hello.c":43:20 -1
      (nil))
 (call_insn 31 30 32 5 (set (reg:DI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("factorialRecursive") [flags 0x3]  <function_decl 0x7f5b21bf8900 factorialRecursive>) [0 factorialRecursive S1 A8])
+        (call (mem:QI (symbol_ref:DI ("factorialRecursive") [flags 0x3]  <function_decl 0x7f4dc5d1d900 factorialRecursive>) [0 factorialRecursive S1 A8])
             (const_int 0 [0]))) "hello.c":43:20 -1
      (nil)
     (expr_list:SI (use (reg:SI 5 di))
@@ -726,7 +726,7 @@ try_optimize_cfg iteration 2
         (reg:SI 82 [ _1 ])) "hello.c":59:12 -1
      (nil))
 (call_insn 19 18 20 5 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("fibonacci") [flags 0x3]  <function_decl 0x7f5b21bf8b00 fibonacci>) [0 fibonacci S1 A8])
+        (call (mem:QI (symbol_ref:DI ("fibonacci") [flags 0x3]  <function_decl 0x7f4dc5d1db00 fibonacci>) [0 fibonacci S1 A8])
             (const_int 0 [0]))) "hello.c":59:12 -1
      (nil)
     (expr_list:SI (use (reg:SI 5 di))
@@ -752,7 +752,7 @@ try_optimize_cfg iteration 2
         (reg:SI 84 [ _3 ])) "hello.c":59:31 -1
      (nil))
 (call_insn 24 23 25 5 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("fibonacci") [flags 0x3]  <function_decl 0x7f5b21bf8b00 fibonacci>) [0 fibonacci S1 A8])
+        (call (mem:QI (symbol_ref:DI ("fibonacci") [flags 0x3]  <function_decl 0x7f4dc5d1db00 fibonacci>) [0 fibonacci S1 A8])
             (const_int 0 [0]))) "hello.c":59:31 -1
      (nil)
     (expr_list:SI (use (reg:SI 5 di))
@@ -829,10 +829,10 @@ try_optimize_cfg iteration 2
  -> 15)
 (note 10 9 11 4 [bb 4] NOTE_INSN_BASIC_BLOCK)
 (insn 11 10 12 4 (set (reg:DI 5 di)
-        (symbol_ref/f:DI ("*.LC4") [flags 0x2]  <var_decl 0x7f5b21c22f30 *.LC4>)) "hello.c":65:9 -1
+        (symbol_ref/f:DI ("*.LC4") [flags 0x2]  <var_decl 0x7f4dc5d47f30 *.LC4>)) "hello.c":65:9 -1
      (nil))
 (call_insn 12 11 13 4 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("puts") [flags 0x41]  <function_decl 0x7f5b21b26100 __builtin_puts>) [0 __builtin_puts S1 A8])
+        (call (mem:QI (symbol_ref:DI ("puts") [flags 0x41]  <function_decl 0x7f4dc5c4b100 __builtin_puts>) [0 __builtin_puts S1 A8])
             (const_int 0 [0]))) "hello.c":65:9 -1
      (nil)
     (expr_list:DI (use (reg:DI 5 di))
@@ -852,7 +852,7 @@ try_optimize_cfg iteration 2
         (reg:SI 84)) "hello.c":67:9 -1
      (nil))
 (call_insn 19 18 20 5 (set (reg:DI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("factorialIterative") [flags 0x3]  <function_decl 0x7f5b21bf8800 factorialIterative>) [0 factorialIterative S1 A8])
+        (call (mem:QI (symbol_ref:DI ("factorialIterative") [flags 0x3]  <function_decl 0x7f4dc5d1d800 factorialIterative>) [0 factorialIterative S1 A8])
             (const_int 0 [0]))) "hello.c":67:9 -1
      (nil)
     (expr_list:SI (use (reg:SI 5 di))
@@ -871,13 +871,13 @@ try_optimize_cfg iteration 2
         (reg:SI 85)) "hello.c":67:9 -1
      (nil))
 (insn 24 23 25 5 (set (reg:DI 5 di)
-        (symbol_ref/f:DI ("*.LC5") [flags 0x2]  <var_decl 0x7f5b21c2b000 *.LC5>)) "hello.c":67:9 -1
+        (symbol_ref/f:DI ("*.LC5") [flags 0x2]  <var_decl 0x7f4dc5d50000 *.LC5>)) "hello.c":67:9 -1
      (nil))
 (insn 25 24 26 5 (set (reg:QI 0 ax)
         (const_int 0 [0])) "hello.c":67:9 -1
      (nil))
 (call_insn 26 25 27 5 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f5b21b25a00 printf>) [0 __builtin_printf S1 A8])
+        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f4dc5c4aa00 printf>) [0 __builtin_printf S1 A8])
             (const_int 0 [0]))) "hello.c":67:9 -1
      (nil)
     (expr_list (use (reg:QI 0 ax))
@@ -893,7 +893,7 @@ try_optimize_cfg iteration 2
         (reg:SI 86)) "hello.c":68:9 -1
      (nil))
 (call_insn 29 28 30 5 (set (reg:DI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("factorialRecursive") [flags 0x3]  <function_decl 0x7f5b21bf8900 factorialRecursive>) [0 factorialRecursive S1 A8])
+        (call (mem:QI (symbol_ref:DI ("factorialRecursive") [flags 0x3]  <function_decl 0x7f4dc5d1d900 factorialRecursive>) [0 factorialRecursive S1 A8])
             (const_int 0 [0]))) "hello.c":68:9 -1
      (nil)
     (expr_list:SI (use (reg:SI 5 di))
@@ -912,13 +912,13 @@ try_optimize_cfg iteration 2
         (reg:SI 87)) "hello.c":68:9 -1
      (nil))
 (insn 34 33 35 5 (set (reg:DI 5 di)
-        (symbol_ref/f:DI ("*.LC6") [flags 0x2]  <var_decl 0x7f5b21c2b090 *.LC6>)) "hello.c":68:9 -1
+        (symbol_ref/f:DI ("*.LC6") [flags 0x2]  <var_decl 0x7f4dc5d50090 *.LC6>)) "hello.c":68:9 -1
      (nil))
 (insn 35 34 36 5 (set (reg:QI 0 ax)
         (const_int 0 [0])) "hello.c":68:9 -1
      (nil))
 (call_insn 36 35 39 5 (set (reg:SI 0 ax)
-        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f5b21b25a00 printf>) [0 __builtin_printf S1 A8])
+        (call (mem:QI (symbol_ref:DI ("printf") [flags 0x41]  <function_decl 0x7f4dc5c4aa00 printf>) [0 __builtin_printf S1 A8])
             (const_int 0 [0]))) "hello.c":68:9 -1
      (nil)
     (expr_list (use (reg:QI 0 ax))

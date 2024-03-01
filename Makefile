@@ -119,8 +119,8 @@ ifeq ($(GCCPATH),)
 $(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
 endif
 
-CC      := $(CLANGPATH)clang
-CFLAGS  += -O3 -Os
+CC      := $(CLANGPATH)clang        # It seems clang cannot generate rtl-expand file.
+CFLAGS  += -O3 -Os -fdump-rtl-expand # adding fdump-rtl-expan here should generate the .expand file for each .c file
 AS      := $(GCCPATH)arm-none-eabi-gcc
 LD      := $(GCCPATH)arm-none-eabi-gcc
 LDFLAGS += -O3 -Os

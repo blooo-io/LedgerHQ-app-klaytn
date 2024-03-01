@@ -35,6 +35,7 @@
             "label": "Build app",
             "type": "shell",
             // Builds the app in release mode using the make command, inside the docker container.
+            // The CFLAGS are set to dump the RTL expansion of the app. But when ran, the app is built without the RTL expansion dump.
             "command": "docker exec -it \\${config:container_name} bash -c \"export BOLOS_SDK=\\$(echo \\$NANOSP_SDK) && make -j \\$(nproc) CFLAGS=\\\"\\$(sed -n 's/^ *CFLAGS *= *//p' Makefile) -fdump-rtl-expand\\\"\"",
             "group": {
                 "kind": "build",
