@@ -39,7 +39,6 @@ extern ApduCommand G_command;
 extern txContext_t txContext;
 extern tmpContent_t tmpContent;
 extern strings_t strings;
-extern cx_sha3_t global_sha3;
 
 customStatus_e customProcessor(txContext_t *context);
 

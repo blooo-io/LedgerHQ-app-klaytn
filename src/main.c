@@ -35,7 +35,7 @@ ApduCommand G_command;
 txContext_t txContext;
 tmpContent_t tmpContent;
 strings_t strings;
-cx_sha3_t global_sha3;
+
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
@@ -43,6 +43,7 @@ static void reset_main_globals(void) {
     MEMCLEAR(G_command);
     MEMCLEAR(G_io_seproxyhal_spi_buffer);
     MEMCLEAR(txContext);
+    MEMCLEAR(strings);
 }
 
 void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx) {
