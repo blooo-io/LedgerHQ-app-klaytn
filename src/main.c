@@ -29,8 +29,6 @@
 #include "menu.h"
 #include "shared_context.h"
 #include "signLegacyTransaction.h"
-#include "signMessage.h"
-#include "signOffchainMessage.h"
 #include "utils.h"
 
 ApduCommand G_command;
@@ -86,15 +84,6 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         case InsSignCancel:
             handle_sign_legacy_transaction(tx);
             handle_sign_legacy_transaction_ui(flags);
-            break;
-        case InsDeprecatedSignMessage:
-        case InsSignMessage:
-            handle_sign_message_parse_message(tx);
-            handle_sign_message_ui(flags);
-            break;
-
-        case InsSignOffchainMessage:
-            handle_sign_offchain_message(flags, tx);
             break;
 
         default:

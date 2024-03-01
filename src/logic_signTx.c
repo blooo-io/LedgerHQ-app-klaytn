@@ -201,7 +201,8 @@ void prepareNetworkDisplay() {
     }
 }
 
-void finalizeParsing() {
+void finalizeParsing( /*cx_hash_t *global_sha3*/ ) {
+    
     // Store the hash
     CX_THROW(cx_hash_no_throw((cx_hash_t *) &global_sha3,
                               CX_LAST,

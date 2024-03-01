@@ -123,6 +123,9 @@ UX_STEP_NOCB_INIT(ux_summary_step,  // rename after deleting the singmessage one
 ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 
 void handle_sign_legacy_transaction(volatile unsigned int *tx) {
+
+    // cx_hash_t *global_sha3;
+    
     if (!tx || G_command.state != ApduStatePayloadComplete ||
         (G_command.instruction != InsSignLegacyTransaction &&
          G_command.instruction != InsSignValueTransfer &&
@@ -176,7 +179,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     }
     txResult = processTx(&txContext, workBuffer, dataLength, 0);
     if (txResult == USTREAM_FINISHED) {
-        finalizeParsing();
+        finalizeParsing(/*&global_sha3*/ );
     }
     transaction_summary_reset();
     if (process_message_body() != 0) {
