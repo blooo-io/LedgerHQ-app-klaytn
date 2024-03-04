@@ -61,8 +61,6 @@ enum DisplayFlags {
     DisplayFlagAll = DisplayFlagLongPubkeys,
 };
 
-
-
 struct SummaryItem {
     const char* title;
     enum SummaryItemKind kind;
@@ -77,12 +75,8 @@ struct SummaryItem {
     };
 };
 
-
 typedef struct TransactionSummary {
     SummaryItem primary;
-    SummaryItem fee_payer;
-    SummaryItem nonce_account;
-    SummaryItem nonce_authority;
     SummaryItem general[NUM_GENERAL_ITEMS];
 } TransactionSummary;
 
@@ -91,12 +85,7 @@ int transaction_summary_finalize(enum SummaryItemKind* item_kinds, size_t* item_
 
 // Get a pointer to the requested SummaryItem. NULL if it has already been set
 SummaryItem* transaction_summary_primary_item();
-SummaryItem* transaction_summary_fee_payer_item();
-SummaryItem* transaction_summary_nonce_account_item();
-SummaryItem* transaction_summary_nonce_authority_item();
 SummaryItem* transaction_summary_general_item();
-
-int transaction_summary_set_fee_payer_pubkey(const Pubkey* pubkey);
 
 // Assign type/title/value to a SummaryItem
 void summary_item_set_amount(SummaryItem* item, const char* title, uint64_t value);

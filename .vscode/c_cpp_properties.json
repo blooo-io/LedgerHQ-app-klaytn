@@ -7,13 +7,17 @@
         {
             "name": "Nano S Plus",
             "includePath": [
-                "/usr/include",
+                // "/usr/include",
                 "${workspaceFolder}/src",
                 "${env:BOLOS_SDK}/include/*",
                 "${env:BOLOS_SDK}/lib_ux/include/*",
                 "${workspaceFolder}/opt/ledger-secure-sdk/include",
                 "${workspaceFolder}/opt/ledger-secure-sdk/target/nanos2/include",
-                "${workspaceFolder}/opt/ledger-secure-sdk/lib_cxng/include"
+                "${workspaceFolder}/opt/ledger-secure-sdk/lib_cxng/include",
+                "${workspaceFolder}/opt/ledger-secure-sdk/lib_ux/include",
+                "${workspaceFolder}/opt/ledger-secure-sdk/lib_bagl/include",
+                "${workspaceFolder}/opt/ledger-secure-sdk/unit-tests/lib_nbgl",
+                "${workspaceFolder}/lib/include"
             ],
             "defines": [
                 "TARGET_NANOSP",
@@ -36,9 +40,11 @@
                 "HAVE_UX_FLOW",
                 "DEBUG=1",
                 "HAVE_PRINTF",
-                "PRINTF=screen_printf"
+                "PRINTF=screen_printf",
+                "HAVE_SHA3=1",
+                "HAVE_HASH=1"
             ],
-            "compilerPath": "${env:BOLOS_ENV}/gcc-arm-none-eabi-5_3-2016q1/bin/arm-none-eabi-gcc",
+            // "compilerPath": "${env:BOLOS_ENV}/gcc-arm-none-eabi-5_3-2016q1/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-arm",

@@ -67,7 +67,6 @@ void summary_item_set_timestamp(SummaryItem* item, const char* title, int64_t va
     item->i64 = value;
 }
 
-
 static TransactionSummary G_transaction_summary;
 
 char G_transaction_summary_title[TITLE_SIZE];
@@ -95,20 +94,6 @@ SummaryItem* transaction_summary_primary_item() {
     return summary_item_as_unused(item);
 }
 
-SummaryItem* transaction_summary_fee_payer_item() {
-    SummaryItem* item = &G_transaction_summary.fee_payer;
-    return summary_item_as_unused(item);
-}
-
-SummaryItem* transaction_summary_nonce_account_item() {
-    SummaryItem* item = &G_transaction_summary.nonce_account;
-    return summary_item_as_unused(item);
-}
-
-SummaryItem* transaction_summary_nonce_authority_item() {
-    SummaryItem* item = &G_transaction_summary.nonce_authority;
-    return summary_item_as_unused(item);
-}
 
 SummaryItem* transaction_summary_general_item() {
     for (size_t i = 0; i < NUM_GENERAL_ITEMS; i++) {
@@ -118,14 +103,6 @@ SummaryItem* transaction_summary_general_item() {
         }
     }
     return NULL;
-}
-
-#define FEE_PAYER_TITLE "Fee payer"
-int transaction_summary_set_fee_payer_pubkey(const Pubkey* pubkey) {
-    SummaryItem* item = transaction_summary_fee_payer_item();
-    BAIL_IF(item == NULL);
-    summary_item_set_pubkey(item, FEE_PAYER_TITLE, pubkey);
-    return 0;
 }
 
 static int transaction_summary_update_display_for_item(const SummaryItem* item) {
@@ -196,24 +173,6 @@ static SummaryItem* transaction_summary_find_item(size_t item_index) {
         }
     }
 
-    if (is_summary_item_used(&summary->nonce_account)) {
-        if (current_index == item_index) {
-            return &summary->nonce_account;
-        }
-        ++current_index;
-    }
-
-    if (is_summary_item_used(&summary->nonce_authority)) {
-        if (current_index == item_index) {
-            return &summary->nonce_authority;
-        }
-        ++current_index;
-    }
-
-    if (current_index == item_index) {
-        return &summary->fee_payer;
-    }
-
     return NULL;
 }
 
@@ -248,10 +207,6 @@ int transaction_summary_finalize(enum SummaryItemKind* item_kinds, size_t* item_
     for (size_t i = 0; i < NUM_GENERAL_ITEMS; i++) {
         SET_IF_USED(summary->general[i], item_kinds, index);
     }
-
-    SET_IF_USED(summary->nonce_account, item_kinds, index);
-    SET_IF_USED(summary->nonce_authority, item_kinds, index);
-    SET_IF_USED(summary->fee_payer, item_kinds, index);
 
     *item_kinds_len = index;
     return 0;
