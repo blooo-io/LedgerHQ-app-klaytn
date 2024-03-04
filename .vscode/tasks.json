@@ -194,9 +194,9 @@
             "type": "pickString",
             "description": "Choose a SDK to build with",
             "options": [
+                "$NANOSP_SDK",
                 "$NANOS_SDK",
                 "$NANOX_SDK",
-                "$NANOSP_SDK",
                 "$STAX_SDK",
             ]
         },
@@ -205,9 +205,9 @@
             "type": "pickString",
             "description": "Which model to run speculos for ?",
             "options": [
+                "nanosp",
                 "nanos",
                 "nanox",
-                "nanosp",
                 "stax",
             ]
         }

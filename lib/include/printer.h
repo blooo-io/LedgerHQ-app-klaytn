@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sol/parser.h"
+#include "parser.h"
 #include <stdint.h>
 #include <stddef.h>
 #include "ethUstream.h"

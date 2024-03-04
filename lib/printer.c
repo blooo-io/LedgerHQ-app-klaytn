@@ -1,7 +1,7 @@
 #include <string.h>
 #include <limits.h>
 #include "rfc3339.h"
-#include "sol/printer.h"
+#include "printer.h"
 #include "util.h"
 #include "ethUstream.h"
 

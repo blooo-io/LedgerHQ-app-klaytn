@@ -1,6 +1,6 @@
 #include "instruction.h"
 #include "parser.c"
-#include "sol/printer.h"
+#include "printer.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>

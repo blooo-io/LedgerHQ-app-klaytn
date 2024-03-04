@@ -1,6 +1,6 @@
-#include "sol/parser.h"
-#include "sol/printer.h"
-#include "sol/transaction_summary.h"
+#include "parser.h"
+#include "printer.h"
+#include "transaction_summary.h"
 #include "util.h"
 #include <string.h>
 #include "ethUstream.h"

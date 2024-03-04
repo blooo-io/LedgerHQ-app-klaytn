@@ -1,12 +1,12 @@
-#include "sol/message.h"
+#include "message.h"
 
 #include <string.h>
 
 #include "globals.h"
 #include "instruction.h"
 #include "shared_context.h"
-#include "sol/parser.h"
-#include "sol/print_config.h"
+#include "parser.h"
+#include "print_config.h"
 #include "util.h"
 
 // change this if you want to be able to add successive tx

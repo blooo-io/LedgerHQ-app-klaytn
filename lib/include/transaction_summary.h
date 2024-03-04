@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sol/parser.h"
-#include "sol/printer.h"
+#include "parser.h"
+#include "printer.h"
 #include "ethUstream.h"
 
 // TransactionSummary management

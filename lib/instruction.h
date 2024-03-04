@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 #include "ethUstream.h"
-#include "sol/parser.h"
+#include "parser.h"
 
 enum ProgramId {
     ProgramIdUnknown = 0,

@@ -3,7 +3,7 @@
 #include "os.h"
 #include "ux.h"
 #include "utils.h"
-#include "sol/printer.h"
+#include "printer.h"
 
 publicKeyContext_t G_publicKey;
 

@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "ethUstream.h"
-#include "sol/parser.h"
-#include "sol/transaction_summary.h"
+#include "parser.h"
+#include "transaction_summary.h"
 #include "util.h"
 
 const char SYMBOL[5] = "KLAY";
