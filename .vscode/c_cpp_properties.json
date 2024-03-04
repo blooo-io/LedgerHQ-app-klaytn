@@ -42,7 +42,8 @@
                 "HAVE_PRINTF",
                 "PRINTF=screen_printf",
                 "HAVE_SHA3=1",
-                "HAVE_HASH=1"
+                "HAVE_HASH=1",
+                "HAVE_ECC=1"
             ],
             // "compilerPath": "${env:BOLOS_ENV}/gcc-arm-none-eabi-5_3-2016q1/bin/arm-none-eabi-gcc",
             "cStandard": "c11",

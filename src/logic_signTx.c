@@ -6,6 +6,9 @@
 #define ERR_SILENT_MODE_CHECK_FAILED 0x6001
 
 customStatus_e customProcessor(txContext_t *context) {
+
+    strings_t strings;
+
     if (((context->txType == LEGACY && context->currentField == LEGACY_RLP_DATA) ||
          (context->txType == EIP2930 && context->currentField == EIP2930_RLP_DATA) ||
          (context->txType == EIP1559 && context->currentField == EIP1559_RLP_DATA)) &&
