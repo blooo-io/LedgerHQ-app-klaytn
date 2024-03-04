@@ -1,24 +1,16 @@
-# Solana application : Common Technical Specifications
-
-## 1.3.1
-
-- Add support for versioned messages
-
-## 1.3.0
-
-- Add SIGN SOLANA OFF-CHAIN MESSAGE
+# Klaytn application : Common Technical Specifications
 
 ## About
 
-This application describes the APDU messages interface to communicate with the Solana application.
+This application describes the APDU messages interface to communicate with the Klaytn application.
 
 The application covers the following functionalities :
 
 - Retrieve an address given an account number
-- Sign Solana transaction
+- Sign Klaytn transaction (excluding signFeePayerTransaction)
 - Sign off-chain message
 
-The application interface can be accessed over HID or BLE
+The application interface can be accessed over HID (or BLE ?)
 
 ## General purpose APDUs
 
@@ -30,9 +22,9 @@ _This command returns specific application configuration_
 
 ##### Command
 
-| _CLA_ | _INS_ | _P1_ | _P2_ | _Lc_ | _Le_ |
-| ----- | :---: | ---: | ---- | :--: | ---: |
-| E0    |  04   |   00 | 00   |  00  |   04 |
+| _CLA_ | _INS_ | _P1_ | _P2_ | _Lc_  |
+| ----- | :---: | ---: | ---- | :---: |
+| E0    |  01   |   00 | 00   |  00   |
 
 ##### Input data
 
@@ -40,98 +32,119 @@ _None_
 
 ##### Output data
 
-| _Description_             | _Length_ |
-| ------------------------- | :------: |
-| Dummy setting n°1 value   |    01    |
-| Dummy setting n°2 value   |    01    |
-| Application major version |    01    |
-| Application minor version |    01    |
-| Application patch version |    01    |
+| _Description_                          | _Length_ |
+| -------------------------------------- | :------: |
+| Allow blind sign (00: false, 01: true) |    01    |
+| Application major version              |    01    |
+| Application minor version              |    01    |
+| Application patch version              |    01    |
+| [Status word](#status-words)           |    02    |
 
 ### GET PUBKEY
 
 #### Description
 
-_This command returns a Solana pubkey for the given BIP 32 path_
+_This command returns a Klaytn pubkey for the given BIP 32 path_
 
-##### Command
+#### Command
 
-| _CLA_ | _INS_ | _P1_ | _P2_ |   _Lc_   |     _Le_ |
-| ----- | :---: | ---: | ---- | :------: | -------: |
-| E0    |  05   |   00 | 00   | variable | variable |
+| _CLA_ | _INS_ | _P1_ | _P2_ |   _Lc_   | _Input data_ |
+| ----- | :---: | ---: | ---- | :------: | :----------: |
+| E0    |  02   |   00 | 00   | variable |   variable   |
 
 ##### Input data
 
-| _Description_                                    | _Length_ |
-| ------------------------------------------------ | :------: |
-| Number of BIP 32 derivations to perform (3 or 4) |    1     |
-| First derivation index (big endian)              |    4     |
-| ...                                              |    4     |
-| Last derivation index (big endian)               |    4     |
+| _Description_                               | _Length_ |
+| ------------------------------------------- | :------: |
+| Number of BIP 32 derivations to perform (5) |    1     |
+| First derivation index (big endian)         |    4     |
+| ...                                         |    4     |
+| Fifth derivation index (big endian)         |    4     |
 
 ##### Output data
 
-| _Description_ | _Length_ |
-| ------------- | :------: |
-| Pubkey        |    32    |
+| _Description_                |      _Length_       |
+| ---------------------------- | :-----------------: |
+| Length of pubkey             |          1          |
+| Pubkey                       | previous value (65) |
+| Length of address            |          1          |
+| Address                      | previous value (40) |
+| [Status Word](#status-words) |          2          |
 
-### SIGN SOLANA TRANSACTION
 
-#### Description
+## SIGN KLAYTN TRANSACTION
 
-_This command signs a Solana Transaction after having the user validate the transaction-specific parameters:_
+### Description
 
-##### Command
+This is the command used to sign a Klaytn transaction after having the user validate the transaction-specific parameters. You can find more info about each section using the links in the table below.
 
-| _CLA_ | _INS_ | _P1_ | _P2_ |   _Lc_   |     _Le_ |
-| ----- | :---: | ---: | ---- | :------: | -------: |
-| E0    |  06   |   01 | 00   | variable | variable |
+### Command Structure
+
+
+#### Input structure
+| _CLA_ | [_INS_](#ins) | [_P1_](#p1) | [_P2_](#p2) |           _Lc_           | [_Input data_](#input-data-2) |
+| ----- | :-----------: | ----------: | ----------- | :----------------------: | ----------------------------: |
+| E0    |   variable    |    variable | variable    | len in byte (input data) |                      variable |
+
+##### INS
+
+`INS` will vary depending on the transaction you want to sign. Use the one that match the transaction you want.
+
+| Transaction type       | INS command |
+| ---------------------- | ----------- |
+| LegacyTransaction      | 0x04        |
+| ValueTransfer          | 0x08        |
+| ValueTransferMemo      | 0x10        |
+| SmartContractDeploy    | 0x28        |
+| SmartContractExecution | 0x30        |
+| Cancel                 | 0x38        |
+
+##### P1
+
+`P1` is used to say which type of transaction the app is dealing with. There are three main types in Klaytn.
+
+| P1_BASIC | P1_FEE_DELEGATED | P1_FEE_DELEGATED_WITH_RATIO |
+| -------- | ---------------- | --------------------------- |
+| 0x00     | 0x01             | 0x02                        |
+
+##### P2
+
+`P2` is used to tell the app if the apdu sent is:
+- the last one(P2_NONE),
+- the first one with more coming (P2_MORE) or
+- at least the second one but not last (P2_EXTEND)
+
+| P2_NONE | P2_EXTEND | P2_MORE |
+| ------- | --------- | ------- |
+| 0x00    | 0x01      | 0x02    |
+
 
 ##### Input data
+
 
 | _Description_                                       | _Length_ |
 | --------------------------------------------------- | :------: |
-| Number of signers (derivation paths) (always 1)     |    1     |
-| Number of BIP 32 derivations to perform (2, 3 or 4) |    1     |
+| Number of BIP 32 derivations to perform (always 5 ) |    1     |
 | First derivation index (big endian)                 |    4     |
 | ...                                                 |    4     |
 | Last derivation index (big endian)                  |    4     |
-| Serialized transaction                              | variable |
+| Encoded transaction                                 | variable |
 
-##### Output data
+###### Encoded transaction
 
-| _Description_ | _Length_ |
-| ------------- | :------: |
-| Signature     |    64    |
+In the table below you will see what type of information need to be encoded and how.
+The encoding algorithm is [RLP](https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp).
+You can find more info about RLP encoding for signature [here](https://archive-docs.klaytn.foundation/content/klaytn/design/transactions/basic#rlp-encoding-for-signature).
 
-### SIGN SOLANA OFF-CHAIN MESSAGE
+You can find information about how to encode Klaytn Transaction on [this page](https://archive-docs.klaytn.foundation/content/klaytn/design/transactions#sendertxhash). Click on the transaction that interests you and search for `RLP Encoding for Signature`
 
-#### Description
+#### Output structure
 
-_This command signs a Solana Off-Chain Message after having the user validate the text of ASCII encoded messages, or hash of UTF-8 encoded messages:_
+| _Description_                | _Length_ |
+| ---------------------------- | :------: |
+| Signature                    |    64    |
+| [Status word](#status-words) |    2     |
 
-##### Command
-
-| _CLA_ | _INS_ | _P1_ | _P2_ |   _Lc_   |     _Le_ |
-| ----- | :---: | ---: | ---- | :------: | -------: |
-| E0    |  07   |   01 | 00   | variable | variable |
-
-##### Input data
-
-| _Description_                                       | _Length_ |
-| --------------------------------------------------- | :------: |
-| Number of signers (derivation paths) (always 1)     |    1     |
-| Number of BIP 32 derivations to perform (2, 3 or 4) |    1     |
-| First derivation index (big endian)                 |    4     |
-| ...                                                 |    4     |
-| Last derivation index (big endian)                  |    4     |
-| Serialized off-chain message                        | variable |
-
-##### Output data
-
-| _Description_ | _Length_ |
-| ------------- | :------: |
-| Signature     |    64    |
 
 ## Transport protocol
 
@@ -168,22 +181,14 @@ APDU Command payloads are encoded as follows :
 | APDU data length         |    1     |
 | Optional APDU data       |   var    |
 
-APDU payload is encoded according to the APDU case
-
-| Case Number | _Lc_ | _Le_ | Case description                                        |
-| ----------- | ---- | ---- | ------------------------------------------------------- |
-| 1           | 0    | 0    | No data in either direction - L is set to 00            |
-| 2           | 0    | !0   | Input Data present, no Output Data - L is set to Lc     |
-| 3           | !0   | 0    | Output Data present, no Input Data - L is set to Le     |
-| 4           | !0   | !0   | Both Input and Output Data are present - L is set to Lc |
 
 #### Deprecation notice
 
 The `ADPU data length` field was formerly serialized as a 16bit unsigned big endian integer. As of version 0.2.0, this has been changed to an 8bit unsigned integer to improve compatibility with client libraries. In doing so, the following instructions have been deprecated.
 
-- 0x01 - GET_APP_CONFIGURATION
-- 0x02 - GET_PUBKEY
-- 0x03 - SIGN_MESSAGE
+- 0xF1 - GET_APP_CONFIGURATION
+- 0xF2 - GET_PUBKEY
+- 0xF3 - SIGN_MESSAGE
 
 ### APDU Response payload encoding
 
@@ -191,8 +196,8 @@ APDU Response payloads are encoded as follows :
 
 | _Description_                      | _Length_ |
 | ---------------------------------- | :------: |
-| APDU response length (big endian)  |    2     |
-| APDU response data and Status Word |   var    |
+| APDU response length (big endian)  |   var    |
+| APDU response data and Status Word |    2     |
 
 ### USB mapping
 
@@ -212,15 +217,34 @@ Requests are encoded using the standard BLE 20 bytes MTU size
 
 The following standard Status Words are returned for all APDUs - some specific Status Words can be used for specific commands and are mentioned in the command description.
 
-##### Status Words
-
-| _SW_ |                   _Description_                   |
-| ---- | :-----------------------------------------------: |
-| 6700 |                 Incorrect length                  |
-| 6982 | Security status not satisfied (Canceled by user)  |
-| 6A80 |                   Invalid data                    |
-| 6A81 |         Invalid off-chain message header          |
-| 6A82 |         Invalid off-chain message format          |
-| 6B00 |           Incorrect parameter P1 or P2            |
-| 6Fxx | Technical problem (Internal error, please report) |
-| 9000 |           Normal ending of the command            |
+| _SW_ |        _Description_         |
+| ---- | :--------------------------: |
+| 9000 |           Success            |
+| 6F01 |  Klaytn SummaryUpdateFailed  |
+| 6F00 | Klaytn SummaryFinalizeFailed |
+| 6A83 |  Klaytn InvalidMessageSize   |
+| 6A82 | Klaytn InvalidMessageFormat  |
+| 6A81 | Klaytn InvalidMessageHeader  |
+| 6A80 |    Klaytn InvalidMessage     |
+| 6982 |        NoApduReceived        |
+| 6E00 |          InvalidCla          |
+| 6D00 |   UnimplementedInstruction   |
+| 6819 |        NotEnoughSpace        |
+| 6818 |       ExceptionSystem        |
+| 6817 |       ExceptionCxPort        |
+| 6816 |       ExceptionIoReset       |
+| 6815 |       ExceptionIoState       |
+| 6814 |      ExceptionIoHeader       |
+| 6813 |     ExceptionIoOverflow      |
+| 6812 |       ExceptionAppExit       |
+| 6811 |         ExceptionPIC         |
+| 6810 |           Timeout            |
+| 6809 |         InvalidState         |
+| 6808 |         NotSupported         |
+| 6807 |        InvalidCounter        |
+| 6806 |       InvalidChecksum        |
+| 6805 |          InvalidCrc          |
+| 6804 |      ExceptionSecurity       |
+| 6803 |      ExceptionOverflow       |
+| 6802 |       InvalidParameter       |
+| 6801 |         SdkException         |
