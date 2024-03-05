@@ -2,47 +2,46 @@ from ragger.backend import RaisePolicy
 from ragger.navigator import NavInsID
 from ragger.utils import RAPDU
 
-from .apps.solana import SolanaClient, ErrorType, INS, P1_FEE_DELEGATED, P1_FEE_DELEGATED_WITH_RATIO, P1_BASIC
-from .apps.solana_cmd_builder import SystemInstructionTransfer, Message
+from .apps.klaytn import KlaytnClient, ErrorType, INS, P1_FEE_DELEGATED, P1_FEE_DELEGATED_WITH_RATIO, P1_BASIC
 from .apps.klaytn_cmd_builder import verify_transaction_signature_from_public_key
-from .apps.solana_utils import FOREIGN_PUBLIC_KEY, FOREIGN_PUBLIC_KEY_2, AMOUNT, AMOUNT_2, SOL_PACKED_DERIVATION_PATH, SOL_PACKED_DERIVATION_PATH_2, KLAYTN_DERIVATION_PATH
+from .apps.klaytn_utils import FOREIGN_PUBLIC_KEY, FOREIGN_PUBLIC_KEY_2, AMOUNT, AMOUNT_2, KLAYTN_DERIVATION_PATH
 
 from .utils import ROOT_SCREENSHOT_PATH
 from binascii import hexlify
 
 
 def perform_test_that_verifies_signature(backend, navigator, test_name, message_hex, ins_value, p1_value=P1_BASIC):
-    sol = SolanaClient(backend)
-    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+    klay = KlaytnClient(backend)
+    from_public_key, address = klay.get_public_key(KLAYTN_DERIVATION_PATH)
     print("from_public_key", list(from_public_key))
     derivation_path_hex = '058000002c80002019800000000000000000000000'
     derivation_path_bytes = bytearray.fromhex(derivation_path_hex)
     message_bytes = bytearray.fromhex(message_hex)
     data: bytes = derivation_path_bytes + message_bytes
 
-    with sol.send_async_sign_transaction(data, ins_value, p1_value):
+    with klay.send_async_sign_transaction(data, ins_value, p1_value):
         navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
                                                     [NavInsID.BOTH_CLICK],
                                                     "Approve",
                                                     ROOT_SCREENSHOT_PATH,
                                                     test_name)
 
-    signature: bytes = sol.get_async_response().data
+    signature: bytes = klay.get_async_response().data
     result = verify_transaction_signature_from_public_key(message_bytes, signature, from_public_key)
     print("-----------------RESULT-----------------", result)
     assert result, "Signature is not valid"
 
 def test_klaytn_get_app_configuration(backend,navigator, test_name):
-    sol = SolanaClient(backend)
-    app_config = sol.get_app_configuration() # (allow_blind_sign, major_version, minor_version, patch_version)
+    klay = KlaytnClient(backend)
+    app_config = klay.get_app_configuration() # (allow_blind_sign, major_version, minor_version, patch_version)
     allow_blind_sign = app_config[0]
     version = f"{app_config[1]}.{app_config[2]}.{app_config[3]}"
     assert allow_blind_sign == False, "Blind sign is not the expected one"
     assert version == "1.0.0", "Version is not the expected one"
 
 def test_klaytn_get_public_key(backend, navigator, test_name):
-    sol = SolanaClient(backend)
-    from_public_key, address = sol.get_public_key(KLAYTN_DERIVATION_PATH)
+    klay = KlaytnClient(backend)
+    from_public_key, address = klay.get_public_key(KLAYTN_DERIVATION_PATH)
 
     print("Address 0x", address.decode(), sep='')
 

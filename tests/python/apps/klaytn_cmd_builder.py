@@ -114,7 +114,7 @@ class CompiledInstruction:
         serialized += self.data
         return serialized
 
-# Solana communication message, header + list of public keys used by the instructions + instructions
+# Klaytn communication message, header + list of public keys used by the instructions + instructions
 # with references to the keys array
 
 

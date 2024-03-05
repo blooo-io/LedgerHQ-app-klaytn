@@ -67,9 +67,6 @@ class ErrorType:
     SDK_NOT_ENOUGH_SPACE = 0x6819
     NO_APDU_RECEIVED = 0x6982
     USER_CANCEL = 0x6985
-    SOLANA_INVALID_MESSAGE = 0x6a80
-    SOLANA_SUMMARY_FINALIZE_FAILED = 0x6f00
-    SOLANA_SUMMARY_UPDATE_FAILED = 0x6f01
     UNIMPLEMENTED_INSTRUCTION = 0x6d00
     INVALID_CLA = 0x6e00
 
@@ -81,7 +78,7 @@ def _extend_and_serialize_multiple_derivations_paths(derivations_paths: List[byt
     return serialized
 
 
-class SolanaClient:
+class KlaytnClient:
     client: BackendInterface
 
     def __init__(self, client):
