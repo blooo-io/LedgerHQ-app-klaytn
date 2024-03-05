@@ -15,13 +15,10 @@
  *  limitations under the License.
  ********************************************************************************/
 
-
-
 #ifdef HAVE_NBGL
 #include "nbgl_touch.h"
 #include "nbgl_page.h"
 #endif  // HAVE_NBGL
-
 
 #include "apdu.h"
 #include "ethUstream.h"
@@ -32,7 +29,7 @@
 #include "utils.h"
 
 ApduCommand G_command;
-txInt256_t  chainID;
+txInt256_t chainID;
 tmpContent_t tmpContent;
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
@@ -43,7 +40,6 @@ static void reset_main_globals() {
 }
 
 void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx) {
-
     if (!flags || !tx) {
         THROW(ApduReplySdkInvalidParameter);
     }
@@ -93,15 +89,13 @@ void app_main(void) {
     volatile unsigned int rx = 0;
     volatile unsigned int tx = 0;
     volatile unsigned int flags = 0;
-    
-    
 
     // Stores the information about the current command. Some commands expect
     // multiple APDUs before they become complete and executed.
     reset_getpubkey_globals();
     reset_main_globals(
         // &txContext
-        );
+    );
 
     // DESIGN NOTE: the bootloader ignores the way APDU are fetched. The only
     // goal is to retrieve APDU.

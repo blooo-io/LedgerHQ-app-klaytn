@@ -6,7 +6,6 @@
 #define ERR_SILENT_MODE_CHECK_FAILED 0x6001
 
 customStatus_e customProcessor(txContext_t *context) {
-
     strings_t strings;
 
     if (((context->txType == LEGACY && context->currentField == LEGACY_RLP_DATA) ||
@@ -14,7 +13,8 @@ customStatus_e customProcessor(txContext_t *context) {
          (context->txType == EIP1559 && context->currentField == EIP1559_RLP_DATA)) &&
         (context->currentFieldLength != 0)) {
         context->content->dataPresent = true;
-        if (tmpContent.txContent.destinationLength == 0) { // TODO : check why this part is killing some tests
+        if (tmpContent.txContent.destinationLength ==
+            0) {  // TODO : check why this part is killing some tests
             return CUSTOM_NOT_HANDLED;
         }
         if (context->currentFieldLength < 4) {
@@ -67,7 +67,6 @@ customStatus_e customProcessor(txContext_t *context) {
 }
 
 void finalizeParsing(txContext_t *txContext) {
-    
     // Store the hash
     CX_THROW(cx_hash_no_throw((cx_hash_t *) txContext->sha3,
                               CX_LAST,
