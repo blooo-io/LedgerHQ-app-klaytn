@@ -145,10 +145,10 @@ int print_summary(const char *in,
 }
 
 const char BASE58_ALPHABET[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
-                                       'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q',
-                                       'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c',
-                                       'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'o', 'p',
-                                       'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+                                'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q',
+                                'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c',
+                                'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'o', 'p',
+                                'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 
 int encode_base58(const void *in, size_t length, char *out, size_t maxoutlen) {
     uint8_t tmp[64];

@@ -5,7 +5,6 @@
 #include <string.h>
 #include "ethUstream.h"
 
-
 void summary_item_set_amount(SummaryItem* item, const char* title, uint64_t value) {
     item->kind = SummaryItemAmount;
     item->title = title;
@@ -93,7 +92,6 @@ SummaryItem* transaction_summary_primary_item() {
     SummaryItem* item = &G_transaction_summary.primary;
     return summary_item_as_unused(item);
 }
-
 
 SummaryItem* transaction_summary_general_item() {
     for (size_t i = 0; i < NUM_GENERAL_ITEMS; i++) {
