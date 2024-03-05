@@ -32,18 +32,22 @@
 #include "utils.h"
 
 ApduCommand G_command;
-tmpContent_t tmpContent;
 txInt256_t chainID;
+tmpContent_t tmpContent;
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
-static void reset_main_globals(txContext_t* txContext) {
+static void reset_main_globals(
+    // txContext_t* txContext
+    ) {
     MEMCLEAR(G_command);
     MEMCLEAR(G_io_seproxyhal_spi_buffer);
-    MEMCLEAR(txContext);
+    // MEMCLEAR(txContext);
 }
 
-void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx, txContext_t *txContext) {
+void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx) {
+    // txContext_t txContext;
+
     if (!flags || !tx) {
         THROW(ApduReplySdkInvalidParameter);
     }
@@ -80,7 +84,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx,
         case InsSignSmartContractDeploy:
         case InsSignSmartContractExecution:
         case InsSignCancel:
-            handle_sign_legacy_transaction(tx, txContext);
+            handle_sign_legacy_transaction(tx);
             handle_sign_legacy_transaction_ui(flags);
             break;
 
@@ -93,12 +97,15 @@ void app_main(void) {
     volatile unsigned int rx = 0;
     volatile unsigned int tx = 0;
     volatile unsigned int flags = 0;
-    txContext_t txContext;
+    
+    
 
     // Stores the information about the current command. Some commands expect
     // multiple APDUs before they become complete and executed.
     reset_getpubkey_globals();
-    reset_main_globals(&txContext);
+    reset_main_globals(
+        // &txContext
+        );
 
     // DESIGN NOTE: the bootloader ignores the way APDU are fetched. The only
     // goal is to retrieve APDU.
@@ -125,7 +132,7 @@ void app_main(void) {
 
                 PRINTF("New APDU received:\n%.*H\n", rx, G_io_apdu_buffer);
 
-                handleApdu(&flags, &tx, rx, &txContext);
+                handleApdu(&flags, &tx, rx);
             }
             CATCH(ApduReplySdkExceptionIoReset) {
                 THROW(ApduReplySdkExceptionIoReset);
