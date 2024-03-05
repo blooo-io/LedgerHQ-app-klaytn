@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-device_label=${1:-"nanox"} # "nanos", "nanox", "nanosp"
+device_label=${1:-"nanos"} # "nanos", "nanox", "nanosp"
 golden_run=${2:-false} # true or false, treated as a boolean
 
 mkdir -p tests/elfs

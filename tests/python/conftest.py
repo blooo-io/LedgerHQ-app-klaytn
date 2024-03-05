@@ -17,13 +17,13 @@ APP_NAME = "klaytn"
 BACKENDS = ["speculos", "ledgercomm", "ledgerwallet"]
 
 DEVICES = [
-           #"nanos",
+           "nanos",
            "nanox", 
            "nanosp", 
            "all"]
 
 FIRMWARES = [
-            #  Firmware('nanos', '2.1'), 
+             Firmware('nanos', '2.1'), 
              Firmware('nanox', '2.0.2'),
              Firmware('nanosp', '1.0.3')]
 

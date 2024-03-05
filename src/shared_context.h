@@ -37,7 +37,6 @@ typedef union {
 
 extern ApduCommand G_command;
 extern txInt256_t chainID;
-extern tmpContent_t tmpContent;
 
 customStatus_e customProcessor(txContext_t *context);
 
