@@ -14,9 +14,9 @@ customStatus_e customProcessor(txContext_t *context) {
          (context->txType == EIP1559 && context->currentField == EIP1559_RLP_DATA)) &&
         (context->currentFieldLength != 0)) {
         context->content->dataPresent = true;
-        if (tmpContent.txContent.destinationLength == 0) { // TODO : check why this part is killing some tests
-            return CUSTOM_NOT_HANDLED;
-        }
+        // if (tmpContent.txContent.destinationLength == 0) { // TODO : check why this part is killing some tests
+        //     return CUSTOM_NOT_HANDLED;
+        // }
         if (context->currentFieldLength < 4) {
             return CUSTOM_NOT_HANDLED;
         }

@@ -32,21 +32,16 @@
 #include "utils.h"
 
 ApduCommand G_command;
-txInt256_t chainID;
-tmpContent_t tmpContent;
+txInt256_t  chainID;
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
-static void reset_main_globals(
-    // txContext_t* txContext
-    ) {
+static void reset_main_globals() {
     MEMCLEAR(G_command);
     MEMCLEAR(G_io_seproxyhal_spi_buffer);
-    // MEMCLEAR(txContext);
 }
 
 void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx) {
-    // txContext_t txContext;
 
     if (!flags || !tx) {
         THROW(ApduReplySdkInvalidParameter);
