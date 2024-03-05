@@ -3,6 +3,7 @@
 #include "globals.h"
 #include <string.h>
 #include "apdu.h"
+#include "ethUstream.h"
 
 #ifndef _UTILS_H_
 #define _UTILS_H_
@@ -42,7 +43,7 @@ void get_private_key_with_seed(cx_ecfp_private_key_t *privateKey,
                                const uint32_t *derivationPath,
                                uint8_t pathLength);
 
-void finalizeParsing();
+void finalizeParsing(txContext_t *txContext);
 
 /**
  * Deserialize derivation path from raw bytes.

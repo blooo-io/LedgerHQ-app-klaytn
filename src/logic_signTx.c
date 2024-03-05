@@ -66,10 +66,10 @@ customStatus_e customProcessor(txContext_t *context) {
     return CUSTOM_NOT_HANDLED;
 }
 
-void finalizeParsing( ) {
+void finalizeParsing(txContext_t *txContext) {
     
     // Store the hash
-    CX_THROW(cx_hash_no_throw((cx_hash_t *) txContext.sha3,
+    CX_THROW(cx_hash_no_throw((cx_hash_t *) txContext->sha3,
                               CX_LAST,
                               G_command.message_hash.data,
                               0,

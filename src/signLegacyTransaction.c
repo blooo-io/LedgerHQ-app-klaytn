@@ -122,7 +122,7 @@ UX_STEP_NOCB_INIT(ux_summary_step,  // rename after deleting the singmessage one
     )
 ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 
-void handle_sign_legacy_transaction(volatile unsigned int *tx) {
+void handle_sign_legacy_transaction(volatile unsigned int *tx, txContext_t *txContext) {
     cx_sha3_t sha3;
     
     if (!tx || G_command.state != ApduStatePayloadComplete ||
@@ -137,7 +137,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
 
     parserStatus_e txResult;
 
-    initTx(&txContext, &sha3, &tmpContent.txContent, customProcessor, NULL);
+    initTx(txContext, &sha3, &tmpContent.txContent, customProcessor, NULL);
 
     uint8_t *workBuffer = G_command.message;
     uint8_t dataLength = G_command.message_length;
@@ -147,8 +147,8 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     // Enumerate through all supported txTypes here...
     switch (txType) {
         case LEGACY:
-            txContext.txType = LEGACY;
-            txContext.outerRLP = false;
+            txContext->txType = LEGACY;
+            txContext->outerRLP = false;
             break;
         case 1:
         case 2:
@@ -167,20 +167,20 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
         case CANCEL:
         case FEE_DELEGATED_CANCEL:
         case PARTIAL_FEE_DELEGATED_CANCEL:
-            txContext.txType = txType;
-            txContext.outerRLP = true;
+            txContext->txType = txType;
+            txContext->outerRLP = true;
             break;
         default:
             PRINTF("Transaction type %d not supported\n", txType);
             THROW(0x6501);
             break;
     }
-    txResult = processTx(&txContext, workBuffer, dataLength, 0);
+    txResult = processTx(txContext, workBuffer, dataLength, 0);
     if (txResult == USTREAM_FINISHED) {
-        finalizeParsing();
+        finalizeParsing(txContext);
     }
     transaction_summary_reset();
-    if (process_message_body() != 0) {
+    if (process_message_body(txContext) != 0) {
         // Message not processed, throw if blind signing is not enabled
         if (N_storage.settings.allow_blind_sign == BlindSignEnabled) {
             SummaryItem *item = transaction_summary_primary_item();

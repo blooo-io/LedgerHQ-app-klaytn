@@ -12,7 +12,7 @@
 // change this if you want to be able to add successive tx
 #define MAX_INSTRUCTIONS 1
 
-int process_message_body() {
+int process_message_body(txContext_t* txContext) {
     size_t instruction_count = 0;
     InstructionInfo instruction_info[MAX_INSTRUCTIONS];
     explicit_bzero(instruction_info, sizeof(InstructionInfo) * MAX_INSTRUCTIONS);
@@ -32,13 +32,13 @@ int process_message_body() {
 
     switch (G_command.instruction) {
         case InsSignLegacyTransaction:
-            parse_system_transfer_instruction(&txContext,
+            parse_system_transfer_instruction(txContext,
                                               &info->transaction,
                                               (char*) "Legacy Transaction");
             break;
         case InsSignValueTransfer:
             parse_system_transfer_instruction(
-                &txContext,
+                txContext,
                 &info->transaction,
                 strncat(fee_delegation_prefix,
                         "Value Transfer",
@@ -46,7 +46,7 @@ int process_message_body() {
             break;
         case InsSignValueTransferMemo:
             parse_system_transfer_instruction(
-                &txContext,
+                txContext,
                 &info->transaction,
                 strncat(fee_delegation_prefix,
                         "Value Transfer Memo",
@@ -54,7 +54,7 @@ int process_message_body() {
             break;
         case InsSignSmartContractDeploy:
             parse_system_transfer_instruction(
-                &txContext,
+                txContext,
                 &info->transaction,
                 strncat(fee_delegation_prefix,
                         "Smart Contract Deploy",
@@ -63,7 +63,7 @@ int process_message_body() {
             break;
         case InsSignSmartContractExecution:
             parse_system_transfer_instruction(
-                &txContext,
+                txContext,
                 &info->transaction,
                 strncat(fee_delegation_prefix,
                         "Smart Contract Execution",
@@ -72,7 +72,7 @@ int process_message_body() {
             break;
         case InsSignCancel:
             parse_system_transfer_instruction(
-                &txContext,
+                txContext,
                 &info->transaction,
                 strncat(fee_delegation_prefix,
                         "Cancel",

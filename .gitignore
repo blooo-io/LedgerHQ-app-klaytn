@@ -22,3 +22,4 @@ __pycache__
 opt
 tests/elfs/*.elf
 tests/python/snapshots-tmp/
+.DS_Store
