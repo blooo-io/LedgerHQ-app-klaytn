@@ -20,6 +20,6 @@ __pycache__
 .pyc
 *~
 opt
-tests/elfs/*.elf
+tests/elfs
 tests/python/snapshots-tmp/
 .DS_Store
