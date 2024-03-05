@@ -74,18 +74,7 @@
             "label": "Generate screenshots to validate test (golden run)",
             "type": "shell",
             // Runs functional tests inside the docker container (with Qt display disabled) and save screenshots.
-            "command": "docker exec -it ${config:container_name} bash -c 'pytest tests/python/ --tb=short -v --device ${input:model} --golden_run'",
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Run functional tests (without logs)",
-            "type": "shell",
-            // Runs functional tests inside the docker container (with Qt display disabled).
-            "command": "docker exec -it ${config:container_name} bash -c 'pytest tests/python/ --tb=short -v --device ${input:model}'",
+            "command": "docker exec -it ${config:container_name} bash -c 'pytest tests/ --tb=short -v --device ${input:model} --golden_run'",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -93,7 +82,23 @@
             "problemMatcher": [],
             "dependsOn": [
                 "Install tests requirements",
-                "Copy app.elf from bin to test/elfs directory"
+                // "Copy app.elf from bin to test/elfs directory"
+
+            ]
+        },
+        {
+            "label": "Run functional tests (without logs)",
+            "type": "shell",
+            // Runs functional tests inside the docker container (with Qt display disabled).
+            "command": "docker exec -it ${config:container_name} bash -c 'pytest tests/ --tb=short -v --device ${input:model}'",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "dependsOn": [
+                "Install tests requirements",
+                // "Copy app.elf from bin to test/elfs directory"
 
             ]
         },
@@ -101,7 +106,7 @@
             "label": "Run functional tests (with logs)",
             "type": "shell",
             // Runs functional tests inside the docker container (with Qt display disabled).
-            "command": "docker exec -it ${config:container_name} bash -c 'pytest -s tests/python/ --tb=short -v --device ${input:model}'",
+            "command": "docker exec -it ${config:container_name} bash -c 'pytest -s tests/ --tb=short -v --device ${input:model}'",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -109,7 +114,7 @@
             "problemMatcher": [],
             "dependsOn": [
                 "Install tests requirements",
-                "Copy app.elf from bin to test/elfs directory"
+                // "Copy app.elf from bin to test/elfs directory"
             ]
         },
         {
@@ -165,7 +170,7 @@
             "label": "Install tests requirements",
             "type": "shell",
             // Installs functional tests python requirements in the docker container.
-            "command":"docker exec -it -u 0 ${config:container_name} bash -c 'apk add gcc musl-dev python3-dev && pip install -r tests/python/requirements.txt'",
+            "command":"docker exec -it -u 0 ${config:container_name} bash -c 'apk add gcc musl-dev python3-dev && pip install -r tests/requirements.txt'",
             "group": {
                 "kind": "test",
                 "isDefault": true

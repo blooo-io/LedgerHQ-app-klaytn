@@ -1,48 +1,48 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.10)
 
-project(SolanaFuzzer VERSION 1.0.5 LANGUAGES C)
-
-set(CMAKE_C_STANDARD 11)
-
-add_compile_options(-g -ggdb2 -O3)
-
-set(LIB_DIR "../lib")
-
-# Build with code coverage generation
-if(CODE_COVERAGE)
-    if(CMAKE_C_COMPILER_ID MATCHES "(Apple)?[Cc]lang")
-        add_compile_options(-fprofile-instr-generate -fcoverage-mapping)
-        add_link_options(-fprofile-instr-generate -fcoverage-mapping)
-    elseif(CMAKE_C_COMPILER_ID MATCHES "GNU")
-        add_compile_options(-fprofile-arcs -ftest-coverage)
-        link_libraries(gcov)
-    else()
-        message(FATAL_ERROR "Unsupported compiler used with code coverage generation")
-    endif()
+if(${CMAKE_VERSION} VERSION_LESS 3.10)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
-add_library(sol
-    ${LIB_DIR}/instruction.c
-    ${LIB_DIR}/message.c
-    ${LIB_DIR}/parser.c
-    ${LIB_DIR}/print_config.c
-    ${LIB_DIR}/printer.c
-    ${LIB_DIR}/rfc3339.c
-    ${LIB_DIR}/serum_assert_owner_instruction.c
-    ${LIB_DIR}/spl_associated_token_account_instruction.c
-    ${LIB_DIR}/spl_memo_instruction.c
-    ${LIB_DIR}/spl_token_instruction.c
-    ${LIB_DIR}/stake_instruction.c
-    ${LIB_DIR}/system_instruction.c
-    ${LIB_DIR}/token_info.c
-    ${LIB_DIR}/transaction_summary.c
-    ${LIB_DIR}/transaction_printers.c
-    ${LIB_DIR}/vote_instruction.c
-)
-target_include_directories(sol PUBLIC ${LIB_DIR}/include)
+# project information
+project(FuzzTxParser
+        VERSION 1.0
+	      DESCRIPTION "Fuzzing of transaction parser"
+        LANGUAGES C)
 
-add_executable(fuzz_message fuzz_message.c)
+# guard against bad build-type strings
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug")
+endif()
 
-target_link_libraries(fuzz_message PUBLIC sol)
-target_compile_options(fuzz_message PUBLIC -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined)
-target_link_options(fuzz_message PUBLIC -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined)
+if (NOT CMAKE_C_COMPILER_ID MATCHES "Clang")
+    message(FATAL_ERROR "Fuzzer needs to be built with Clang")
+endif()
+
+if (NOT DEFINED BOLOS_SDK)
+  message(FATAL_ERROR "BOLOS_SDK environment variable not found.")
+endif()
+
+# guard against in-source builds
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
+endif()
+
+# compatible with ClusterFuzzLite
+if (NOT DEFINED ENV{LIB_FUZZING_ENGINE})
+	set(COMPILATION_FLAGS_ "-g -Wall -fsanitize=fuzzer,address,undefined")
+else()
+	set(COMPILATION_FLAGS_ "$ENV{LIB_FUZZING_ENGINE} $ENV{CXXFLAGS}")
+endif()
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+string(REPLACE " " ";" COMPILATION_FLAGS ${COMPILATION_FLAGS_})
+
+include(extra/TxParser.cmake)
+
+add_executable(fuzz_tx_parser fuzz_tx_parser.c)
+
+target_compile_options(fuzz_tx_parser PUBLIC ${COMPILATION_FLAGS})
+target_link_options(fuzz_tx_parser PUBLIC ${COMPILATION_FLAGS})
+target_link_libraries(fuzz_tx_parser PUBLIC txparser)
