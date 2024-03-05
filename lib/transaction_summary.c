@@ -67,7 +67,7 @@ void summary_item_set_timestamp(SummaryItem* item, const char* title, int64_t va
     item->i64 = value;
 }
 
-static TransactionSummary G_transaction_summary;
+TransactionSummary G_transaction_summary;
 
 char G_transaction_summary_title[TITLE_SIZE];
 char G_transaction_summary_text[TEXT_BUFFER_LENGTH];

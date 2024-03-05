@@ -27,7 +27,7 @@
 #include "rfc3339.h"
 #include "util.h"
 
-static const uint16_t DayOffset[13] = {0, 306, 337, 0, 31, 61, 92, 122, 153, 184, 214, 245, 275};
+const uint16_t DayOffset[13] = {0, 306, 337, 0, 31, 61, 92, 122, 153, 184, 214, 245, 275};
 
 /* Rata Die algorithm by Peter Baum */
 

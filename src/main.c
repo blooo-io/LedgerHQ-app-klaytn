@@ -33,7 +33,7 @@
 
 ApduCommand G_command;
 txContext_t txContext;
-tmpContent_t tmpContent;
+tmpContent_t tmpContent; //TODO : move this variable somewhere within a function
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
