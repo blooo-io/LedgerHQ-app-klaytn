@@ -54,8 +54,8 @@ static uint8_t set_result_sign_message() {
                                             &info));
 
             // Taking only the 4 highest bytes
-            uint32_t v = (uint32_t) u64_from_BE(txContext.content->chainID.value,
-                                                MIN(4, txContext.content->chainID.length));
+            uint32_t v = (uint32_t) u64_from_BE(chainID.value,
+                                                MIN(4, chainID.length));
 
             G_io_apdu_buffer[0] = (v * 2) + 35;
             if (info & CX_ECCINFO_PARITY_ODD) {
