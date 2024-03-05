@@ -92,9 +92,7 @@
             },
             "problemMatcher": [],
             "dependsOn": [
-                "Install tests requirements",
-                "Copy app.elf from bin to test/elfs directory"
-
+                "Install tests requirements"
             ]
         },
         {
@@ -108,8 +106,7 @@
             },
             "problemMatcher": [],
             "dependsOn": [
-                "Install tests requirements",
-                "Copy app.elf from bin to test/elfs directory"
+                "Install tests requirements"
             ]
         },
         {

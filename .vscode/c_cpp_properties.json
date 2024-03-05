@@ -17,7 +17,8 @@
                 "${workspaceFolder}/opt/ledger-secure-sdk/lib_ux/include",
                 "${workspaceFolder}/opt/ledger-secure-sdk/lib_bagl/include",
                 "${workspaceFolder}/opt/ledger-secure-sdk/unit-tests/lib_nbgl",
-                "${workspaceFolder}/lib/include"
+                "${workspaceFolder}/lib/include",
+                "${workspaceFolder}/opt/ledger-secure-sdk/lib_standard_app"
             ],
             "defines": [
                 "TARGET_NANOSP",
