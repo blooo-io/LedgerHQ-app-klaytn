@@ -1,31 +1,61 @@
-[![Ensure compliance with Ledger guidelines](https://github.com/LedgerHQ/app-boilerplate/actions/workflows/guidelines_enforcer.yml/badge.svg)](https://github.com/LedgerHQ/app-boilerplate/actions/workflows/guidelines_enforcer.yml) [![Build and run functional tests using ragger through reusable workflow](https://github.com/LedgerHQ/app-boilerplate/actions/workflows/build_and_functional_tests.yml/badge.svg?branch=master)](https://github.com/LedgerHQ/app-boilerplate/actions/workflows/build_and_functional_tests.yml)
+[![Ensure compliance with Ledger guidelines](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/guidelines_enforcer.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/guidelines_enforcer.yml) [![Build and run functional tests using ragger through reusable workflow](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/build_and_functional_tests.yml/badge.svg?branch=master)](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/build_and_functional_tests.yml)
 
-# Ledger Boilerplate Application
+# Klaytn app for Ledger Wallet
 
-This is a boilerplate application which can be forked to start a new project for the Ledger Nano S/X/SP and Stax.
+This app adds support for the Klaytn native token for the Ledger Nano S/X/SP and Stax.
 
 ## Quick start guide
 
 ### With VSCode
 
-You can quickly setup a convenient environment to build and test your application by using [Ledger's VSCode developer tools extension](https://marketplace.visualstudio.com/items?itemName=LedgerHQ.ledger-dev-tools) which leverages the [ledger-app-dev-tools](https://github.com/LedgerHQ/ledger-app-builder/pkgs/container/ledger-app-builder%2Fledger-app-dev-tools) docker image.
+You can quickly setup a convenient environment to build and test your application by using the vscode integration and the [ledger-app-dev-tools](https://github.com/LedgerHQ/ledger-app-builder/pkgs/container/ledger-app-builder%2Fledger-app-dev-tools) docker image.
 
 It will allow you, whether you are developing on macOS, Windows or Linux to quickly **build** your apps, **test** them on **Speculos** and **load** them on any supported device.
 
-* Install and run [Docker](https://www.docker.com/products/docker-desktop/).
-* Make sure you have an X11 server running :
-    * On Ubuntu Linux, it should be running by default.
-    * On macOS, install and launch [XQuartz](https://www.xquartz.org/) (make sure to go to XQuartz > Preferences > Security and check "Allow client connections").
-    * On Windows, install and launch [VcXsrv](https://sourceforge.net/projects/vcxsrv/) (make sure to configure it to disable access control).
-* Install [VScode](https://code.visualstudio.com/download) and add [Ledger's extension](https://marketplace.visualstudio.com/items?itemName=LedgerHQ.ledger-dev-tools).
-* Open a terminal and clone `app-boilerplate` with `git clone git@github.com:LedgerHQ/app-boilerplate.git`.
-* Open the `app-boilerplate` folder with VSCode.
-* Use Ledger extension's sidebar menu or open the tasks menu with `ctrl + shift + b` (`command + shift + b` on a Mac) to conveniently execute actions :
-    * Build the app for the device model of your choice with `Build`.
-    * Test your binary on [Speculos](https://github.com/LedgerHQ/speculos) with `Run with Speculos`.
-    * You can also run functional tests, load the app on a physical device, and more.
+1. Run Docker.
+2. Make sure you have an X11 server running :
+   - On Ubuntu Linux, it should be running by default.
+   - On macOS, install and launch [XQuartz](https://www.xquartz.org/) (make sure to go to XQuartz > Preferences > Security and check "Allow client connections").
+   - On Windows, install and launch [VcXsrv](https://sourceforge.net/projects/vcxsrv/) (make sure to configure it to disable access control).
+3. Open a terminal and clone `LedgerHQ-app-klaytn` with `git clone https://github.com/blooo-io/LedgerHQ-app-klaytn.git`.
+4. Open the `LedgerHQ-app-klaytn` folder with VSCode.
+5. Open the vscode tasks with `ctrl + shift + b` (`command + shift + b` on a Mac) and run the following actions : Pull and run the [ledger-app-dev-tools](https://github.com/LedgerHQ/ledger-app-builder/pkgs/container/ledger-app-builder%2Fledger-app-dev-tools) docker image by selecting `Run dev-tools image`.
 
 :information_source: The terminal tab of VSCode will show you what commands the extension runs behind the scene.
+
+#### Build
+
+Open the vscode tasks with `ctrl + shift + b` (`command + shift + b` on a Mac) and run the build for the device model of your choice with `Build app`.
+To build the app in debug mode use `Build app [Debug]` instead.
+
+# Test
+
+## Python
+
+- Open the vscode tasks with `ctrl + shift + b` (`command + shift + b` on a Mac) and run the following actions :
+  - Run the tests with `Run functional tests (without logs)`.
+  - Select a SDK
+  - Select a model
+
+#### Load
+
+Open the vscode tasks with `ctrl + shift + b` (`command + shift + b` on a Mac) and load your binary on a Ledger device with `Load app on device`.
+
+If you get the error below when loading.
+
+> File "hid.pyx", line 157, in hid.device.open_path
+>
+> OSError: open failed
+>
+> make: \*\*\* [Makefile:146: load-only] Error 1
+
+Follow these steps:
+
+- Re-run `Build app` copy the command executed from the terminal
+- Open a terminal, execute the command `sudo su`
+- Paste the copied command and execute it
+- Try loading the app again
+<!--  -->
 
 ### With a terminal
 
@@ -77,10 +107,10 @@ make DEBUG=1  # compile optionally with PRINTF
 
 You can choose which device to compile and load for by setting the `BOLOS_SDK` environment variable to the following values :
 
-* `BOLOS_SDK=$NANOS_SDK`
-* `BOLOS_SDK=$NANOX_SDK`
-* `BOLOS_SDK=$NANOSP_SDK`
-* `BOLOS_SDK=$STAX_SDK`
+- `BOLOS_SDK=$NANOS_SDK`
+- `BOLOS_SDK=$NANOX_SDK`
+- `BOLOS_SDK=$NANOSP_SDK`
+- `BOLOS_SDK=$STAX_SDK`
 
 By default this variable is set to build/load for Nano S.
 
@@ -97,7 +127,7 @@ First make sure you have the proper udev rules added on your host :
 ```shell
 # Run these commands on your host, from the app's source folder.
 sudo cp .vscode/20-ledger.ledgerblue.rules /etc/udev/rules.d/
-sudo udevadm control --reload-rules 
+sudo udevadm control --reload-rules
 sudo udevadm trigger
 ```
 
@@ -118,26 +148,26 @@ Run these commands on your host from the app's source folder once you have [buil
 
 ```shell
 # Install Python virtualenv
-python3 -m pip install virtualenv 
+python3 -m pip install virtualenv
 # Create the 'ledger' virtualenv
 python3 -m virtualenv ledger
 ```
 
 Enter the Python virtual environment
 
-* macOS : `source ledger/bin/activate`
-* Windows : `.\ledger\Scripts\Activate.ps1`
+- macOS : `source ledger/bin/activate`
+- Windows : `.\ledger\Scripts\Activate.ps1`
 
 ```shell
 # Install Ledgerblue (tool to load the app)
-python3 -m pip install ledgerblue 
+python3 -m pip install ledgerblue
 # Load the app.
 python3 -m ledgerblue.runScript --scp --fileName bin/app.apdu --elfFile bin/app.elf
 ```
 
 ## Test
 
-The boilerplate app comes with functional tests implemented with Ledger's [Ragger](https://github.com/LedgerHQ/ragger) test framework.
+The Klaytn app comes with functional tests implemented with Ledger's [Ragger](https://github.com/LedgerHQ/ragger) test framework.
 
 ### macOS / Windows
 
@@ -145,16 +175,16 @@ To test your app on macOS or Windows, it is recommended to use [Ledger's VS Code
 
 You can use the following sequence of tasks and commands (all accessible in the **extension sidebar menu**) :
 
-* `Select build target`
-* `Build app`
+- `Select build target`
+- `Build app`
 
 Then you can choose to execute the functional tests :
 
-* Use `Run tests`.
+- Use `Run tests`.
 
 Or simply run the app on the Speculos emulator :
 
-* `Run with Speculos`.
+- `Run with Speculos`.
 
 ### Linux (Ubuntu)
 
@@ -163,7 +193,7 @@ On Linux, you can use [Ledger's VS Code extension](#with-vscode) to run the test
 Install the tests requirements :
 
 ```shell
-pip install -r tests/requirements.txt 
+pip install -r tests/requirements.txt
 ```
 
 Then you can :
@@ -203,15 +233,7 @@ The flow processed in [GitHub Actions](https://github.com/features/actions) is t
 - Documentation generation with [doxygen](https://www.doxygen.nl)
 
 It outputs 3 artifacts:
+
 - `compiled_app_binaries` within binary files of the build process for each device
 - `code-coverage` within HTML details of code coverage
 - `documentation` within HTML auto-generated documentation
-
-## Are you developing a Nano S, S Plus, X application?
-
-If so, This boilerplate will help you get started.
-
-For a smooth and quick integration:
-
-- See the developers’ documentation on the [Developer Portal](https://developers.ledger.com/), and
-- [Go on Discord](https://developers.ledger.com/discord-pro/) to chat with developer support and the developer community.
