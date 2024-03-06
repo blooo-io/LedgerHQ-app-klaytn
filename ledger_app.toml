@@ -4,4 +4,4 @@ sdk = "C"
 devices = ["nanox", "nanos+"]
 
 [tests]
-pytest_directory = "./tests/python"
+pytest_directory = "./tests"
