@@ -52,11 +52,6 @@ typedef struct txContent_t {
     bool dataPresent;
 } txContent_t;
 
-typedef union {
-    txContent_t txContent;
-    // char tmp[100];
-} tmpContent_t;
-
 typedef enum customStatus_e {
     CUSTOM_NOT_HANDLED,
     CUSTOM_HANDLED,
@@ -335,7 +330,6 @@ typedef struct txContext_t {
     const uint8_t *workBuffer;
     uint32_t commandLength;
     uint32_t processingFlags;
-    ustreamProcess_t customProcessor;
     txContent_t *content;
     void *extra;
     uint8_t txType;

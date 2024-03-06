@@ -808,23 +808,7 @@ static parserStatus_e processTxInternal(txContext_t *context) {
                 return status;
             }
         }
-        if (context->customProcessor != NULL) {
-            customStatus = context->customProcessor(context);
-            PRINTF("After customprocessor\n");
-            switch (customStatus) {
-                case CUSTOM_NOT_HANDLED:
-                case CUSTOM_HANDLED:
-                    break;
-                case CUSTOM_SUSPENDED:
-                    return USTREAM_SUSPENDED;
-                case CUSTOM_FAULT:
-                    PRINTF("Custom processor aborted\n");
-                    return USTREAM_FAULT;
-                default:
-                    PRINTF("Unhandled custom processor status\n");
-                    return USTREAM_FAULT;
-            }
-        }
+
         if (customStatus == CUSTOM_NOT_HANDLED) {
             PRINTF("Current field: %d\n", context->currentField);
             switch (context->txType) {
