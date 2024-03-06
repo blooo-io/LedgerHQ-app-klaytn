@@ -93,7 +93,7 @@
             "problemMatcher": [],
             "dependsOn": [
                 "Install tests requirements",
-
+                "Copy app.elf from bin to test/elfs directory"
             ]
         },
         {
@@ -107,7 +107,8 @@
             },
             "problemMatcher": [],
             "dependsOn": [
-                "Install tests requirements"
+                "Install tests requirements",
+                "Copy app.elf from bin to test/elfs directory"
             ]
         },
         {
@@ -175,13 +176,13 @@
             "type": "shell",
             // Copies the app.elf file from bin to the tests/elfs directory with the name klaytn_{input:model}.elf.
             "linux": {
-                "command": "cp bin/app.elf tests/elfs/klaytn_${input:model}.elf",
+                "command": "mkdir tests/elfs/; cp bin/app.elf tests/elfs/klaytn_${input:model}.elf",
             },
             "windows": {
-                "command": "cmd.exe /C 'copy bin\\app.elf tests\\elfs\\klaytn_${input:model}.elf'",
+                "command": "mkdir tests\\elfs\\ & copy bin\\app.elf tests\\elfs\\klaytn_${input:model}.elf",
             },
             "osx": {
-                "command": "cp bin/app.elf tests/elfs/klaytn_${input:model}.elf",
+                "command": "mkdir tests/elfs/; cp bin/app.elf tests/elfs/klaytn_${input:model}.elf",
             },
             "group": {
                 "kind": "test",
@@ -199,8 +200,8 @@
             "type": "pickString",
             "description": "Choose a SDK to build with",
             "options": [
-                "$NANOSP_SDK",
                 "$NANOS_SDK",
+                "$NANOSP_SDK",
                 "$NANOX_SDK"
             ]
         },
@@ -209,8 +210,8 @@
             "type": "pickString",
             "description": "Which model to run speculos for ?",
             "options": [
-                "nanosp",
                 "nanos",
+                "nanosp",
                 "nanox"
             ]
         }
