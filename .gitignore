@@ -19,6 +19,7 @@ __pycache__
 .egg
 .pyc
 *~
-
+opt
 tests/elfs/*
-tests/python/snapshots-tmp/
+tests/snapshots-tmp/
+.DS_Store
