@@ -341,10 +341,7 @@ typedef struct txContext_t {
     uint8_t txType;
 } txContext_t;
 
-void initTx(txContext_t *context,
-            cx_sha3_t *sha3,
-            txContent_t *content,
-            void *extra);
+void initTx(txContext_t *context, cx_sha3_t *sha3, txContent_t *content, void *extra);
 parserStatus_e processTx(txContext_t *context,
                          const uint8_t *buffer,
                          uint32_t length,

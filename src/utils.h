@@ -10,7 +10,6 @@
 
 #define ARRAY_COUNT(array) (sizeof(array) / sizeof(array[0]))
 
-
 // Marker flag for DEPRECATED ADPU exchange format
 #define DATA_HAS_LENGTH_PREFIX (1 << 15)
 
