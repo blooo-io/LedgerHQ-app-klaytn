@@ -142,13 +142,6 @@ ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
     SDK_SOURCE_PATH += lib_blewbxx lib_blewbxx_impl
 endif
 
-WITH_U2F=0
-ifneq ($(WITH_U2F),0)
-    DEFINES         += HAVE_U2F HAVE_IO_U2F
-    DEFINES         += U2F_PROXY_MAGIC=\"~SOL\"
-		SDK_SOURCE_PATH += lib_u2f
-endif
-
 WITH_LIB=1
 ifneq ($(WITH_LIB),0)
     SOURCE_FILES += $(filter-out %_test.c,$(wildcard lib/*.c))

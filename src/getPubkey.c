@@ -40,6 +40,8 @@ UX_FLOW(ux_display_public_flow,
         &ux_display_public_flow_6_step,
         &ux_display_public_flow_7_step);
 
+#endif  // HAVE_BAGL
+
 void handle_get_pubkey(volatile unsigned int *flags, volatile unsigned int *tx) {
     if (!flags || !tx ||
         (G_command.instruction != InsDeprecatedGetPubkey &&
@@ -54,9 +56,9 @@ void handle_get_pubkey(volatile unsigned int *flags, volatile unsigned int *tx) 
         *tx = set_result_get_publicKey(&G_publicKey);
         THROW(ApduReplySuccess);
     } else {
+#ifdef HAVE_BAGL
         ux_flow_init(0, ux_display_public_flow, NULL);
+#endif  // HAVE_BAGL
         *flags |= IO_ASYNCH_REPLY;
     }
 }
-
-#endif // HAVE_BAGL

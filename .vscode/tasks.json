@@ -93,7 +93,6 @@
             "problemMatcher": [],
             "dependsOn": [
                 "Install tests requirements",
-                "Copy app.elf from bin to test/elfs directory"
 
             ]
         },
@@ -108,8 +107,7 @@
             },
             "problemMatcher": [],
             "dependsOn": [
-                "Install tests requirements",
-                "Copy app.elf from bin to test/elfs directory"
+                "Install tests requirements"
             ]
         },
         {
@@ -203,8 +201,7 @@
             "options": [
                 "$NANOSP_SDK",
                 "$NANOS_SDK",
-                "$NANOX_SDK",
-                "$STAX_SDK",
+                "$NANOX_SDK"
             ]
         },
         {
@@ -214,8 +211,7 @@
             "options": [
                 "nanosp",
                 "nanos",
-                "nanox",
-                "stax",
+                "nanox"
             ]
         }
     ]

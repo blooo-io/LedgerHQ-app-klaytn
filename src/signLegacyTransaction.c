@@ -83,6 +83,9 @@ static void send_result_sign_message(void) {
 
 //////////////////////////////////////////////////////////////////////
 
+// UI
+#ifdef HAVE_BAGL
+
 UX_STEP_CB(ux_approve_step,
            pb,
            send_result_sign_message(),
@@ -121,11 +124,12 @@ UX_STEP_NOCB_INIT(ux_summary_step,  // rename after deleting the singmessage one
     )
 ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 
+#endif  // HAVE_BAGL
+
 void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     cx_sha3_t sha3;
     txContext_t txContext;
     // tmpContent_t tmpContent;
-    
 
     if (!tx || G_command.state != ApduStatePayloadComplete ||
         (G_command.instruction != InsSignLegacyTransaction &&
@@ -206,6 +210,8 @@ void handle_sign_legacy_transaction_ui(volatile unsigned int *flags) {
     SummaryItemKind_t summary_step_kinds[MAX_TRANSACTION_SUMMARY_ITEMS];
     size_t num_summary_steps = 0;
     if (transaction_summary_finalize(summary_step_kinds, &num_summary_steps) == 0) {
+#ifdef HAVE_BAGL
+
         size_t num_flow_steps = 0;
 
         for (size_t i = 0; i < num_summary_steps; i++) {
@@ -217,6 +223,9 @@ void handle_sign_legacy_transaction_ui(volatile unsigned int *flags) {
         flow_steps[num_flow_steps++] = FLOW_END_STEP;
 
         ux_flow_init(0, flow_steps, NULL);
+
+#endif  // HAVE_BAGL
+
     } else {
         THROW(ApduReplyKlaytnSummaryFinalizeFailed);
     }
