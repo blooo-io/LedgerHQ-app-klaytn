@@ -54,7 +54,7 @@ typedef struct txContent_t {
 
 typedef union {
     txContent_t txContent;
-    char tmp[100];
+    // char tmp[100];
 } tmpContent_t;
 
 typedef enum customStatus_e {
@@ -344,7 +344,6 @@ typedef struct txContext_t {
 void initTx(txContext_t *context,
             cx_sha3_t *sha3,
             txContent_t *content,
-            ustreamProcess_t customProcessor,
             void *extra);
 parserStatus_e processTx(txContext_t *context,
                          const uint8_t *buffer,

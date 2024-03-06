@@ -124,7 +124,8 @@ ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     cx_sha3_t sha3;
     txContext_t txContext;
-    tmpContent_t tmpContent;
+    // tmpContent_t tmpContent;
+    
 
     if (!tx || G_command.state != ApduStatePayloadComplete ||
         (G_command.instruction != InsSignLegacyTransaction &&
@@ -138,7 +139,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
 
     parserStatus_e txResult;
 
-    initTx(&txContext, &sha3, &tmpContent.txContent, customProcessor, NULL);
+    initTx(&txContext, &sha3, &tmpContent.txContent, NULL);
 
     uint8_t *workBuffer = G_command.message;
     uint8_t dataLength = G_command.message_length;

@@ -31,13 +31,11 @@
 void initTx(txContext_t *context,
             cx_sha3_t *sha3,
             txContent_t *content,
-            ustreamProcess_t customProcessor,
             void *extra) {
     memset(context, 0, sizeof(txContext_t));
     context->sha3 = sha3;
     context->content = content;
     chainID = content->chainID;
-    context->customProcessor = customProcessor;
     context->extra = extra;
     context->currentField = RLP_NONE + 1;
 

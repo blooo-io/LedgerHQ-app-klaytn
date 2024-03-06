@@ -8,6 +8,9 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+#define ARRAY_COUNT(array) (sizeof(array) / sizeof(array[0]))
+
+
 // Marker flag for DEPRECATED ADPU exchange format
 #define DATA_HAS_LENGTH_PREFIX (1 << 15)
 
@@ -26,8 +29,6 @@ typedef struct publicKeyContext_t {
 } publicKeyContext_t;
 
 uint32_t set_result_get_publicKey(publicKeyContext_t *publicKeyContext);
-
-unsigned int ui_prepro(const bagl_element_t *element);
 
 void get_public_key(publicKeyContext_t *publicKeyContext,
                     const uint32_t *derivationPath,

@@ -12,6 +12,7 @@ void reset_getpubkey_globals(void) {
 }
 
 //////////////////////////////////////////////////////////////////////
+#ifdef HAVE_BAGL
 
 UX_STEP_NOCB(ux_display_public_flow_5_step,
              bnnn_paging,
@@ -57,3 +58,5 @@ void handle_get_pubkey(volatile unsigned int *flags, volatile unsigned int *tx) 
         *flags |= IO_ASYNCH_REPLY;
     }
 }
+
+#endif // HAVE_BAGL

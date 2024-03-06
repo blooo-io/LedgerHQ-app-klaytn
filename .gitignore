@@ -23,3 +23,4 @@ opt
 tests/elfs
 tests/python/snapshots-tmp/
 .DS_Store
+*.log

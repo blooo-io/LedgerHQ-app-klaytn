@@ -23,13 +23,14 @@
 #include "apdu.h"
 #include "ethUstream.h"
 #include "getPubkey.h"
-#include "menu.h"
+#include "ui_api.h"
 #include "shared_context.h"
 #include "signLegacyTransaction.h"
 #include "utils.h"
 
 ApduCommand G_command;
 txInt256_t chainID;
+tmpContent_t tmpContent;
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
