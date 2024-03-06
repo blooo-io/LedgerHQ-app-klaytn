@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "globals.h"
-#include "sol/parser.h"
+#include "parser.h"
 
 typedef enum ApduState {
     ApduStateUninitialized = 0,

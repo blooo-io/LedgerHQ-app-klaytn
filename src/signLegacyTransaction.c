@@ -2,10 +2,10 @@
 #include "cx.h"
 #include "ethUstream.h"
 #include "shared_context.h"
-#include "sol/parser.h"
-#include "sol/print_config.h"
-#include "sol/transaction_summary.h"
-#include "sol/message.h"
+#include "parser.h"
+#include "print_config.h"
+#include "transaction_summary.h"
+#include "message.h"
 #include "uint_common.h"
 #include "utils.h"
 #include "utils_copy.h"
@@ -54,8 +54,7 @@ static uint8_t set_result_sign_message() {
                                             &info));
 
             // Taking only the 4 highest bytes
-            uint32_t v = (uint32_t) u64_from_BE(txContext.content->chainID.value,
-                                                MIN(4, txContext.content->chainID.length));
+            uint32_t v = (uint32_t) u64_from_BE(chainID.value, MIN(4, chainID.length));
 
             G_io_apdu_buffer[0] = (v * 2) + 35;
             if (info & CX_ECCINFO_PARITY_ODD) {
@@ -83,6 +82,9 @@ static void send_result_sign_message(void) {
 }
 
 //////////////////////////////////////////////////////////////////////
+
+// UI
+#ifdef HAVE_BAGL
 
 UX_STEP_CB(ux_approve_step,
            pb,
@@ -122,7 +124,13 @@ UX_STEP_NOCB_INIT(ux_summary_step,  // rename after deleting the singmessage one
     )
 ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 
+#endif  // HAVE_BAGL
+
 void handle_sign_legacy_transaction(volatile unsigned int *tx) {
+    cx_sha3_t sha3;
+    txContext_t txContext;
+    // tmpContent_t tmpContent;
+
     if (!tx || G_command.state != ApduStatePayloadComplete ||
         (G_command.instruction != InsSignLegacyTransaction &&
          G_command.instruction != InsSignValueTransfer &&
@@ -135,7 +143,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
 
     parserStatus_e txResult;
 
-    initTx(&txContext, &global_sha3, &tmpContent.txContent, customProcessor, NULL);
+    initTx(&txContext, &sha3, &tmpContent.txContent, NULL);
 
     uint8_t *workBuffer = G_command.message;
     uint8_t dataLength = G_command.message_length;
@@ -165,7 +173,6 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
         case CANCEL:
         case FEE_DELEGATED_CANCEL:
         case PARTIAL_FEE_DELEGATED_CANCEL:
-            // cx_hash_no_throw((cx_hash_t *) &global_sha3, 0, workBuffer, 1, NULL, 0);
             txContext.txType = txType;
             txContext.outerRLP = true;
             break;
@@ -176,10 +183,10 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx) {
     }
     txResult = processTx(&txContext, workBuffer, dataLength, 0);
     if (txResult == USTREAM_FINISHED) {
-        finalizeParsing();
+        finalizeParsing(&txContext);
     }
     transaction_summary_reset();
-    if (process_message_body() != 0) {
+    if (process_message_body(&txContext) != 0) {
         // Message not processed, throw if blind signing is not enabled
         if (N_storage.settings.allow_blind_sign == BlindSignEnabled) {
             SummaryItem *item = transaction_summary_primary_item();
@@ -203,6 +210,8 @@ void handle_sign_legacy_transaction_ui(volatile unsigned int *flags) {
     SummaryItemKind_t summary_step_kinds[MAX_TRANSACTION_SUMMARY_ITEMS];
     size_t num_summary_steps = 0;
     if (transaction_summary_finalize(summary_step_kinds, &num_summary_steps) == 0) {
+#ifdef HAVE_BAGL
+
         size_t num_flow_steps = 0;
 
         for (size_t i = 0; i < num_summary_steps; i++) {
@@ -214,6 +223,9 @@ void handle_sign_legacy_transaction_ui(volatile unsigned int *flags) {
         flow_steps[num_flow_steps++] = FLOW_END_STEP;
 
         ux_flow_init(0, flow_steps, NULL);
+
+#endif  // HAVE_BAGL
+
     } else {
         THROW(ApduReplyKlaytnSummaryFinalizeFailed);
     }
