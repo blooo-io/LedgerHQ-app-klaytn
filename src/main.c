@@ -15,36 +15,29 @@
  *  limitations under the License.
  ********************************************************************************/
 
-
-
 #ifdef HAVE_NBGL
 #include "nbgl_touch.h"
 #include "nbgl_page.h"
 #endif  // HAVE_NBGL
 
-
 #include "apdu.h"
 #include "ethUstream.h"
 #include "getPubkey.h"
-#include "menu.h"
+#include "ui_api.h"
 #include "shared_context.h"
 #include "signLegacyTransaction.h"
-#include "signMessage.h"
-#include "signOffchainMessage.h"
 #include "utils.h"
 
 ApduCommand G_command;
-txContext_t txContext;
+txInt256_t chainID;
 tmpContent_t tmpContent;
-strings_t strings;
-cx_sha3_t global_sha3;
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
-static void reset_main_globals(void) {
+static void reset_main_globals() {
     MEMCLEAR(G_command);
     MEMCLEAR(G_io_seproxyhal_spi_buffer);
-    MEMCLEAR(txContext);
+    MEMCLEAR(chainID);
 }
 
 void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx) {
@@ -56,7 +49,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         THROW(ApduReplySdkExceptionIoOverflow);
     }
 
-    const int ret = apdu_handle_message(G_io_apdu_buffer, rx, &G_command);
+    int ret = apdu_handle_message(G_io_apdu_buffer, rx, &G_command);
     if (ret != 0) {
         THROW(ret);
     }
@@ -86,15 +79,6 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         case InsSignCancel:
             handle_sign_legacy_transaction(tx);
             handle_sign_legacy_transaction_ui(flags);
-            break;
-        case InsDeprecatedSignMessage:
-        case InsSignMessage:
-            handle_sign_message_parse_message(tx);
-            handle_sign_message_ui(flags);
-            break;
-
-        case InsSignOffchainMessage:
-            handle_sign_offchain_message(flags, tx);
             break;
 
         default:

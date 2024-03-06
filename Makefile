@@ -30,9 +30,9 @@ include $(BOLOS_SDK)/Makefile.defines
 
 APP_LOAD_PARAMS  = --curve secp256k1
 ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
-    APP_LOAD_PARAMS += --appFlags 0x200  # APPLICATION_FLAG_BOLOS_SETTINGS
+APP_LOAD_PARAMS += --appFlags 0xa00 # APPLICATION_FLAG_LIBRARY + APPLICATION_FLAG_BOLOS_SETTINGS
 else
-    APP_LOAD_PARAMS += --appFlags 0x000
+APP_LOAD_PARAMS += --appFlags 0x800 # APPLICATION_FLAG_LIBRARY
 endif
 APP_LOAD_PARAMS += --path "44'/8217'"
 APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
@@ -45,8 +45,6 @@ APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
     ICONNAME=icons/nanos_app_klaytn.gif
-else ifeq ($(TARGET_NAME),TARGET_STAX)
-    ICONNAME=icons/stax_app_klaytn.gif
 else
     ICONNAME=icons/nanox_app_klaytn.gif
 endif
@@ -93,7 +91,7 @@ else
     endif
 endif
 
-DEBUG = 0
+# DEBUG = 0
 ifneq ($(DEBUG),0)
     DEFINES += HAVE_PRINTF
     ifeq ($(TARGET_NAME),TARGET_NANOS)
@@ -140,13 +138,6 @@ endif
 
 ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
     SDK_SOURCE_PATH += lib_blewbxx lib_blewbxx_impl
-endif
-
-WITH_U2F=0
-ifneq ($(WITH_U2F),0)
-    DEFINES         += HAVE_U2F HAVE_IO_U2F
-    DEFINES         += U2F_PROXY_MAGIC=\"~SOL\"
-		SDK_SOURCE_PATH += lib_u2f
 endif
 
 WITH_LIB=1

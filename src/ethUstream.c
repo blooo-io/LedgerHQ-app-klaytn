@@ -28,15 +28,11 @@
 #define MAX_INT256  32
 #define MAX_ADDRESS 20
 
-void initTx(txContext_t *context,
-            cx_sha3_t *sha3,
-            txContent_t *content,
-            ustreamProcess_t customProcessor,
-            void *extra) {
+void initTx(txContext_t *context, cx_sha3_t *sha3, txContent_t *content, void *extra) {
     memset(context, 0, sizeof(txContext_t));
     context->sha3 = sha3;
     context->content = content;
-    context->customProcessor = customProcessor;
+    chainID = content->chainID;
     context->extra = extra;
     context->currentField = RLP_NONE + 1;
 

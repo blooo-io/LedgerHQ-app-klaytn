@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-docker_tag=73c9e07
+docker_tag=latest
 docker_image_base=ledger-app-builder
 docker_image="${docker_image_base}:${docker_tag}"
 

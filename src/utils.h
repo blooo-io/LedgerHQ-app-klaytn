@@ -3,9 +3,12 @@
 #include "globals.h"
 #include <string.h>
 #include "apdu.h"
+#include "ethUstream.h"
 
 #ifndef _UTILS_H_
 #define _UTILS_H_
+
+#define ARRAY_COUNT(array) (sizeof(array) / sizeof(array[0]))
 
 // Marker flag for DEPRECATED ADPU exchange format
 #define DATA_HAS_LENGTH_PREFIX (1 << 15)
@@ -26,8 +29,6 @@ typedef struct publicKeyContext_t {
 
 uint32_t set_result_get_publicKey(publicKeyContext_t *publicKeyContext);
 
-unsigned int ui_prepro(const bagl_element_t *element);
-
 void get_public_key(publicKeyContext_t *publicKeyContext,
                     const uint32_t *derivationPath,
                     size_t pathLength);
@@ -42,7 +43,7 @@ void get_private_key_with_seed(cx_ecfp_private_key_t *privateKey,
                                const uint32_t *derivationPath,
                                uint8_t pathLength);
 
-void finalizeParsing();
+void finalizeParsing(txContext_t *txContext);
 
 /**
  * Deserialize derivation path from raw bytes.

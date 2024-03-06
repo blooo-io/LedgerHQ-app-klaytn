@@ -2,11 +2,9 @@
 
 #include <string.h>
 
-// #include "ethUstream.h"
-#include "serum_assert_owner_instruction.h"
-#include "sol/parser.h"
-#include "spl_memo_instruction.h"
-#include "spl_token_instruction.h"
+#include "ethUstream.h"
+#include "parser.h"
+#include "transaction_summary.h"
 #include "util.h"
 
 const char SYMBOL[5] = "KLAY";
@@ -61,9 +59,6 @@ int parse_system_transfer_instruction(txContext_t* context,
 
     // Address to
     info->to = (Pubkey*) context->content->destination;
-
-    // Amount
-    // info->amount = convertUint256ToUint64(&context->content->value); //0x2b5e3af16b1880000
 
     // Display Amount
     info->display_amount = context->content->value;  // maybe display_amount.value
