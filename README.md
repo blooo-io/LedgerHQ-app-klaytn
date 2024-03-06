@@ -1,72 +1,80 @@
-[![Code style check](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/lint-workflow.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/lint-workflow.yml)
-[![Compilation & tests](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/ci-workflow.yml)
+[![build_and_functional_tests](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/build_and_functional_tests.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/build_and_functional_tests.yml)
+[![codeql_checks](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/codeql_checks.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/codeql_checks.yml)
+[![guidelines_enforcer](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/guidelines_enforcer.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/guidelines_enforcer.yml)
+ [![lint-workflow](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/lint-workflow.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/lint-workflow.yml)
 [![Sonarcloud](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-klaytn/actions/workflows/sonarcloud.yml)
 
-# Klaytn app for Ledger Wallet
 
-## Overview
+# Klaytn Application for Ledger Wallets
 
-This app adds support for the Klaytn native token to Ledger Nano SP/X hardware wallet.
+## Introduction
 
-# Prerequisites: Working with the device with VSCode
+The Klaytn application enables Ledger Nano S and Ledger Nano X hardware wallets to support the Klaytn native token. This document provides comprehensive guidelines for setting up your development environment, building, cleaning, loading, and testing the Klaytn application.
 
-- [Install Docker](https://docs.docker.com/get-docker/)
-- [Install VS Code](https://code.visualstudio.com/download)
-- For Linux hosts, install the Ledger Nano [udev rules](https://github.com/LedgerHQ/udev-rules)
 
-You can quickly setup a convenient environment to build and test your application by using the vscode integration and the [ledger-app-dev-tools](https://github.com/LedgerHQ/ledger-app-builder/pkgs/container/ledger-app-builder%2Fledger-app-dev-tools) docker image.
+## Prerequisites for Development
 
-It will allow you, whether you are developing on macOS, Windows or Linux to quickly **build** your apps, **test** them on **Speculos** and **load** them on any supported device.
+Ensure you have the following tools installed and configured for your development environment:
 
-1. Run Docker.
-2. Make sure you have an X11 server running :
-   - On Ubuntu Linux, it should be running by default.
-   - On macOS, install and launch [XQuartz](https://www.xquartz.org/) (make sure to go to XQuartz > Preferences > Security and check "Allow client connections").
-   - On Windows, install and launch [VcXsrv](https://sourceforge.net/projects/vcxsrv/) (make sure to configure it to disable access control).
-3. Open a terminal and clone `LedgerHQ-app-klaytn` with `git clone https://github.com/blooo-io/LedgerHQ-app-klaytn.git`.
-4. Open the `LedgerHQ-app-klaytn` folder with VSCode.
-5. Open the vscode tasks with `ctrl + shift + b` (`command + shift + b` on a Mac) and run the following actions : Pull and run the [ledger-app-dev-tools](https://github.com/LedgerHQ/ledger-app-builder/pkgs/container/ledger-app-builder%2Fledger-app-dev-tools) docker image by selecting `Run dev-tools image`.
+- [Docker](https://docs.docker.com/get-docker/) for container management.
+- [Visual Studio Code](https://code.visualstudio.com/download) as the integrated development environment.
+- Ledger Nano [udev rules](https://github.com/LedgerHQ/udev-rules) for Linux users to ensure device compatibility.
 
-# Build
+### Setting Up Your Environment
 
-Open the vscode tasks with `ctrl + shift + b` (`command + shift + b` on a Mac) and run the build for the device model of your choice with `Build app`.
-To build the app in debug mode use `Build app [Debug]` instead.
+To facilitate a seamless development experience across macOS, Windows, or Linux, utilize the [ledger-app-dev-tools](https://github.com/LedgerHQ/ledger-app-builder/pkgs/container/ledger-app-builder%2Fledger-app-dev-tools) Docker image. This setup allows you to build, test on Speculos emulator, and load applications onto Ledger devices efficiently.
 
-# Clean
+#### Steps to Initialize Your Development Environment:
 
-Open the vscode tasks with `ctrl + shift + b` (`command + shift + b` on a Mac) and run the build for the device model of your choice with `Clean build files`.
+1. Start Docker and ensure it's running correctly on your system.
+2. Verify the presence of an X11 server:
+   - Default on Ubuntu Linux.
+   - On macOS, install and configure [XQuartz](https://www.xquartz.org/).
+   - For Windows, use [VcXsrv](https://sourceforge.net/projects/vcxsrv/), configuring it to disable access control.
+3. Clone the Klaytn application repository: `git clone https://github.com/blooo-io/LedgerHQ-app-klaytn.git`.
+4. Open the cloned repository folder in Visual Studio Code.
+5. Use the `ctrl + shift + b` (or `command + shift + b` on Mac) shortcut to access Visual Studio Code tasks and execute the `Run dev-tools image` to pull and run the ledger-app-dev-tools Docker image.
 
-# Load
+## Building the Application
 
-Open the vscode tasks with `ctrl + shift + b` (`command + shift + b` on a Mac) and load your binary on a Ledger device with `Load app on device`.
+To build the Klaytn application for your Ledger device, follow these steps:
 
-If you get the error below when loading.
+1. Open Visual Studio Code tasks using `ctrl + shift + b` (or `command + shift + b` on Mac).
+2. Choose `Build app` for standard build or `Build app [Debug]` for debugging purposes.
 
-> File "hid.pyx", line 157, in hid.device.open_path
->
-> OSError: open failed
->
-> make: \*\*\* [Makefile:146: load-only] Error 1
+## Cleaning Build Files
 
-Follow these steps:
+For cleaning up build files:
 
-- Re-run `Build app` copy the command executed from the terminal
-- Open a terminal, execute the command `sudo su`
-- Paste the copied command and execute it
-- Try loading the app again
+1. Access Visual Studio Code tasks with `ctrl + shift + b` (or `command + shift + b` on Mac).
+2. Select `Clean build files` to remove any existing build artifacts.
 
-# Test
+## Loading the Application onto a Ledger Device
 
-## Python
-- Open the vscode tasks with `ctrl + shift + b` (`command + shift + b` on a Mac) and run the following actions :
-  - Run the tests with `Run functional tests (without logs)`.
-  - Select a SDK
-  - Select a model
+To load the built application onto a Ledger device:
 
-## Unit
+1. Use `ctrl + shift + b` (or `command + shift + b` on Mac) to open tasks in Visual Studio Code.
+2. Choose `Load app on device`.
 
-Run C tests:
+### Troubleshooting Load Errors
+
+If encountering errors during the load process, such as failed device open paths, ensure:
+
+- The device is connected directly to the computer using the official Ledger cable. Avoid using adapters or hubs as they can cause connection issues.
+- Retry the `Build app` process, then run the command shown in the terminal as `sudo su` in a new terminal window.
+- Attempt loading the application again.
+
+## Testing the Application
+
+### Python Tests
+
+1. Access tasks in Visual Studio Code with `ctrl + shift + b` (or `command + shift + b` on Mac).
+2. Execute `Run functional tests (without logs)`.
+3. Select the appropriate SDK and model for testing.
+
+### Unit Tests
+
+Execute C tests using the following command:
 
 ```bash
 make -C lib
-```
