@@ -190,7 +190,7 @@
             },
             "problemMatcher": [],
             "dependsOn": [
-                "Build app"
+                "Build app [debug]"
             ]
         },
     ],
