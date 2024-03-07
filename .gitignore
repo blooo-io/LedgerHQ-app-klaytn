@@ -5,6 +5,7 @@ debug
 dep
 obj
 dev-env
+ledger
 src/glyphs.c
 src/glyphs.h
 *.core
