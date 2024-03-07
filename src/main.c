@@ -30,7 +30,7 @@
 
 ApduCommand G_command;
 txInt256_t chainID;
-txContent_t txContent;
+// txContent_t txContent;
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
