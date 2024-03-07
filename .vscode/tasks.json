@@ -48,7 +48,7 @@
             "label": "Build app [debug]",
             "type": "shell",
             // Builds the app with debug mode enabled using the make command, inside the docker container.
-            "command": "docker exec -it ${config:container_name} bash -c 'export BOLOS_SDK=$(echo ${input:sdk}) && make -j DEBUG=1' && cp bin/app.elf tests/elfs/klaytn_${input:model}.elf",
+            "command": "docker exec -it ${config:container_name} bash -c 'export BOLOS_SDK=$(echo ${input:sdk}) && make -j DEBUG=1'",
             "group": {
                 "kind": "build",
                 "isDefault": true
