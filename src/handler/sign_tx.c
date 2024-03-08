@@ -1,6 +1,6 @@
 /*****************************************************************************
  *   Ledger App Klaytn.
- *   (c) 2020 Ledger SAS.
+ *   (c) 2024 Blooo SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
