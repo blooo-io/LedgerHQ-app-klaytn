@@ -18,7 +18,7 @@ jobs:
     name: Analyse
     strategy:
       matrix:
-        sdk: [ "$NANOX_SDK", "$NANOSP_SDK" ]
+        sdk: [ "$NANOS_SDK", "$NANOX_SDK", "$NANOSP_SDK" ]
         #'cpp' covers C and C++
         language: [ 'cpp' ]
     runs-on: ubuntu-latest

@@ -18,7 +18,7 @@ The application to test must be compiled for all required devices.
 You can use for this the container `ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-lite`:
 ```
 docker pull ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-lite:latest
-cd <your app repository>                        # replace <appname> with the name of your app, (eg boilerplate)
+cd <your app repository>                        # replace <appname> with the name of your app, (eg klaytn)
 docker run --user "$(id -u)":"$(id -g)" --rm -ti -v "$(realpath .):/app" --privileged -v "/dev/bus/usb:/dev/bus/usb" ledger-app-builder-lite:latest
 make clean && make BOLOS_SDK=$<device>_SDK      # replace <device> with one of [NANOS, NANOX, NANOSP, STAX]
 exit
@@ -39,7 +39,7 @@ The application to test must be loaded and started on a Ledger device plugged in
 You can use for this the container `ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-lite`:
 ```
 docker pull ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-lite:latest
-cd app-<appname>/                                   # replace <appname> with the name of your app, (eg boilerplate)
+cd app-<appname>/                                   # replace <appname> with the name of your app, (eg klaytn)
 docker run --user "$(id -u)":"$(id -g)" --rm -ti -v "$(realpath .):/app" --privileged -v "/dev/bus/usb:/dev/bus/usb" ledger-app-builder-lite:latest
 make clean && make BOLOS_SDK=$<device>_SDK load     # replace <device> with one of [NANOS, NANOX, NANOSP, STAX]
 exit
@@ -71,3 +71,4 @@ Custom pytest options
     --golden_run                on Speculos, screen comparison functions will save the current screen instead of comparing
     --log_apdu_file <filepath>  log all apdu exchanges to the file in parameter. The previous file content is erased
 ``` 
+

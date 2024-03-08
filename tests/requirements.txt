@@ -1,4 +1,3 @@
-base58
 pytest
 ragger[speculos,ledgerwallet]>=1.11.4
 ecdsa>=0.16.1,<0.17.0
