@@ -46,4 +46,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial commit with the brand new Boilerplate application
+- Initial commit with the brand new Klaytn application
