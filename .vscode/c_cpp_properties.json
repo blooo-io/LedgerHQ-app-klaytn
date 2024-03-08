@@ -1,26 +1,19 @@
 {
     "env": {
-        "BOLOS_SDK": "/opt/nanosp-secure-sdk",
+        "BOLOS_SDK": "/opt/nanos-secure-sdk",
         "BOLOS_ENV": "/opt/bolos-devenv"
     },
     "configurations": [
         {
-            "name": "Nano S Plus",
+            "name": "Nano S",
             "includePath": [
                 "/usr/include",
                 "${workspaceFolder}/src",
                 "${env:BOLOS_SDK}/include/*",
-                "${env:BOLOS_SDK}/lib_ux/include/*",
-                "${workspaceFolder}/opt/ledger-secure-sdk/include",
-                "${workspaceFolder}/opt/ledger-secure-sdk/target/nanos2/include",
-                "${workspaceFolder}/opt/ledger-secure-sdk/lib_cxng/include",
-                "${workspaceFolder}/opt/ledger-secure-sdk/lib_ux/include",
-                "${workspaceFolder}/opt/ledger-secure-sdk/lib_bagl/include",
-                "${workspaceFolder}/opt/ledger-secure-sdk/unit-tests/lib_nbgl",
-                "${workspaceFolder}/lib/include"
+                "${env:BOLOS_SDK}/lib_ux/include/*"
             ],
             "defines": [
-                "TARGET_NANOSP",
+                "TARGET_NANOS",
                 "OS_IO_SEPROXYHAL",
                 "HAVE_BAGL",
                 "HAVE_SPRINTF",
@@ -36,14 +29,11 @@
                 "MAJOR_VERSION=1",
                 "MINOR_VERSION=0",
                 "PATCH_VERSION=0",
-                "IO_SEPROXYHAL_BUFFER_SIZE_B=300",
+                "IO_SEPROXYHAL_BUFFER_SIZE_B=128",
                 "HAVE_UX_FLOW",
                 "DEBUG=1",
                 "HAVE_PRINTF",
-                "PRINTF=screen_printf",
-                "HAVE_SHA3=1",
-                "HAVE_HASH=1",
-                "HAVE_ECC=1"
+                "PRINTF=screen_printf"
             ],
             "compilerPath": "${env:BOLOS_ENV}/gcc-arm-none-eabi-5_3-2016q1/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
