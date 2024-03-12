@@ -43,12 +43,9 @@ void get_public_key(publicKeyContext_t *publicKeyContext,
     END_TRY;
 
     cx_sha3_t sha3_hash;
-    uint64_t chainId = 8217;
-
     getEthAddressStringFromKey(&(publicKeyContext->publicKey),
                                publicKeyContext->address,
-                               &sha3_hash,
-                               chainId);
+                               &sha3_hash);
 }
 
 uint32_t readUint32BE(uint8_t *buffer) {

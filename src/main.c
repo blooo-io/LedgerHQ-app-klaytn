@@ -40,7 +40,10 @@ static void reset_main_globals() {
     MEMCLEAR(chainID);
 }
 
-void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx) {
+void handleApdu(volatile unsigned int *flags,
+                volatile unsigned int *tx,
+                int rx,
+                txContent_t* txContent) {
     if (!flags || !tx) {
         THROW(ApduReplySdkInvalidParameter);
     }
@@ -77,7 +80,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         case InsSignSmartContractDeploy:
         case InsSignSmartContractExecution:
         case InsSignCancel:
-            handle_sign_legacy_transaction(tx);
+            handle_sign_legacy_transaction(tx, txContent);
             handle_sign_legacy_transaction_ui(flags);
             break;
 
@@ -90,11 +93,13 @@ void app_main(void) {
     volatile unsigned int rx = 0;
     volatile unsigned int tx = 0;
     volatile unsigned int flags = 0;
+    txContent_t txContent;
 
     // Stores the information about the current command. Some commands expect
     // multiple APDUs before they become complete and executed.
     reset_getpubkey_globals();
     reset_main_globals();
+
 
     // DESIGN NOTE: the bootloader ignores the way APDU are fetched. The only
     // goal is to retrieve APDU.
@@ -121,7 +126,7 @@ void app_main(void) {
 
                 PRINTF("New APDU received:\n%.*H\n", rx, G_io_apdu_buffer);
 
-                handleApdu(&flags, &tx, rx);
+                handleApdu(&flags, &tx, rx, &txContent);
             }
             CATCH(ApduReplySdkExceptionIoReset) {
                 THROW(ApduReplySdkExceptionIoReset);
