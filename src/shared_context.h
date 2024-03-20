@@ -8,6 +8,5 @@
 
 extern ApduCommand G_command;
 extern txInt256_t chainID;
-extern tmpContent_t tmpContent;
 
 #endif  // _SHARED_CONTEXT_H_

@@ -119,10 +119,7 @@ void u64_to_string(uint64_t src, char *dst, uint8_t dst_size) {
     }
 }
 
-void getEthAddressStringFromBinary(uint8_t *address,
-                                   char *out,
-                                   cx_sha3_t *sha3Context,
-                                   uint64_t chainId) {
+void getEthAddressStringFromBinary(uint8_t *address, char *out, cx_sha3_t *sha3Context) {
     // save some precious stack space
     union locals_union {
         uint8_t hashChecksum[HASH_LENGTH];
@@ -130,20 +127,8 @@ void getEthAddressStringFromBinary(uint8_t *address,
     } locals_union;
 
     uint8_t i;
-    bool eip1191 = false;
     uint32_t offset = 0;
-    switch (chainId) {
-        case 30:
-        case 31:
-            eip1191 = true;
-            break;
-    }
-    if (eip1191) {
-        u64_to_string(chainId, (char *) locals_union.tmp, sizeof(locals_union.tmp));
-        offset = strnlen((char *) locals_union.tmp, sizeof(locals_union.tmp));
-        strlcat((char *) locals_union.tmp + offset, "0x", sizeof(locals_union.tmp) - offset);
-        offset = strnlen((char *) locals_union.tmp, sizeof(locals_union.tmp));
-    }
+
     for (i = 0; i < 20; i++) {
         uint8_t digit = address[i];
         locals_union.tmp[offset + 2 * i] = HEXDIGITS[(digit >> 4) & 0x0f];
@@ -197,8 +182,7 @@ void getEthAddressFromKey(cx_ecfp_public_key_t *publicKey, uint8_t *out, cx_sha3
 
 void getEthAddressStringFromKey(cx_ecfp_public_key_t *publicKey,
                                 char *out,
-                                cx_sha3_t *sha3Context,
-                                uint64_t chainId) {
+                                cx_sha3_t *sha3Context) {
     uint8_t hashAddress[HASH_LENGTH];
 
     CX_THROW(cx_keccak_init_no_throw(sha3Context, 256));
@@ -210,7 +194,7 @@ void getEthAddressStringFromKey(cx_ecfp_public_key_t *publicKey,
                               hashAddress,
                               32));
 
-    getEthAddressStringFromBinary(hashAddress + 12, out, sha3Context, chainId);
+    getEthAddressStringFromBinary(hashAddress + 12, out, sha3Context);
 }
 
 bool adjustDecimals(const char *src,
