@@ -30,8 +30,6 @@
 
 ApduCommand G_command;
 txInt256_t chainID;
-// txContent_t txContent;
-
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 static void reset_main_globals() {
@@ -43,7 +41,7 @@ static void reset_main_globals() {
 void handleApdu(volatile unsigned int *flags,
                 volatile unsigned int *tx,
                 int rx,
-                txContent_t* txContent) {
+                txContent_t *txContent) {
     if (!flags || !tx) {
         THROW(ApduReplySdkInvalidParameter);
     }
@@ -99,7 +97,6 @@ void app_main(void) {
     // multiple APDUs before they become complete and executed.
     reset_getpubkey_globals();
     reset_main_globals();
-
 
     // DESIGN NOTE: the bootloader ignores the way APDU are fetched. The only
     // goal is to retrieve APDU.

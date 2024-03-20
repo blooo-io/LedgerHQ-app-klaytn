@@ -119,9 +119,7 @@ void u64_to_string(uint64_t src, char *dst, uint8_t dst_size) {
     }
 }
 
-void getEthAddressStringFromBinary(uint8_t *address,
-                                   char *out,
-                                   cx_sha3_t *sha3Context) {
+void getEthAddressStringFromBinary(uint8_t *address, char *out, cx_sha3_t *sha3Context) {
     // save some precious stack space
     union locals_union {
         uint8_t hashChecksum[HASH_LENGTH];
@@ -130,7 +128,7 @@ void getEthAddressStringFromBinary(uint8_t *address,
 
     uint8_t i;
     uint32_t offset = 0;
-    
+
     for (i = 0; i < 20; i++) {
         uint8_t digit = address[i];
         locals_union.tmp[offset + 2 * i] = HEXDIGITS[(digit >> 4) & 0x0f];

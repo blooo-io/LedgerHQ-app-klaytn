@@ -6,7 +6,7 @@
         "string_view": "c"
     },
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": true,
     "task.autoDetect": "off",
     "python.terminal.activateEnvironment": false,
     "buid_dir_relative_path": ".",

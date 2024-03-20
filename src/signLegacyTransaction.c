@@ -40,7 +40,6 @@ static uint8_t set_result_sign_message() {
     cx_ecfp_private_key_t privateKey;
     BEGIN_TRY {
         TRY {
-
             get_private_key(&privateKey,
                             G_command.derivation_path,
                             G_command.derivation_path_length);
@@ -127,7 +126,7 @@ ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 
 #endif  // HAVE_BAGL
 
-void handle_sign_legacy_transaction(volatile unsigned int *tx, txContent_t *txContent){
+void handle_sign_legacy_transaction(volatile unsigned int *tx, txContent_t *txContent) {
     cx_sha3_t sha3;
     txContext_t txContext;
 
@@ -144,7 +143,7 @@ void handle_sign_legacy_transaction(volatile unsigned int *tx, txContent_t *txCo
     parserStatus_e txResult;
 
     initTx(&txContext, &sha3, txContent, NULL);
-    
+
     uint8_t *workBuffer = G_command.message;
     uint8_t dataLength = G_command.message_length;
     PRINTF("workBuffer: %.*H\n", dataLength, workBuffer);
